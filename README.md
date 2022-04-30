@@ -40,7 +40,7 @@
 `close / closes / closed / fix / fixes / fixed / resolve /resolves / resolved`
 ```
 < 예시 >
-[BE] feat: Flowing close #1
+[BE] feat: cors close #1
 ```
 
 ### 🔐보안 관련
@@ -67,7 +67,5 @@
 ### Issue
 
 - 앞으로 할 일이나 버그 등을 기록한다.
-- 이슈에 맞는 라벨을 알맞게 선택한다.
-- 필요한 라벨이 있다면 공동 계정(hanghae-flowing)의 `Settings` -> `Repository Defaults` 에서 추가한다.
 
 <br>
