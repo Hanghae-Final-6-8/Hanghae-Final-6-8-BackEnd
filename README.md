@@ -7,8 +7,8 @@
 
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/jinsDevelopment"></a></td>
-    <td align="center"><a href="https://github.com/devgusehdrh"></a></td>
+    <td align="center"><a href="https://github.com/jinsDevelopment" target='_blank'><img src="https://avatars.githubusercontent.com/u/101075624?v=4" width="120px" /></a></td>
+    <td align="center"><a href="https://github.com/devgusehdrh" target='_blank'><img src="https://avatars.githubusercontent.com/u/98457348?v=4" width="120px" /></a></td>
   </tr>
   <tr>
     <td align="center"><b>이진서</b></td>
