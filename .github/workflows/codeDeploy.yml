@@ -66,6 +66,7 @@ jobs:
           --acl private \
           ./springboot-build.zip s3://coffee-deploy-99/
 
+
       # Deploy
       - name: Deploy
         env:
@@ -76,5 +77,5 @@ jobs:
           --application-name springboot-deploy \
           --deployment-group-name springboot-deploy-group \
           --file-exists-behavior OVERWRITE \
-          --s3-location bucket=springboot-build,bundleType=zip,key=springboot-build.zip \
+          --s3-location bucket=coffee-deploy-99,bundleType=zip,key=springboot-build.zip \
           --region us-east-1
