@@ -6,8 +6,6 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,36 +20,21 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Users extends Timestamped {
+public class Cafe {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "cafe_id")
     private Long id;
 
     @NotNull
-    private String authId;
-
-    private String email;
-
-    private String nickname;
-
-    private String profileUrl;
-
-    private String name;
+    private String cafeName;
 
     @NotNull
-    private String requestToken;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private OauthType oauthType;
+    private String cafeImage;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    private List<Posts> posts = new ArrayList<>();
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    private List<Comments> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "cafe", cascade = CascadeType.ALL)
+    private List<Beans> beans = new ArrayList<>();
 
 }

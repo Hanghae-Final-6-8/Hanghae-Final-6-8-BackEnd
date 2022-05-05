@@ -1,16 +1,18 @@
 package com.hanghae.coffee.model;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -22,36 +24,18 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Users extends Timestamped {
+public class PostsIamge {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "image_id")
     private Long id;
 
-    @NotNull
-    private String authId;
-
-    private String email;
-
-    private String nickname;
-
-    private String profileUrl;
-
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "posts_id")
+    private Posts posts;
 
     @NotNull
-    private String requestToken;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private OauthType oauthType;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    private List<Posts> posts = new ArrayList<>();
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    private List<Comments> comments = new ArrayList<>();
+    private String imageUrl;
 
 }

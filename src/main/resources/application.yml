@@ -1,4 +1,26 @@
 spring:
+
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+  h2:
+    console:
+      enabled: true
+  profiles:
+    active: server
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:coffee;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+
+
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
