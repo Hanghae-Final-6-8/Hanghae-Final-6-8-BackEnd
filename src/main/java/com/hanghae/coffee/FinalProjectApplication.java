@@ -1,4 +1,4 @@
-package com.hanghae.final_project;
+package com.hanghae.coffee;
 
 import java.util.TimeZone;
 import javax.annotation.PostConstruct;
