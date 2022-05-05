@@ -30,7 +30,7 @@ os: linux
 
 files:
   - source: /
-    destination: /home/ubuntu/deploy(폴더이름은 아무거나)
+    destination: /home/ubuntu/deploy
 permissions:
   - object: /home/ubuntu/deploy
     owner: ubuntu
