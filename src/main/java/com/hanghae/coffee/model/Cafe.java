@@ -27,14 +27,14 @@ public class Cafe {
     @Column(name = "cafe_id")
     private Long id;
 
-    @NotNull
+    @Column(nullable = false)
     private String cafeName;
 
-    @NotNull
+    @Column(nullable = false)
     private String cafeImage;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "cafe", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cafe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Beans> beans = new ArrayList<>();
 
 }

@@ -1,6 +1,7 @@
 package com.hanghae.coffee.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -28,7 +29,7 @@ public class Users extends Timestamped {
     @Column(name = "user_id")
     private Long id;
 
-    @NotNull
+    @Column(nullable = false)
     private String authId;
 
     private String email;
@@ -39,19 +40,30 @@ public class Users extends Timestamped {
 
     private String name;
 
-    @NotNull
+    @Column(nullable = false)
     private String requestToken;
 
-    @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private OauthType oauthType;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "users")
     private List<Posts> posts = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "users")
     private List<Comments> comments = new ArrayList<>();
+
+    //==생성 메서드==//
+    public static Users createUser(String nickname,String email,String authId, OauthType oauth,String requestToken) {
+        Users users = new Users();
+        users.setAuthId(authId);
+        users.setNickname(nickname);
+        users.setEmail(email);
+        users.setOauthType(oauth);
+        users.setRequestToken(requestToken);
+        return users;
+    }
 
 }
