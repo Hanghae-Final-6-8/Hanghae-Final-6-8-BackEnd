@@ -30,13 +30,13 @@ public class Beans {
     @Column(name = "bean_id")
     private Long id;
 
-    @NotNull
+    @Column(nullable = false)
     private String beanName;
 
-    @NotNull
+    @Column(nullable = false)
     private String beanDescription; // text로 자료형 변경
 
-    @NotNull
+    @Column(nullable = false)
     private int type;
 
     private int acidity;

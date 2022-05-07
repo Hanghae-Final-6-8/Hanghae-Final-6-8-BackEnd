@@ -35,7 +35,7 @@ public class PostsIamge {
     @JoinColumn(name = "posts_id")
     private Posts posts;
 
-    @NotNull
+    @Column(nullable = false)
     private String imageUrl;
 
 }

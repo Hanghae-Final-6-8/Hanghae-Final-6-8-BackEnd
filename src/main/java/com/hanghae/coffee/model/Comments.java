@@ -27,7 +27,7 @@ public class Comments extends Timestamped {
     @Column(name = "comments_id")
     private Long id;
 
-    @NotNull
+    @Column(nullable = false)
     private String content; // text로 자료형 변경
 
     @ManyToOne(fetch = LAZY)

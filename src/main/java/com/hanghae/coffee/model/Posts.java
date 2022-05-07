@@ -32,10 +32,10 @@ public class Posts extends Timestamped {
     @Column(name = "posts_id")
     private Long id;
 
-    @NotNull
+    @Column(nullable = false)
     private String title;
 
-    @NotNull
+    @Column(nullable = false)
     private String content; // text로 자료형 변경
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,11 +43,11 @@ public class Posts extends Timestamped {
     private Users users;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comments> comments = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostsIamge> postsIamges = new ArrayList<>();
 
 
