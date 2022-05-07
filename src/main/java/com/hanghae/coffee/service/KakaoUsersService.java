@@ -3,24 +3,21 @@ package com.hanghae.coffee.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hanghae.coffee.dto.oauthProperties.KakaoPropertiesDto;
 import com.hanghae.coffee.dto.oauthProperties.KakaoUserInfoDto;
+import com.hanghae.coffee.dto.oauthProperties.OauthPropertiesDto;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.UsersRepository;
 import com.hanghae.coffee.security.jwt.JwtTokenProvider;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -30,19 +27,37 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class KakaoUsersService {
+public class KakaoUsersService implements OauthUsersService {
 
+    private final static String KAKAO_OAUTH_REQUEST_URL = "https://kauth.kakao.com/oauth/authorize";
     private final static String KAKAO_TOKEN_BASE_URL = "https://kauth.kakao.com/oauth/token";
     private final static String KAKAO_TOKEN_INFO_URL = "https://kapi.kakao.com/v2/user/me";
 
     private final UsersRepository usersRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final OauthPropertiesDto oauthPropertiesDto;
 
-    @Autowired
-    private final KakaoPropertiesDto kakaoPropertiesDto;
+    @Override
+    public String getOauthRedirectURL() {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("response_type", "code");
+        params.put("redirect_uri", "http://localhost:8080/api/user/login/kakao/callback");
+        params.put("client_id", oauthPropertiesDto.getKakao().get("client").getId());
+
+
+        String parameterString = params.entrySet().stream()
+            .map(x -> x.getKey() + "=" + x.getValue())
+            .collect(Collectors.joining("&"));
+
+        System.out.println(KAKAO_OAUTH_REQUEST_URL + "?" + parameterString);
+
+        return KAKAO_OAUTH_REQUEST_URL + "?" + parameterString;
+    }
 
     @Transactional
-    public void kakaoLogin(String code) throws JsonProcessingException {
+    @Override
+    public String doLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
 
@@ -54,9 +69,10 @@ public class KakaoUsersService {
 
         // 4. 강제 로그인 처리
 //        forceLogin(kakaoUser);
+        return accessToken;
     }
 
-    private String getAccessToken(String code) throws JsonProcessingException {
+    public String getAccessToken(String code) throws JsonProcessingException {
 
         HttpHeaders headers = new HttpHeaders();
 
@@ -65,8 +81,8 @@ public class KakaoUsersService {
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", kakaoPropertiesDto.getClient().get("id"));
-        body.add("redirect_uri", "http://localhost:8080/api/user/kakao");
+        body.add("client_id", oauthPropertiesDto.getKakao().get("client").getId());
+        body.add("redirect_uri", "http://localhost:8080/api/user/login/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청 보내기
@@ -91,7 +107,9 @@ public class KakaoUsersService {
     }
 
     private KakaoUserInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
+
         HttpHeaders headers = new HttpHeaders();
+
         // HTTP Header 생성
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
@@ -109,6 +127,7 @@ public class KakaoUsersService {
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
+
         String id = jsonNode.get("id").asText();
         String nickname = jsonNode.get("properties")
             .get("nickname").asText();
@@ -129,12 +148,10 @@ public class KakaoUsersService {
             // username: kakao nickname
             String nickname = kakaoUserInfo.getNickname();
 
-
             // email: kakao email
             String email = kakaoUserInfo.getEmail();
 
             String requestToken = jwtTokenProvider.createRefreshToken(kakaoId);
-
 
             kakaoUsers = Users.createUser(nickname, email, kakaoId, OauthType.KAKAO, requestToken);
 
