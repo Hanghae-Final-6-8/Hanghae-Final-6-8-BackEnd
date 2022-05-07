@@ -1,24 +1,19 @@
 package com.hanghae.coffee.model;
 
+import lombok.AllArgsConstructor;
+
 public enum OauthType {
-    GOOGLE(AuthType.GOOGLE),
-    KAKAO(AuthType.KAKAO),
-    NAVER(AuthType.NAVER);
+    GOOGLE("GOOGLE"), KAKAO("KAKAO"), NAVER("NAVER");
 
-    private final String type;
+    private final String value;
 
-    OauthType(String type) {
-        this.type = type;
+    OauthType(String value) {
+        this.value = value;
     }
 
-    public String getAuthType() {
-        return this.type;
+    public String getValue() {
+        return value;
+
     }
 
-    private static class AuthType {
-
-        private static final String GOOGLE = "GOOGLE";
-        private static final String KAKAO = "KAKAO";
-        private static final String NAVER = "NAVER";
-    }
 }
