@@ -99,7 +99,7 @@ public class GoogleUsersService implements OauthUsersService {
         // 2. "액세스 토큰"에서 사용자 이메일 획득
         Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(accessToken);
 
-        Users googleUsers = usersRepository.findAllByRequestToken(accessToken)
+        Users googleUsers = usersRepository.findAllByaccessToken(accessToken)
             .orElse(null);
         if (googleUsers != null) {
             String usersEmail = googleUsers.getEmail();
@@ -139,7 +139,7 @@ public class GoogleUsersService implements OauthUsersService {
         // 2. "리프레시 토큰"에서 사용자 이메일 획득
         Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(refreshToken);
 
-        Users googleUsers = usersRepository.findAllByRequestToken(refreshToken)
+        Users googleUsers = usersRepository.findAllByaccessToken(refreshToken)
             .orElse(null);
         if (googleUsers != null) {
             String usersEmail = googleUsers.getEmail();
@@ -250,13 +250,13 @@ public class GoogleUsersService implements OauthUsersService {
                 // 회원가입
                 accessToken = jwtTokenProvider.createAccessToken(googleId);
                 refreshToken = jwtTokenProvider.createRefreshToken(googleId);
-                googleUsers = Users.createUsers(userInfoDto, accessToken);
+                googleUsers = Users.createUsers(userInfoDto, accessToken,refreshToken);
                 usersRepository.save(googleUsers);
 
             } else {
                 googleUsers = Users.updateUsers(googleUsers, userInfoDto);
                 // requestToken Redis 저장
-                accessToken = googleUsers.getRequestToken();
+                accessToken = googleUsers.getAccessToken();
             }
             // accessToken Redis 저장
             Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY)
@@ -268,6 +268,7 @@ public class GoogleUsersService implements OauthUsersService {
                     TimeUnit.MILLISECONDS);
 
             // refreshToken Redis 저장
+
             Jws<Claims> claims2 = Jwts.parser().setSigningKey(SECRET_KEY)
                 .parseClaimsJws(refreshToken);
             Date expiration2 = claims2.getBody().getExpiration();
