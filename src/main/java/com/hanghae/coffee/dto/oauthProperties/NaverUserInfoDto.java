@@ -1,13 +1,14 @@
 package com.hanghae.coffee.dto.oauthProperties;
 
 import com.hanghae.coffee.model.OauthType;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-public class GoogleUserInfoDto extends UserInfoDto{
+@Getter
+@Setter
+public class NaverUserInfoDto extends UserInfoDto {
 
-    public GoogleUserInfoDto(String authId, String nickname, String email, String profileUrl) {
+    public NaverUserInfoDto(String authId, String nickname, String email, String profileUrl) {
         super(authId, nickname, email, profileUrl);
     }
 
@@ -33,6 +34,6 @@ public class GoogleUserInfoDto extends UserInfoDto{
 
     @Override
     public OauthType getOauthType() {
-        return OauthType.GOOGLE;
+        return OauthType.NAVER;
     }
 }
