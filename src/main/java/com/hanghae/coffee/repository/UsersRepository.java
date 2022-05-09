@@ -8,4 +8,7 @@ public interface UsersRepository extends JpaRepository<Users,Long> {
 
     Optional<Users> findAllByAuthId(String authId);
 
+	Optional<Object> findByname(String name);
+
+	Optional<Users> findAllByaccessToken(String accessToken);
 }
