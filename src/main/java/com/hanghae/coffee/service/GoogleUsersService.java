@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae.coffee.dto.oauthProperties.GoogleUserInfoDto;
 import com.hanghae.coffee.dto.oauthProperties.OauthPropertiesDto;
-import com.hanghae.coffee.dto.oauthProperties.UserInfoDto;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.UsersRepository;
@@ -25,19 +24,19 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class GoogleUsersService implements OauthUsersService {
 
-    @Value("${oauth.google.url}")
+    @Value("${sns.google.url}")
     private String GOOGLE_SNS_BASE_URL;
-    @Value("${oauth.google.client.id}")
+    @Value("${sns.google.client.id}")
     private String GOOGLE_SNS_CLIENT_ID;
-    @Value("${oauth.google.callback.url}")
+    @Value("${sns.google.callback.url}")
     private String GOOGLE_SNS_CALLBACK_URL;
-    @Value("${oauth.google.client.secret}")
+    @Value("${sns.google.client.secret}")
     private String GOOGLE_SNS_CLIENT_SECRET;
-    @Value("${oauth.google.token.url}")
+    @Value("${sns.google.token.url}")
     private String GOOGLE_SNS_TOKEN_BASE_URL;
-    @Value("${oauth.google.scope}")
+    @Value("${sns.google.scope}")
     private String GOOGLE_SNS_SCOPE;
-    @Value("${oauth.google.user.info.url}")
+    @Value("${sns.google.user.info.url}")
     private String GOOGLE_SNS_USER_INFO_URL;
 
     private final UsersRepository usersRepository;
@@ -65,7 +64,7 @@ public class GoogleUsersService implements OauthUsersService {
         String accessToken = getAccessToken(code);
 
         // 2. 토큰으로 구글 API 호출
-        UserInfoDto googleUserInfo = requestUserInfo(accessToken);
+        GoogleUserInfoDto googleUserInfo = requestUserInfo(accessToken);
 
         // 3. 필요시에 회원가입
         Users googleUser = registerGoogleUserIfNeeded(googleUserInfo);
@@ -89,7 +88,7 @@ public class GoogleUsersService implements OauthUsersService {
         ObjectMapper mapper = new ObjectMapper();
 
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
-            Map<String, String> map = new HashMap<>();
+            Map<String, String> map = new HashMap<>() {};
             try{
                 map = mapper.readValue(responseEntity.getBody(), Map.class);
             } catch (IOException e) {
@@ -100,7 +99,30 @@ public class GoogleUsersService implements OauthUsersService {
         return "구글 로그인 요청 처리 실패";
     }
 
-    public UserInfoDto requestUserInfo(String access_token) {
+    private Users registerGoogleUserIfNeeded(GoogleUserInfoDto googleUserInfo) {
+        // DB 에 중복된 Kakao Id 가 있는지 확인
+        String googleId = googleUserInfo.getId();
+        Users googleUsers = usersRepository.findAllByAuthId(googleId)
+            .orElse(null);
+        if (googleUsers == null) {
+            // 회원가입
+            // username: kakao nickname
+            String name = googleUserInfo.getName();
+
+            // email: kakao email
+            String email = googleUserInfo.getEmail();
+
+            String requestToken = jwtTokenProvider.createRefreshToken(googleId);
+
+            googleUsers = Users.createUser(name, email, googleId, OauthType.GOOGLE, requestToken);
+
+            usersRepository.save(googleUsers);
+        }
+
+        return googleUsers;
+    }
+
+    public GoogleUserInfoDto requestUserInfo(String access_token) {
         try {
             RestTemplate restTemplate = new RestTemplate();
             ObjectMapper mapper = new ObjectMapper();
@@ -118,15 +140,15 @@ public class GoogleUsersService implements OauthUsersService {
 
 
             ResponseEntity<String> responseEntity = restTemplate.getForEntity(GOOGLE_SNS_USER_INFO_URL + "?" + parameterString, String.class);
-            Map<String, String> map = new HashMap<>();
+            Map<String, String> map = new HashMap<>() {};
             try {
                 map = mapper.readValue(responseEntity.getBody(), Map.class);
                 System.out.println("=====구글 사용자 정보=====");
                 System.out.println("id: " + map.get("id"));
                 System.out.println("name: " + map.get("name"));
                 System.out.println("email: " + map.get("email"));
-                System.out.println("picture: " + map.get("picture"));
-                return UserInfoFactory.getOAuth2UserInfo(OauthType.GOOGLE, map.get("id"), map.get("name"), map.get("email"), map.get("picture"));
+                GoogleUserInfoDto googleUserInfoDto = new GoogleUserInfoDto(map.get("id"),map.get("name"),map.get("email"));
+                return googleUserInfoDto;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -135,23 +157,5 @@ public class GoogleUsersService implements OauthUsersService {
         } catch (IOException e) {
             throw new IllegalArgumentException("구글 로그인 요청 처리 실패");
         }
-    }
-
-    private Users registerGoogleUserIfNeeded(UserInfoDto userInfoDto) {
-        // DB 에 중복된 Kakao Id 가 있는지 확인
-        String googleId = userInfoDto.getAuthId();
-        Users googleUsers = usersRepository.findAllByAuthId(googleId)
-            .orElse(null);
-        if (googleUsers == null) {
-            // 회원가입
-
-            String requestToken = jwtTokenProvider.createRefreshToken(googleId);
-            googleUsers = Users.createUsers(userInfoDto, requestToken);
-            usersRepository.save(googleUsers);
-        } else {
-            googleUsers = Users.updateUsers(googleUsers, userInfoDto);
-        }
-        
-        return googleUsers;
     }
 }

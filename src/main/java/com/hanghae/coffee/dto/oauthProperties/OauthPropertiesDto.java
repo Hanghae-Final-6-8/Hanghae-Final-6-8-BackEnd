@@ -14,7 +14,18 @@ public class OauthPropertiesDto {
 
     private Map<String, Client> kakao;
 
+    private Map<String, Client> naver;
+
     // getters and setters
+
+    public Map<String, Client> getNaver() {
+        return naver;
+    }
+
+    public void setNaver(
+        Map<String, Client> naver) {
+        this.naver = naver;
+    }
 
     public Map<String, Client> getKakao() {
         return kakao;
