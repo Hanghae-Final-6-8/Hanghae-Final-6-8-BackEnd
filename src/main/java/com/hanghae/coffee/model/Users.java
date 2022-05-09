@@ -15,11 +15,14 @@ import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Proxy;
 
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+// 캐싱시 문제가 발생하지 않도록 proxy false 설정
+@Proxy(lazy=false)
 public class Users extends Timestamped {
 
     @Id
@@ -39,7 +42,10 @@ public class Users extends Timestamped {
     private String name;
 
     @Column(nullable = false)
-    private String requestToken;
+    private String accessToken;
+
+    @Column(nullable = false)
+    private String refreshToken;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -73,19 +79,23 @@ public class Users extends Timestamped {
         this.oauthType = oauthType;
     }
 
-    private void setRequestToken(String requestToken) {
-        this.requestToken = requestToken;
+    private void setaccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+    private void setrefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     //==생성 메서드==//
-    public static Users createUsers(UserInfoDto userInfoDto, String requestToken) {
+    public static Users createUsers(UserInfoDto userInfoDto, String accessToken, String refreshToken) {
         Users users = new Users();
         users.setAuthId(userInfoDto.getAuthId());
         users.setNickname(userInfoDto.getNickname());
         users.setEmail(userInfoDto.getEmail());
         users.setProfileUrl(userInfoDto.getProfileUrl());
         users.setOauthType(userInfoDto.getOauthType());
-        users.setRequestToken(requestToken);
+        users.setaccessToken(accessToken);
+        users.setrefreshToken(refreshToken);
         return users;
     }
 
