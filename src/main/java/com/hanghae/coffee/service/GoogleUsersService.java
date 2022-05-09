@@ -137,19 +137,19 @@ public class GoogleUsersService implements OauthUsersService {
         }
     }
 
-    private Users registerGoogleUserIfNeeded(UserInfoDto googleUserInfo) {
+    private Users registerGoogleUserIfNeeded(UserInfoDto userInfoDto) {
         // DB 에 중복된 Kakao Id 가 있는지 확인
-        String googleId = googleUserInfo.getAuthId();
+        String googleId = userInfoDto.getAuthId();
         Users googleUsers = usersRepository.findAllByAuthId(googleId)
             .orElse(null);
         if (googleUsers == null) {
             // 회원가입
 
             String requestToken = jwtTokenProvider.createRefreshToken(googleId);
-
-            googleUsers = Users.createUsers(googleUserInfo, requestToken);
-
+            googleUsers = Users.createUsers(userInfoDto, requestToken);
             usersRepository.save(googleUsers);
+        } else {
+            googleUsers = Users.updateUsers(googleUsers, userInfoDto);
         }
 
         return googleUsers;
