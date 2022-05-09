@@ -3,8 +3,8 @@ package com.hanghae.coffee.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hanghae.coffee.dto.oauthProperties.KakaoUserInfoDto;
 import com.hanghae.coffee.dto.oauthProperties.OauthPropertiesDto;
+import com.hanghae.coffee.dto.oauthProperties.UserInfoDto;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.UsersRepository;
@@ -45,7 +45,6 @@ public class KakaoUsersService implements OauthUsersService {
         params.put("redirect_uri", "http://localhost:8080/api/user/login/kakao/callback");
         params.put("client_id", oauthPropertiesDto.getKakao().get("client").getId());
 
-
         String parameterString = params.entrySet().stream()
             .map(x -> x.getKey() + "=" + x.getValue())
             .collect(Collectors.joining("&"));
@@ -62,17 +61,17 @@ public class KakaoUsersService implements OauthUsersService {
         String accessToken = getAccessToken(code);
 
         // 2. 토큰으로 카카오 API 호출
-        KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
+        UserInfoDto userInfoDto = getKakaoUserInfo(accessToken);
 
         // 3. 필요시에 회원가입
-        Users kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
+        Users kakaoUser = registerKakaoUserIfNeeded(userInfoDto);
 
         // 4. 강제 로그인 처리
 //        forceLogin(kakaoUser);
-        return accessToken;
+        return String.valueOf(kakaoUser);
     }
 
-    public String getAccessToken(String code) throws JsonProcessingException {
+    private String getAccessToken(String code) throws JsonProcessingException {
 
         HttpHeaders headers = new HttpHeaders();
 
@@ -96,9 +95,6 @@ public class KakaoUsersService implements OauthUsersService {
             String.class
         );
 
-        log.info(String.valueOf(response.getHeaders()));
-        log.info(String.valueOf(response.getBody()));
-
         // HTTP 응답 (JSON) -> 액세스 토큰 파싱
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -106,7 +102,7 @@ public class KakaoUsersService implements OauthUsersService {
         return jsonNode.get("access_token").asText();
     }
 
-    private KakaoUserInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
+    private UserInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
 
         HttpHeaders headers = new HttpHeaders();
 
@@ -127,35 +123,41 @@ public class KakaoUsersService implements OauthUsersService {
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
+        log.info(String.valueOf(jsonNode));
 
         String id = jsonNode.get("id").asText();
         String nickname = jsonNode.get("properties")
             .get("nickname").asText();
-        String email = jsonNode.get("kakao_account")
-            .get("email").asText();
+        // 필수 값이 아니라 값이 없으면 null로 초기화
+        String email =
+            jsonNode.get("kakao_account").has("email") ?
+                jsonNode.get("kakao_account").get("email").asText() : null;
 
-        System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + email);
-        return new KakaoUserInfoDto(id, nickname, email);
+        String profile_image_url =
+            jsonNode.get("kakao_account").get("profile").has("profile_image_url") ?
+                jsonNode.get("kakao_account").get("profile").get("profile_image_url").asText()
+                : null;
+
+        log.info("카카오 사용자 정보: " + id + ", " + nickname + ", " + email + ", " + profile_image_url);
+        return UserInfoFactory.getOAuth2UserInfo(OauthType.KAKAO, id, nickname, email, profile_image_url);
+
     }
 
-    private Users registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
+    private Users registerKakaoUserIfNeeded(UserInfoDto userInfoDto) {
         // DB 에 중복된 Kakao Id 가 있는지 확인
-        String kakaoId = kakaoUserInfo.getId();
+        String kakaoId = userInfoDto.getAuthId();
         Users kakaoUsers = usersRepository.findAllByAuthId(kakaoId)
             .orElse(null);
         if (kakaoUsers == null) {
             // 회원가입
-            // username: kakao nickname
-            String nickname = kakaoUserInfo.getNickname();
-
-            // email: kakao email
-            String email = kakaoUserInfo.getEmail();
-
             String requestToken = jwtTokenProvider.createRefreshToken(kakaoId);
-
-            kakaoUsers = Users.createUser(nickname, email, kakaoId, OauthType.KAKAO, requestToken);
-
+            kakaoUsers = Users.createUsers(userInfoDto,requestToken);
             usersRepository.save(kakaoUsers);
+        } else {
+
+            kakaoUsers = Users.updateUsers(kakaoUsers, userInfoDto);
+//            usersRepository.save(kakaoUsers);     //dirty checking 으로 생략가능..?
+
         }
 
         return kakaoUsers;

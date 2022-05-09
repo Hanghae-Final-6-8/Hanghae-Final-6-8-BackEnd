@@ -1,10 +1,14 @@
 package com.hanghae.coffee.dto.oauthProperties;
 
 import com.hanghae.coffee.model.OauthType;
+import lombok.Getter;
+import lombok.Setter;
 
-public class KakaoUserInfoDto extends UserInfoDto {
+@Getter
+@Setter
+public class NaverUserInfoDto extends UserInfoDto {
 
-    public KakaoUserInfoDto(String authId, String nickname, String email, String profileUrl) {
+    public NaverUserInfoDto(String authId, String nickname, String email, String profileUrl) {
         super(authId, nickname, email, profileUrl);
     }
 
@@ -30,8 +34,6 @@ public class KakaoUserInfoDto extends UserInfoDto {
 
     @Override
     public OauthType getOauthType() {
-        return OauthType.KAKAO;
+        return OauthType.NAVER;
     }
-
-
 }
