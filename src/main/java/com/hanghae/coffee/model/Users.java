@@ -1,10 +1,9 @@
 package com.hanghae.coffee.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.time.LocalDateTime;
+import com.hanghae.coffee.dto.oauthProperties.UserInfoDto;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,17 +12,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Users extends Timestamped {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -55,15 +53,57 @@ public class Users extends Timestamped {
     @OneToMany(mappedBy = "users")
     private List<Comments> comments = new ArrayList<>();
 
+    private void setAuthId(String authId) {
+        this.authId = authId;
+    }
+
+    private void setEmail(String email) {
+        this.email = email;
+    }
+
+    private void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    private void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
+    }
+
+    private void setOauthType(OauthType oauthType) {
+        this.oauthType = oauthType;
+    }
+
+    private void setRequestToken(String requestToken) {
+        this.requestToken = requestToken;
+    }
+
     //==생성 메서드==//
-    public static Users createUser(String nickname,String email,String authId, OauthType oauth,String requestToken) {
+    public static Users createUsers(UserInfoDto userInfoDto, String requestToken) {
         Users users = new Users();
-        users.setAuthId(authId);
-        users.setNickname(nickname);
-        users.setEmail(email);
-        users.setOauthType(oauth);
+        users.setAuthId(userInfoDto.getAuthId());
+        users.setNickname(userInfoDto.getNickname());
+        users.setEmail(userInfoDto.getEmail());
+        users.setProfileUrl(userInfoDto.getProfileUrl());
+        users.setOauthType(userInfoDto.getOauthType());
         users.setRequestToken(requestToken);
         return users;
+    }
+
+    //==생성 메서드==//
+    public static Users updateUsers(Users users, UserInfoDto userInfoDto) {
+
+        users.setNickname(userInfoDto.getNickname());
+        users.setEmail(userInfoDto.getEmail());
+        users.setProfileUrl(userInfoDto.getProfileUrl());
+        users.setOauthType(userInfoDto.getOauthType());
+
+        return users;
+    }
+
+    //==연관관계 메서드==//
+    public void createPosts(Posts post) {
+        posts.add(post);
+        post.setUsers(this);
     }
 
 }
