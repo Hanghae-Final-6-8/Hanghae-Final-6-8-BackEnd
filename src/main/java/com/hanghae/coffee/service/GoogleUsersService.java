@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae.coffee.dto.oauthProperties.GoogleUserInfoDto;
 import com.hanghae.coffee.dto.oauthProperties.OauthPropertiesDto;
+import com.hanghae.coffee.dto.oauthProperties.UserInfoDto;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.UsersRepository;
@@ -64,7 +65,7 @@ public class GoogleUsersService implements OauthUsersService {
         String accessToken = getAccessToken(code);
 
         // 2. 토큰으로 구글 API 호출
-        GoogleUserInfoDto googleUserInfo = requestUserInfo(accessToken);
+        UserInfoDto googleUserInfo = requestUserInfo(accessToken);
 
         // 3. 필요시에 회원가입
         Users googleUser = registerGoogleUserIfNeeded(googleUserInfo);
@@ -88,7 +89,7 @@ public class GoogleUsersService implements OauthUsersService {
         ObjectMapper mapper = new ObjectMapper();
 
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
-            Map<String, String> map = new HashMap<>() {};
+            Map<String, String> map = new HashMap<>();
             try{
                 map = mapper.readValue(responseEntity.getBody(), Map.class);
             } catch (IOException e) {
@@ -99,30 +100,7 @@ public class GoogleUsersService implements OauthUsersService {
         return "구글 로그인 요청 처리 실패";
     }
 
-    private Users registerGoogleUserIfNeeded(GoogleUserInfoDto googleUserInfo) {
-        // DB 에 중복된 Kakao Id 가 있는지 확인
-        String googleId = googleUserInfo.getId();
-        Users googleUsers = usersRepository.findAllByAuthId(googleId)
-            .orElse(null);
-        if (googleUsers == null) {
-            // 회원가입
-            // username: kakao nickname
-            String name = googleUserInfo.getName();
-
-            // email: kakao email
-            String email = googleUserInfo.getEmail();
-
-            String requestToken = jwtTokenProvider.createRefreshToken(googleId);
-
-            googleUsers = Users.createUser(name, email, googleId, OauthType.GOOGLE, requestToken);
-
-            usersRepository.save(googleUsers);
-        }
-
-        return googleUsers;
-    }
-
-    public GoogleUserInfoDto requestUserInfo(String access_token) {
+    public UserInfoDto requestUserInfo(String access_token) {
         try {
             RestTemplate restTemplate = new RestTemplate();
             ObjectMapper mapper = new ObjectMapper();
@@ -140,7 +118,7 @@ public class GoogleUsersService implements OauthUsersService {
 
 
             ResponseEntity<String> responseEntity = restTemplate.getForEntity(GOOGLE_SNS_USER_INFO_URL + "?" + parameterString, String.class);
-            Map<String, String> map = new HashMap<>() {};
+            Map<String, String> map = new HashMap<>();
             try {
                 map = mapper.readValue(responseEntity.getBody(), Map.class);
                 System.out.println("=====구글 사용자 정보=====");
@@ -148,8 +126,7 @@ public class GoogleUsersService implements OauthUsersService {
                 System.out.println("name: " + map.get("name"));
                 System.out.println("email: " + map.get("email"));
                 System.out.println("picture: " + map.get("picture"));
-                GoogleUserInfoDto googleUserInfoDto = new GoogleUserInfoDto(map.get("id"),map.get("name"),map.get("email"));
-                return googleUserInfoDto;
+                return UserInfoFactory.getOAuth2UserInfo(OauthType.GOOGLE, map.get("id"), map.get("name"), map.get("email"), map.get("picture"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -158,5 +135,23 @@ public class GoogleUsersService implements OauthUsersService {
         } catch (IOException e) {
             throw new IllegalArgumentException("구글 로그인 요청 처리 실패");
         }
+    }
+
+    private Users registerGoogleUserIfNeeded(UserInfoDto userInfoDto) {
+        // DB 에 중복된 Kakao Id 가 있는지 확인
+        String googleId = userInfoDto.getAuthId();
+        Users googleUsers = usersRepository.findAllByAuthId(googleId)
+            .orElse(null);
+        if (googleUsers == null) {
+            // 회원가입
+
+            String requestToken = jwtTokenProvider.createRefreshToken(googleId);
+            googleUsers = Users.createUsers(userInfoDto, requestToken);
+            usersRepository.save(googleUsers);
+        } else {
+            googleUsers = Users.updateUsers(googleUsers, userInfoDto);
+        }
+
+        return googleUsers;
     }
 }
