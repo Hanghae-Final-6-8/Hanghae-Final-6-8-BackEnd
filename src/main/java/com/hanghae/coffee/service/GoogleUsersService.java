@@ -2,20 +2,27 @@ package com.hanghae.coffee.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hanghae.coffee.dto.oauthProperties.GoogleUserInfoDto;
-import com.hanghae.coffee.dto.oauthProperties.OauthPropertiesDto;
+
 import com.hanghae.coffee.dto.oauthProperties.UserInfoDto;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.UsersRepository;
 import com.hanghae.coffee.security.jwt.JwtTokenProvider;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -39,10 +46,17 @@ public class GoogleUsersService implements OauthUsersService {
     private String GOOGLE_SNS_SCOPE;
     @Value("${oauth.google.user.info.url}")
     private String GOOGLE_SNS_USER_INFO_URL;
+    private String SECRET_KEY = "acc_magazine";
 
     private final UsersRepository usersRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final OauthPropertiesDto oauthPropertiesDto;
+    private final RedisTemplate<String,String> redisTemplate;
+
+    // 객체 초기화, secretKey를 Base64로 인코딩한다
+    @PostConstruct
+    protected void init() {
+        SECRET_KEY = Base64.getEncoder().encodeToString(SECRET_KEY.getBytes());
+    }
 
     @Override
     public String getOauthRedirectURL() {
@@ -70,8 +84,55 @@ public class GoogleUsersService implements OauthUsersService {
         // 3. 필요시에 회원가입
         Users googleUser = registerGoogleUserIfNeeded(googleUserInfo);
 
+
         return accessToken;
     }
+
+    @Override
+    public String doLogout(String accessToken, String refreshToken) throws JsonProcessingException {
+        // 1. "액세스 토큰" 유효성 검사
+//        if (!JwtTokenProvider.validateToken(accessToken)){
+//            return "잘못된 요청입니다.";
+//        }
+
+        // 2. "액세스 토큰"에서 사용자 이메일 획득
+
+        Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(accessToken);
+
+        Users googleUsers = usersRepository.findAllByRequestToken(accessToken)
+            .orElse(null);
+        if (googleUsers != null) {
+            String usersEmail = googleUsers.getEmail();
+
+            // 3. Redis 에서 해당 User email 로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
+            Long expiration = null;
+            Long now = null;
+            if (redisTemplate.opsForValue().get("RT:" + usersEmail) != null) {
+                // 토큰 삭제 전 유효시간 가지고 오기
+                expiration = claims.getBody().getExpiration().getTime();
+                now = new Date().getTime();
+                // Refresh Token 삭제
+                redisTemplate.delete("RT:" + usersEmail);
+            }
+
+            // 4. 해당 Access Token 유효시간 가지고 와서 BlackList 로 저장하기
+            redisTemplate.opsForValue()
+                .set(accessToken, "logout", expiration - now, TimeUnit.MILLISECONDS);
+        }
+
+
+
+
+        // 3. Redis에 해당 email로 저장된 토큰이 있을 경우 삭제
+        UserInfoDto googleUserInfo = requestUserInfo(accessToken);
+
+        // 4. 해당 토큰 Blacklist에 추가(유효시간 동안)
+        Users googleUser = registerGoogleUserIfNeeded(googleUserInfo);
+
+
+        return accessToken;
+    }
+
 
 
     private String getAccessToken(String code) {
@@ -137,21 +198,34 @@ public class GoogleUsersService implements OauthUsersService {
         }
     }
 
+
     private Users registerGoogleUserIfNeeded(UserInfoDto userInfoDto) {
         // DB 에 중복된 Kakao Id 가 있는지 확인
         String googleId = userInfoDto.getAuthId();
+        String requestToken = null;
         Users googleUsers = usersRepository.findAllByAuthId(googleId)
             .orElse(null);
         if (googleUsers == null) {
             // 회원가입
-
-            String requestToken = jwtTokenProvider.createRefreshToken(googleId);
+            requestToken = jwtTokenProvider.createRefreshToken(googleId);
             googleUsers = Users.createUsers(userInfoDto, requestToken);
             usersRepository.save(googleUsers);
+
         } else {
             googleUsers = Users.updateUsers(googleUsers, userInfoDto);
+            // requestToken Redis 저장
+            requestToken = googleUsers.getRequestToken();
+            System.out.println(requestToken);
         }
+        // requestToken Redis 저장
+        Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(requestToken);
+        Date expiration = claims.getBody().getExpiration();
+        Long now = new Date().getTime();
+        System.out.println(expiration.getTime()-now);
 
+        System.out.println(requestToken);
+        redisTemplate.opsForValue()
+            .set("RT:" + googleUsers.getEmail(), requestToken,expiration.getTime()-now, TimeUnit.MILLISECONDS);
         return googleUsers;
     }
 }
