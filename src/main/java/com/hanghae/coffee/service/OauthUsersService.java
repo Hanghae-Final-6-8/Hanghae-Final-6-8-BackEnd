@@ -20,7 +20,7 @@ public interface OauthUsersService {
 
     /**
      * oAuth type 에 따른 서비스 이동
-     * @return API 서버로 부터 응답받은 Json 형태의 결과를 string으로 반
+     * @return API 서버로 부터 응답받은 Json 형태의 결과를 string으로 반환
      */
     default OauthType type() {
         if (this instanceof KakaoUsersService) {
