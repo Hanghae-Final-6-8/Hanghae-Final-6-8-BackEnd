@@ -72,17 +72,18 @@ public class NaverUsersService implements OauthUsersService {
         return String.valueOf(naverUser);
     }
 
-	@Override
-	public String doLogout(String accessToken, String refreshToken) throws JsonProcessingException {
-		return null;
-	}
 
-	@Override
-	public String reissue(String refreshToken) throws JsonProcessingException {
-		return null;
-	}
+    @Override
+    public String doLogout(String accessToken, String refreshToken) throws JsonProcessingException {
+        return null;
+    }
 
-	private String getAccessToken(String code) throws JsonProcessingException {
+    @Override
+    public String reissue(String refreshToken) throws JsonProcessingException {
+        return null;
+    }
+
+    private String getAccessToken(String code) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
 
         // HTTP Header 생성
@@ -159,9 +160,8 @@ public class NaverUsersService implements OauthUsersService {
             .orElse(null);
         if (naverUsers == null) {
             // 회원가입
-            String accessToken = jwtTokenProvider.createAccessToken(naverId);
-            String refreshToken = jwtTokenProvider.createRefreshToken(naverId);
-            naverUsers = Users.createUsers(userInfoDto, accessToken,refreshToken);
+            String requestToken = jwtTokenProvider.createRefreshToken(naverId);
+            naverUsers = Users.createUsers(userInfoDto, requestToken);
             usersRepository.save(naverUsers);
         } else {
             naverUsers = Users.updateUsers(naverUsers, userInfoDto);

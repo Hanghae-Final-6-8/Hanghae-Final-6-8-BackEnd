@@ -42,10 +42,7 @@ public class Users extends Timestamped {
     private String name;
 
     @Column(nullable = false)
-    private String accessToken;
-
-    @Column(nullable = false)
-    private String refreshToken;
+    private String requestToken;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -79,23 +76,19 @@ public class Users extends Timestamped {
         this.oauthType = oauthType;
     }
 
-    private void setaccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-    private void setrefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
+    private void setRequestToken(String requestToken) {
+        this.requestToken = requestToken;
     }
 
     //==생성 메서드==//
-    public static Users createUsers(UserInfoDto userInfoDto, String accessToken, String refreshToken) {
+    public static Users createUsers(UserInfoDto userInfoDto, String requestToken) {
         Users users = new Users();
         users.setAuthId(userInfoDto.getAuthId());
         users.setNickname(userInfoDto.getNickname());
         users.setEmail(userInfoDto.getEmail());
         users.setProfileUrl(userInfoDto.getProfileUrl());
         users.setOauthType(userInfoDto.getOauthType());
-        users.setaccessToken(accessToken);
-        users.setrefreshToken(refreshToken);
+        users.setRequestToken(requestToken);
         return users;
     }
 

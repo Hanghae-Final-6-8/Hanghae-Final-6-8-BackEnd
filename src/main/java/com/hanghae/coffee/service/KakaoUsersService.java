@@ -71,17 +71,17 @@ public class KakaoUsersService implements OauthUsersService {
         return String.valueOf(kakaoUser);
     }
 
-	@Override
-	public String doLogout(String accessToken, String refreshToken) throws JsonProcessingException {
-		return null;
-	}
+    @Override
+    public String doLogout(String accessToken, String refreshToken){
+        return null;
+    }
 
-	@Override
-	public String reissue(String refreshToken) throws JsonProcessingException {
-		return null;
-	}
+    @Override
+    public String reissue(String refreshToken){
+        return null;
+    }
 
-	private String getAccessToken(String code) throws JsonProcessingException {
+    private String getAccessToken(String code) throws JsonProcessingException {
 
         HttpHeaders headers = new HttpHeaders();
 
@@ -160,9 +160,8 @@ public class KakaoUsersService implements OauthUsersService {
             .orElse(null);
         if (kakaoUsers == null) {
             // 회원가입
-            String accessToken = jwtTokenProvider.createAccessToken(kakaoId);
-            String refreshToken = jwtTokenProvider.createRefreshToken(kakaoId);
-            kakaoUsers = Users.createUsers(userInfoDto,accessToken,refreshToken);
+            String requestToken = jwtTokenProvider.createRefreshToken(kakaoId);
+            kakaoUsers = Users.createUsers(userInfoDto,requestToken);
             usersRepository.save(kakaoUsers);
         } else {
 

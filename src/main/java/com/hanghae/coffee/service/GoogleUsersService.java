@@ -99,7 +99,7 @@ public class GoogleUsersService implements OauthUsersService {
         // 2. "액세스 토큰"에서 사용자 이메일 획득
         Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(accessToken);
 
-        Users googleUsers = usersRepository.findAllByaccessToken(accessToken)
+        Users googleUsers = usersRepository.findAllByRequestToken(accessToken)
             .orElse(null);
         if (googleUsers != null) {
             String usersEmail = googleUsers.getEmail();
@@ -139,7 +139,7 @@ public class GoogleUsersService implements OauthUsersService {
         // 2. "리프레시 토큰"에서 사용자 이메일 획득
         Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(refreshToken);
 
-        Users googleUsers = usersRepository.findAllByaccessToken(refreshToken)
+        Users googleUsers = usersRepository.findAllByRequestToken(refreshToken)
             .orElse(null);
         if (googleUsers != null) {
             String usersEmail = googleUsers.getEmail();
@@ -158,17 +158,17 @@ public class GoogleUsersService implements OauthUsersService {
             // 4. 새로운 토큰 생성
             // DB 에 중복된 Kakao Id 가 있는지 확인
             String googleId = googleUsers.getAuthId();
-            String accessToken = null;
+            String requestToken = null;
             if (googleUsers == null) {
                 // 토큰 생성
-                accessToken = jwtTokenProvider.createAccessToken(googleId);
+                requestToken = jwtTokenProvider.createAccessToken(googleId);
                 Jws<Claims> claims2 = Jwts.parser().setSigningKey(SECRET_KEY)
-                    .parseClaimsJws(accessToken);
+                    .parseClaimsJws(requestToken);
                 Long expiration = claims2.getBody().getExpiration().getTime();
                 Long now = new Date().getTime();
-                // 5. 액세스 토큰 Redis 업데이트
+                // 5. 리프레시 토큰 Redis 업데이트
                 redisTemplate.opsForValue()
-                    .set("AT:", accessToken, expiration - now, TimeUnit.MILLISECONDS);
+                    .set("RT:", requestToken, expiration - now, TimeUnit.MILLISECONDS);
 
             }
         }
@@ -250,13 +250,13 @@ public class GoogleUsersService implements OauthUsersService {
                 // 회원가입
                 accessToken = jwtTokenProvider.createAccessToken(googleId);
                 refreshToken = jwtTokenProvider.createRefreshToken(googleId);
-                googleUsers = Users.createUsers(userInfoDto, accessToken,refreshToken);
+                googleUsers = Users.createUsers(userInfoDto, accessToken);
                 usersRepository.save(googleUsers);
 
             } else {
                 googleUsers = Users.updateUsers(googleUsers, userInfoDto);
                 // requestToken Redis 저장
-                accessToken = googleUsers.getAccessToken();
+                accessToken = googleUsers.getRequestToken();
             }
             // accessToken Redis 저장
             Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY)
@@ -268,7 +268,6 @@ public class GoogleUsersService implements OauthUsersService {
                     TimeUnit.MILLISECONDS);
 
             // refreshToken Redis 저장
-
             Jws<Claims> claims2 = Jwts.parser().setSigningKey(SECRET_KEY)
                 .parseClaimsJws(refreshToken);
             Date expiration2 = claims2.getBody().getExpiration();
