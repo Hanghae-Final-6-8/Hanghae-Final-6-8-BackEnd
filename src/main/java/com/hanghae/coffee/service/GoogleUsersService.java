@@ -3,23 +3,19 @@ package com.hanghae.coffee.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.hanghae.coffee.dto.oauthProperties.GoogleUserInfoDto;
 import com.hanghae.coffee.dto.oauthProperties.UserInfoDto;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.UsersRepository;
 import com.hanghae.coffee.security.jwt.JwtTokenProvider;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Base64;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -47,17 +43,11 @@ public class GoogleUsersService implements OauthUsersService {
     private String GOOGLE_SNS_SCOPE;
     @Value("${oauth.google.user.info.url}")
     private String GOOGLE_SNS_USER_INFO_URL;
-    private String SECRET_KEY = "acc_magazine";
 
     private final UsersRepository usersRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String,String> redisTemplate;
 
-    // 객체 초기화, secretKey를 Base64로 인코딩한다
-    @PostConstruct
-    protected void init() {
-        SECRET_KEY = Base64.getEncoder().encodeToString(SECRET_KEY.getBytes());
-    }
 
     @Override
     public String getOauthRedirectURL() {
@@ -97,28 +87,23 @@ public class GoogleUsersService implements OauthUsersService {
 //        }
 
         // 2. "액세스 토큰"에서 사용자 이메일 획득
-        Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(accessToken);
-
-        Users googleUsers = usersRepository.findAllByRequestToken(accessToken)
-            .orElse(null);
-        if (googleUsers != null) {
-            String usersEmail = googleUsers.getEmail();
+        String usersEmail = jwtTokenProvider.getEmail(accessToken);
 
             // 3. Redis 에서 해당 User email 로 저장된 Refresh Token 이 있는지 여부를 확인 후 있을 경우 삭제합니다.
-            Long expiration = null;
-            Long now = null;
-            if (redisTemplate.opsForValue().get("RT:" + usersEmail) != null) {
+
+
+        if (redisTemplate.opsForValue().get("RT:" + usersEmail) != null) {
                 // 토큰 삭제 전 유효시간 가지고 오기
-                expiration = claims.getBody().getExpiration().getTime();
-                now = new Date().getTime();
+                Long expiration = jwtTokenProvider.getExpiration(accessToken);
+
                 // Refresh Token 삭제
                 redisTemplate.delete("RT:" + usersEmail);
-            }
+
 
             // 4. 해당 Access Token 유효시간 가지고 와서 BlackList 로 저장하기
             redisTemplate.opsForValue()
-                .set(accessToken, "logout", expiration - now, TimeUnit.MILLISECONDS);
-        }
+                .set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
+
 
         // 3. Redis에 해당 email로 저장된 토큰이 있을 경우 삭제
         UserInfoDto googleUserInfo = requestUserInfo(accessToken);
@@ -126,7 +111,7 @@ public class GoogleUsersService implements OauthUsersService {
         // 4. 해당 토큰 Blacklist에 추가(유효시간 동안)
         Users googleUser = registerGoogleUserIfNeeded(googleUserInfo);
 
-
+        }
         return accessToken;
     }
 
@@ -137,13 +122,11 @@ public class GoogleUsersService implements OauthUsersService {
             return "Refresh Token 정보가 유효하지 않습니다.";
         }
         // 2. "리프레시 토큰"에서 사용자 이메일 획득
-        Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(refreshToken);
+        String usersEmail = jwtTokenProvider.getEmail(refreshToken);
 
         Users googleUsers = usersRepository.findAllByRequestToken(refreshToken)
             .orElse(null);
         if (googleUsers != null) {
-            String usersEmail = googleUsers.getEmail();
-
             // 3. Redis 에서 User email 을 기반으로 저장된 Refresh Token 값을 가져옵니다.
             String Token = (String) redisTemplate.opsForValue().get("RT:" + usersEmail);
 
@@ -162,14 +145,23 @@ public class GoogleUsersService implements OauthUsersService {
             if (googleUsers == null) {
                 // 토큰 생성
                 requestToken = jwtTokenProvider.createAccessToken(googleId);
-                Jws<Claims> claims2 = Jwts.parser().setSigningKey(SECRET_KEY)
-                    .parseClaimsJws(requestToken);
-                Long expiration = claims2.getBody().getExpiration().getTime();
-                Long now = new Date().getTime();
-                // 5. 리프레시 토큰 Redis 업데이트
-                redisTemplate.opsForValue()
-                    .set("RT:", requestToken, expiration - now, TimeUnit.MILLISECONDS);
+                if (refreshToken != null) {
+                    Long expiration = jwtTokenProvider.getExpiration(requestToken);
 
+                    // 5. 엑세스 토큰 Redis 업데이트
+                    redisTemplate.opsForValue()
+                        .set("AT:", requestToken, expiration, TimeUnit.MILLISECONDS);
+
+                    Optional<Users> googleUser = usersRepository.findAllByAuthId(googleId);
+                    GoogleUserInfoDto userInfoDto = new GoogleUserInfoDto(
+                        googleUser.get().getAuthId(),
+                        googleUser.get().getName(),
+                        googleUser.get().getEmail(),
+                        googleUser.get().getProfileUrl()
+                    );
+                    googleUsers = Users.createUsers(userInfoDto, requestToken);
+                    usersRepository.save(googleUsers);
+                }
             }
         }
         return null;
@@ -221,11 +213,6 @@ public class GoogleUsersService implements OauthUsersService {
                 Map<String, String> map = new HashMap<>();
                 try {
                     map = mapper.readValue(responseEntity.getBody(), Map.class);
-                    System.out.println("=====구글 사용자 정보=====");
-                    System.out.println("id: " + map.get("id"));
-                    System.out.println("name: " + map.get("name"));
-                    System.out.println("email: " + map.get("email"));
-                    System.out.println("picture: " + map.get("picture"));
                     return UserInfoFactory.getOAuth2UserInfo(OauthType.GOOGLE, map.get("id"),
                         map.get("name"), map.get("email"), map.get("picture"));
                 } catch (IOException e) {
@@ -259,21 +246,15 @@ public class GoogleUsersService implements OauthUsersService {
                 accessToken = googleUsers.getRequestToken();
             }
             // accessToken Redis 저장
-            Jws<Claims> claims = Jwts.parser().setSigningKey(SECRET_KEY)
-                .parseClaimsJws(accessToken);
-            Date expiration = claims.getBody().getExpiration();
-            Long now = new Date().getTime();
+            Long expiration = jwtTokenProvider.getExpiration(accessToken);
             redisTemplate.opsForValue()
-                .set("AT:" + googleUsers.getEmail(), accessToken, expiration.getTime() - now,
+                .set("AT:" + googleUsers.getEmail(), accessToken, expiration,
                     TimeUnit.MILLISECONDS);
 
             // refreshToken Redis 저장
-            Jws<Claims> claims2 = Jwts.parser().setSigningKey(SECRET_KEY)
-                .parseClaimsJws(refreshToken);
-            Date expiration2 = claims2.getBody().getExpiration();
-            Long now2 = new Date().getTime();
+            Long expiration2 = jwtTokenProvider.getExpiration(refreshToken);
             redisTemplate.opsForValue()
-                .set("RT:" + googleUsers.getEmail(), refreshToken, expiration2.getTime() - now2,
+                .set("RT:" + googleUsers.getEmail(), refreshToken, expiration2,
                     TimeUnit.MILLISECONDS);
             return googleUsers;
         }
