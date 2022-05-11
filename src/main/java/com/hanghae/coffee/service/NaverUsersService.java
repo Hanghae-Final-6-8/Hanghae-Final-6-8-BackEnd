@@ -58,7 +58,7 @@ public class NaverUsersService implements OauthUsersService {
 
     @Transactional
     @Override
-    public String doLogin(String code) throws JsonProcessingException {
+    public Users doLogin(String code) throws JsonProcessingException {
 
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
@@ -69,18 +69,7 @@ public class NaverUsersService implements OauthUsersService {
         // 3. 필요시에 회원가입
         Users naverUser = registerNaverUserIfNeeded(userInfoDto);
 
-        return String.valueOf(naverUser);
-    }
-
-
-    @Override
-    public String doLogout(String accessToken, String refreshToken) throws JsonProcessingException {
-        return null;
-    }
-
-    @Override
-    public String reissue(String refreshToken) throws JsonProcessingException {
-        return null;
+        return naverUser;
     }
 
     private String getAccessToken(String code) throws JsonProcessingException {
@@ -160,8 +149,7 @@ public class NaverUsersService implements OauthUsersService {
             .orElse(null);
         if (naverUsers == null) {
             // 회원가입
-            String requestToken = jwtTokenProvider.createRefreshToken(naverId);
-            naverUsers = Users.createUsers(userInfoDto, requestToken);
+            naverUsers = Users.createUsers(userInfoDto);
             usersRepository.save(naverUsers);
         } else {
             naverUsers = Users.updateUsers(naverUsers, userInfoDto);

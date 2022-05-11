@@ -2,6 +2,7 @@ package com.hanghae.coffee.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanghae.coffee.model.OauthType;
+import com.hanghae.coffee.model.Users;
 
 public interface OauthUsersService {
 
@@ -16,22 +17,7 @@ public interface OauthUsersService {
      * @param code API Server 에서 받아온 code
      * @return API 서버로 부터 응답받은 Json 형태의 결과를 string으로 반환
      */
-    String doLogin(String code) throws JsonProcessingException;
-
-    /**
-     * 클라이언트가 가지고 있는 AccessToken, RefreshToken을 이용하여 사용자 인증 정보 삭제 요청
-     * @param accessToken
-     * @param refreshToken
-     * @return API 서버로 부터 응답받은 Json 형태의 결과를 string으로 반환
-     */
-    String doLogout(String accessToken, String refreshToken)throws JsonProcessingException ;
-
-    /**
-     * 클라이언트가 가지고 있는 AccessToken, RefreshToken을 이용하여 사용자 인증 정보 삭제 요청
-     * @param refreshToken
-     * @return API 서버로 부터 응답받은 Json 형태의 결과를 string으로 반환
-     */
-    String reissue(String refreshToken)throws JsonProcessingException ;
+    Users doLogin(String code) throws JsonProcessingException;
 
     /**
      * oAuth type 에 따른 서비스 이동
