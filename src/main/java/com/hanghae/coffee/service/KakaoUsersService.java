@@ -56,7 +56,7 @@ public class KakaoUsersService implements OauthUsersService {
 
     @Transactional
     @Override
-    public String doLogin(String code) throws JsonProcessingException {
+    public Users doLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
 
@@ -66,19 +66,7 @@ public class KakaoUsersService implements OauthUsersService {
         // 3. 필요시에 회원가입
         Users kakaoUser = registerKakaoUserIfNeeded(userInfoDto);
 
-        // 4. 강제 로그인 처리
-//        forceLogin(kakaoUser);
-        return String.valueOf(kakaoUser);
-    }
-
-    @Override
-    public String doLogout(String accessToken, String refreshToken){
-        return null;
-    }
-
-    @Override
-    public String reissue(String refreshToken){
-        return null;
+        return kakaoUser;
     }
 
     private String getAccessToken(String code) throws JsonProcessingException {
@@ -160,8 +148,8 @@ public class KakaoUsersService implements OauthUsersService {
             .orElse(null);
         if (kakaoUsers == null) {
             // 회원가입
-            String requestToken = jwtTokenProvider.createRefreshToken(kakaoId);
-            kakaoUsers = Users.createUsers(userInfoDto,requestToken);
+
+            kakaoUsers = Users.createUsers(userInfoDto);
             usersRepository.save(kakaoUsers);
         } else {
 
@@ -172,11 +160,5 @@ public class KakaoUsersService implements OauthUsersService {
 
         return kakaoUsers;
     }
-
-//    private void forceLogin(Users kakaoUser) {
-//        UserDetails userDetails = new UserDetailsImpl(kakaoUser);
-//        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//    }
 
 }

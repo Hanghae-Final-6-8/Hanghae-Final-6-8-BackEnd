@@ -10,5 +10,4 @@ public interface UsersRepository extends JpaRepository<Users,Long> {
 
 	Optional<Object> findByname(String name);
 
-	Optional<Users> findAllByRequestToken(String accessToken);
 }
