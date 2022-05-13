@@ -13,7 +13,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 public class FinalProjectApplication {
 
 	public static void main(String[] args) {
+		System.setProperty("spring.profiles.default", "dev");
 		SpringApplication.run(FinalProjectApplication.class, args);
+
 	}
 
 	@PostConstruct
