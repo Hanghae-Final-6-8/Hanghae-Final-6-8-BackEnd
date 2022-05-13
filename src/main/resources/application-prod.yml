@@ -59,3 +59,17 @@ oauth:
         url: ${{ secrets.OAUTH_NAVER_USER_INFO_URL}}
     redirect:
       url: ${{ secrets.OAUTH_NAVER_REDIRECT_URL}}
+
+  google:
+    url: https://accounts.google.com/o/oauth2/v2/auth
+    client:
+      id: ${{ secrets.OAUTH_GOOGLE_CLIENT_ID }}
+      secret: ${{ secrets.OAUTH_GOOGLE_SECRET_KEY }}
+    callback:
+      url: http://localhost:8080/api/user/login/google/callback
+    token:
+      url: https://oauth2.googleapis.com/token
+    scope: profile+email
+    user:
+      info:
+        url: https://www.googleapis.com/oauth2/v1/userinfo
