@@ -1,0 +1,61 @@
+spring:
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+
+  config:
+    activate:
+      on-profile: local
+
+  cache:
+    type: redis
+
+  redis:
+    host: localhost
+    port: 6379
+
+
+  datasource:
+    url: ${{ secrets.DATABASE_URL }}
+    username: ${{ secrets.DATASOURCE_USERNAME }}
+    password: ${{ secrets.DATASOURCE_PASSWORD }}
+
+secret:
+  key: ${{ secrets.JWT_SECRET_KEY }}
+
+oauth:
+  kakao:
+    client:
+      id: ${{ secrets.OAUTH_KAKAO_CLIENT_ID }}
+    oauth:
+      request:
+        url: ${{ secrets.OAUTH_KAKAO_OAUTH_REQUEST_URL }}
+    token:
+      url: ${{ secrets.OAUTH_KAKAO_TOKEN_URL }}
+    user:
+      info:
+        url: ${{ secrets.OAUTH_KAKAO_USER_INFO_URL }}
+    redirect:
+      url: ${{ secrets.OAUTH_KAKAO_REDIRECT_URL }}
+
+
+  naver:
+    client:
+      id: ${{ secrets.OAUTH_NAVER_CLIENT_ID}}
+      secret: ${{ secrets.OAUTH_NAVER_CLIENT_SECRET}}
+    oauth:
+      request:
+        url: ${{ secrets.OAUTH_NAVER_OAUTH_REQUEST_URL}}
+    token:
+      url: ${{ secrets.OAUTH_NAVER_TOKEN_URL}}
+    user:
+      info:
+        url: ${{ secrets.OAUTH_NAVER_USER_INFO_URL}}
+    redirect:
+      url: ${{ secrets.OAUTH_NAVER_REDIRECT_URL}}
