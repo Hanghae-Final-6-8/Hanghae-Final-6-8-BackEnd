@@ -1,7 +1,9 @@
 package com.hanghae.coffee.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.hanghae.coffee.dto.users.LoginResponseDto;
 import com.hanghae.coffee.model.OauthType;
+import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.OauthCommonService;
 import io.swagger.annotations.Api;
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,7 +47,7 @@ public class OauthLoginController {
      * @return SNS Login 요청 결과로 받은 Json 형태의 String 문자열 (access_token, refresh_token 등)
      */
     @GetMapping(value = "/login/{oauth}/callback")
-    public String oauthLoginCallback(
+    public LoginResponseDto oauthLoginCallback(
         HttpServletResponse response,
         @PathVariable(name = "oauth") String oauthType,
         @RequestParam(name = "code") String code) throws JsonProcessingException {
@@ -53,9 +56,11 @@ public class OauthLoginController {
     }
 
     @GetMapping(value = "/logout")
-    public String doLogout(HttpServletRequest request, @AuthenticationPrincipal Authentication authentication){
+    public LoginResponseDto doLogout(HttpServletRequest request, @AuthenticationPrincipal UserDetailsImpl users){
+        //TODO : @AuthenticationPrincipal 에 왜 값이 안들어오는지 체크해야함.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        return oauthCommonService.doLogout(request ,authentication.getName());
+        return oauthCommonService.doLogout(request ,users.getUsername());
 
     }
 

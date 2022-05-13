@@ -22,7 +22,7 @@ import org.hibernate.annotations.Proxy;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 // 캐싱시 문제가 발생하지 않도록 proxy false 설정
-@Proxy(lazy=false)
+//@Proxy(lazy=false)
 public class Users extends Timestamped {
 
     @Id
@@ -38,8 +38,6 @@ public class Users extends Timestamped {
     private String nickname;
 
     private String profileUrl;
-
-    private String name;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

@@ -3,12 +3,11 @@ package com.hanghae.coffee.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hanghae.coffee.dto.oauthProperties.OauthPropertiesDto;
+import com.hanghae.coffee.dto.oauthProperties.OauthNaverPropertiesDto;
 import com.hanghae.coffee.dto.oauthProperties.UserInfoDto;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.UsersRepository;
-import com.hanghae.coffee.security.jwt.JwtTokenProvider;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,32 +27,24 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class NaverUsersService implements OauthUsersService {
 
-    private final static String NAVER_OAUTH_REQUEST_URL = "https://nid.naver.com/oauth2.0/authorize";
-    private final static String NAVER_TOKEN_BASE_URL = "https://nid.naver.com/oauth2.0/token";
-    private final static String NAVER_USER_INFO_URL = "https://openapi.naver.com/v1/nid/me";
-    private final static String NAVER_REDIRECT_URL = "http://localhost:8080/api/user/login/naver/callback";
-
-
     private final UsersRepository usersRepository;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final OauthPropertiesDto oauthPropertiesDto;
 
     @Override
     public String getOauthRedirectURL() {
 
         Map<String, Object> params = new HashMap<>();
         params.put("response_type", "code");
-        params.put("redirect_uri", NAVER_REDIRECT_URL);
-        params.put("client_secret", oauthPropertiesDto.getNaver().get("client").getSecret());
-        params.put("client_id", oauthPropertiesDto.getNaver().get("client").getId());
+        params.put("redirect_uri", OauthNaverPropertiesDto.naverRedirectUrl);
+        params.put("client_secret", OauthNaverPropertiesDto.naverClientSecret);
+        params.put("client_id", OauthNaverPropertiesDto.naverClientId);
 
         String parameterString = params.entrySet().stream()
             .map(x -> x.getKey() + "=" + x.getValue())
             .collect(Collectors.joining("&"));
 
-        System.out.println(NAVER_OAUTH_REQUEST_URL + "?" + parameterString);
+        System.out.println(OauthNaverPropertiesDto.naverOauthRequestUrl + "?" + parameterString);
 
-        return NAVER_OAUTH_REQUEST_URL + "?" + parameterString;
+        return OauthNaverPropertiesDto.naverOauthRequestUrl + "?" + parameterString;
     }
 
     @Transactional
@@ -80,9 +71,9 @@ public class NaverUsersService implements OauthUsersService {
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", oauthPropertiesDto.getNaver().get("client").getId());
-        body.add("client_secret", oauthPropertiesDto.getNaver().get("client").getSecret());
-        body.add("redirect_uri", NAVER_REDIRECT_URL);
+        body.add("client_id", OauthNaverPropertiesDto.naverClientId);
+        body.add("client_secret", OauthNaverPropertiesDto.naverClientSecret);
+        body.add("redirect_uri", OauthNaverPropertiesDto.naverRedirectUrl);
         body.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(body, headers);
@@ -90,7 +81,7 @@ public class NaverUsersService implements OauthUsersService {
         RestTemplate restTemplate = new RestTemplate();
 
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-            NAVER_TOKEN_BASE_URL,
+            OauthNaverPropertiesDto.naverTokenUrl,
             entity,
             String.class
         );
@@ -118,7 +109,7 @@ public class NaverUsersService implements OauthUsersService {
         RestTemplate restTemplate = new RestTemplate();
 
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(
-            NAVER_USER_INFO_URL,
+            OauthNaverPropertiesDto.naverUserInfoUrl,
             httpEntity,
             String.class
         );

@@ -3,12 +3,11 @@ package com.hanghae.coffee.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hanghae.coffee.dto.oauthProperties.OauthPropertiesDto;
+import com.hanghae.coffee.dto.oauthProperties.OauthKakaoPropertiesDto;
 import com.hanghae.coffee.dto.oauthProperties.UserInfoDto;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.UsersRepository;
-import com.hanghae.coffee.security.jwt.JwtTokenProvider;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,29 +28,23 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class KakaoUsersService implements OauthUsersService {
 
-    private final static String KAKAO_OAUTH_REQUEST_URL = "https://kauth.kakao.com/oauth/authorize";
-    private final static String KAKAO_TOKEN_BASE_URL = "https://kauth.kakao.com/oauth/token";
-    private final static String KAKAO_TOKEN_INFO_URL = "https://kapi.kakao.com/v2/user/me";
-
     private final UsersRepository usersRepository;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final OauthPropertiesDto oauthPropertiesDto;
 
     @Override
     public String getOauthRedirectURL() {
 
         Map<String, Object> params = new HashMap<>();
         params.put("response_type", "code");
-        params.put("redirect_uri", "http://localhost:8080/api/user/login/kakao/callback");
-        params.put("client_id", oauthPropertiesDto.getKakao().get("client").getId());
+        params.put("redirect_uri", OauthKakaoPropertiesDto.kakaoRedirectUrl);
+        params.put("client_id", OauthKakaoPropertiesDto.kakaoClientId);
 
         String parameterString = params.entrySet().stream()
             .map(x -> x.getKey() + "=" + x.getValue())
             .collect(Collectors.joining("&"));
 
-        System.out.println(KAKAO_OAUTH_REQUEST_URL + "?" + parameterString);
+        System.out.println(OauthKakaoPropertiesDto.kakaoOauthRequestUrl + "?" + parameterString);
 
-        return KAKAO_OAUTH_REQUEST_URL + "?" + parameterString;
+        return OauthKakaoPropertiesDto.kakaoOauthRequestUrl + "?" + parameterString;
     }
 
     @Transactional
@@ -78,8 +71,8 @@ public class KakaoUsersService implements OauthUsersService {
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", oauthPropertiesDto.getKakao().get("client").getId());
-        body.add("redirect_uri", "http://localhost:8080/api/user/login/kakao/callback");
+        body.add("client_id", OauthKakaoPropertiesDto.kakaoClientId);
+        body.add("redirect_uri", OauthKakaoPropertiesDto.kakaoRedirectUrl);
         body.add("code", code);
 
         // HTTP 요청 보내기
@@ -87,7 +80,7 @@ public class KakaoUsersService implements OauthUsersService {
             new HttpEntity<>(body, headers);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange(
-            KAKAO_TOKEN_BASE_URL,
+            OauthKakaoPropertiesDto.kakaoTokenUrl,
             HttpMethod.POST,
             kakaoTokenRequest,
             String.class
@@ -112,7 +105,7 @@ public class KakaoUsersService implements OauthUsersService {
         HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(headers);
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange(
-            KAKAO_TOKEN_INFO_URL,
+            OauthKakaoPropertiesDto.kakaoUserInfoUrl,
             HttpMethod.POST,
             kakaoUserInfoRequest,
             String.class

@@ -8,10 +8,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Base64;
 import java.util.Date;
 import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,8 +27,8 @@ import org.springframework.util.StringUtils;
 @Component
 public class JwtTokenProvider {
 
-    // 보안 설정 필요
-    private String SECRET_KEY = "copick";
+    @Value("${secret.key}")
+    private String SECRET_KEY;
 
     private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
     private static final String REFRESH_TOKEN = "REFRESH_TOKEN";
@@ -122,9 +124,13 @@ public class JwtTokenProvider {
         response.setHeader(ACCESS_TOKEN, BEARER_TYPE + " " + accessToken);
     }
 
-    // 리프레시 토큰 헤더 설정
+    // 리프레시 토큰 쿠키 설정
     public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
-        response.setHeader(REFRESH_TOKEN, refreshToken);
+        Cookie cookie = new Cookie(REFRESH_TOKEN, refreshToken);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        response.addCookie(cookie);
     }
 
     @Transactional(readOnly = true)

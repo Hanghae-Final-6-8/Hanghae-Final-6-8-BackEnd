@@ -67,12 +67,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
             .authorizeRequests()
-            // home 페이지 login 없이 허용
+            .antMatchers(HttpMethod.GET, "/image/**").permitAll()
             // 회원 관리 처리 API 전부를 login 없이 허용
             .antMatchers("/api/user/login/**").permitAll()
-
             // Get 요청 login 없이 허용
-            .antMatchers(HttpMethod.GET, "/api/beans/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/beans/lists","/api/beans/random","/api/beans/:bean_id").permitAll()
             .antMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
             //antMatchers로 설정한 조건 외의 어떤 요청이든 '인증'해야 한다
             .anyRequest().authenticated()

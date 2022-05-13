@@ -2,10 +2,12 @@ package com.hanghae.coffee.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanghae.coffee.advice.RestException;
+import com.hanghae.coffee.dto.users.LoginResponseDto;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.security.jwt.JwtTokenProvider;
+import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,23 +40,32 @@ public class OauthCommonService {
         }
     }
 
-    public String doLogin(HttpServletResponse response, OauthType oauthType, String code) throws JsonProcessingException {
+    public LoginResponseDto doLogin(HttpServletResponse response, OauthType oauthType, String code) throws JsonProcessingException {
+        HashMap<String, String> result = new HashMap<>();
         OauthUsersService oauthUsersService = this.findOauthByType(oauthType);
         Users users = oauthUsersService.doLogin(code);
-        forceLogin(response, users);
+        String token = forceLogin(response, users);
+        result.put("token", token);
 
-        return "login success";
+        return LoginResponseDto.builder()
+            .data(result)
+            .status(200)
+            .msg("로그인 되었습니다.")
+            .build();
     }
 
     @Transactional
-    public String doLogout(HttpServletRequest request, String authId) {
+    public LoginResponseDto doLogout(HttpServletRequest request, String authId) {
         String accessToken = jwtTokenProvider.resolveAccessToken(request);
         jwtTokenProvider.deleteRefreshToken(authId);
         jwtTokenProvider.saveLogoutAccessToken(accessToken);
-        return authId;
+        return LoginResponseDto.builder()
+            .status(200)
+            .msg("로그아웃 되었습니다.")
+            .build();
     }
 
-    private void forceLogin(HttpServletResponse response, Users users){
+    private String forceLogin(HttpServletResponse response, Users users){
         log.info(String.valueOf(users));
         UserDetails userDetails = new UserDetailsImpl(users);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -66,6 +77,8 @@ public class OauthCommonService {
         jwtTokenProvider.setHeaderRefreshToken(response, refreshToken);
 
         jwtTokenProvider.saveRefreshToken(users.getAuthId(), refreshToken);
+
+        return accessToken;
 
     }
 
