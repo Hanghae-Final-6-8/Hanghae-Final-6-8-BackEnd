@@ -17,7 +17,7 @@ spring:
     type: redis
 
   redis:
-    host: localhost
+    host: ${{ secrets.AWS_REDIS_HOST }}
     port: 6379
 
 
