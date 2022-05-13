@@ -48,6 +48,12 @@ jobs:
         oauth.kakao.token.url: ${{ secrets.OAUTH_KAKAO_TOKEN_URL }}
         oauth.kakao.user.info.url: ${{ secrets.OAUTH_KAKAO_USER_INFO_URL }}
         oauth.kakao.redirect.url: ${{ secrets.OAUTH_KAKAO_REDIRECT_URL }}
+        oauth.naver.client.id: ${{ secrets.OAUTH_NAVER_CLIENT_ID}}
+        oauth.naver.client.secret: ${{ secrets.OAUTH_NAVER_CLIENT_SECRET}}
+        oauth.naver.oauth.request.url: ${{ secrets.OAUTH_NAVER_OAUTH_REQUEST_URL}}
+        oauth.naver.token.url: ${{ secrets.OAUTH_NAVER_TOKEN_URL}}
+        oauth.naver.user.info.url: ${{ secrets.OAUTH_NAVER_USER_INFO_URL}}
+        oauth.naver.redirect.url: ${{ secrets.OAUTH_NAVER_REDIRECT_URL}}
         oauth.google.client.id: ${{ secrets.OAUTH_GOOGLE_CLIENT_ID }}
         oauth.google.client.secret : ${{ secrets.OAUTH_GOOGLE_SECRET_KEY }}
         
