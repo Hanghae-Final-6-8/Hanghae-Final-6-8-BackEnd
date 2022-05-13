@@ -62,7 +62,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           aws s3 cp \
-          --region ap-northeast-2a \
+          --region ap-northeast-2 \
           --acl private \
           ./springboot-build.zip s3://${{ secrets.CLOUD_AWS_S3_BUCKET }}/
 
@@ -78,4 +78,4 @@ jobs:
           --deployment-group-name springboot-deploy-group \
           --file-exists-behavior OVERWRITE \
           --s3-location bucket=${{ secrets.CLOUD_AWS_S3_BUCKET }},bundleType=zip,key=springboot-build.zip \
-          --region ap-northeast-2a
+          --region ap-northeast-2
