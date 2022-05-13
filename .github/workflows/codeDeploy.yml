@@ -42,6 +42,12 @@ jobs:
         cloud.aws.region.static: ${{ secrets.CLOUD_AWS_REGION_STATIC }}
         spring.redis.host : ${{ secrets.AWS_REDIS_HOST }}
         spring.redis.port : 6379
+        secret.key : ${{ secrets.JWT_SECRET_KEY }}
+        oauth.kakao.client.id: ${{ secrets.OAUTH_KAKAO_CLIENT_ID }}
+        oauth.kakao.oauth.request.url: ${{ secrets.OAUTH_KAKAO_OAUTH_REQUEST_URL }}
+        oauth.kakao.token.url: ${{ secrets.OAUTH_KAKAO_TOKEN_URL }}
+        oauth.kakao.user.info.url: ${{ secrets.OAUTH_KAKAO_USER_INFO_URL }}
+        oauth.kakao.redirect.url: ${{ secrets.OAUTH_KAKAO_REDIRECT_URL }}
         
     - name: Build with Gradle
       run: ./gradlew clean build
