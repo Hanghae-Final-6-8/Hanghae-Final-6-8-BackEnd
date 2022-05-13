@@ -11,7 +11,7 @@ spring:
 
   config:
     activate:
-      on-profile: local
+      on-profile: prod
 
   cache:
     type: redis
