@@ -59,11 +59,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     // Refresh 토큰 생성
                     jwtTokenProvider.saveRefreshToken(authId, newRefreshToken);
 
+                } else {
+                    request.setAttribute("EXCEPTION", "NOT VALIDATE REFRESH TOKEN");
                 }
                 // Access 토큰 만료 및 refresh 토큰 없을 때
             } else if (!jwtTokenProvider.validateToken(accessToken) && refreshToken == null) {
 
-                request.setAttribute("EXCEPTION", "ACCESS TOKEN EXPIRED");
+                request.setAttribute("EXCEPTION", "NOT VALIDATE ACCESS TOKEN");
 
             }
 
