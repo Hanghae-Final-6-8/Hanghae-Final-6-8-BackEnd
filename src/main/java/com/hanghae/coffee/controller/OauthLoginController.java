@@ -33,11 +33,11 @@ public class OauthLoginController {
      * @param oauthType (GOOGLE, KAKAO, NAVER)
      */
     @GetMapping(value = "/login/{oauth}")
-    public void oauthLogin(
+    public String oauthLogin(
         @PathVariable(name = "oauth") String oauthType) {
         log.info(">> 사용자로부터 SNS 로그인 요청을 받음 :: {} oauthLogin", oauthType);
 
-        oauthCommonService.request(OauthType.valueOf(oauthType.toUpperCase()));
+        return oauthCommonService.request(OauthType.valueOf(oauthType.toUpperCase()));
     }
 
     /**
