@@ -1,7 +1,7 @@
 PROJECT=backend
-REPOSITORY=/home/ubuntu/app
-LOGS_DIRECTORY=/home/ubuntu/app/logs
-LOG_BACKUP_DIRECTORY=/home/ubuntu/app/log-backup
+REPOSITORY=/home/ubuntu/deploy
+LOGS_DIRECTORY=/home/ubuntu/deploy/logs
+LOG_BACKUP_DIRECTORY=/home/ubuntu/deploy/log-backup
 
 echo "> 현재 구동 중인 애플리케이션 pid 확인"
 
@@ -25,7 +25,7 @@ echo "> JAR NAME: $JAR_NAME"
 
 echo "> $JAR_NAME 에 실행권한 추가"
 
-chmod +x "$JAR_NAME"
+sudo chmod +x "$JAR_NAME"
 
 echo "> $JAR_NAME 실행"
 
@@ -33,15 +33,15 @@ if [ -d $LOGS_DIRECTORY ]
 then
   echo "$LOGS_DIRECTORY 가 이미 존재합니다."
 else
-  ln -s /opt/codedeploy-agent/logs /home/ubuntu/app/logs
+  ln -s /opt/codedeploy-agent/logs /home/ubuntu/deploy/logs
 fi
 
 if [ -d $LOG_BACKUP_DIRECTORY ]
 then
   echo "$LOG_BACKUP_DIRECTORY 가 이미 존재합니다."
 else
-  ln -s /opt/codedeploy-agent/log-backup /home/ubuntu/app/log-backup
+  ln -s /opt/codedeploy-agent/log-backup /home/ubuntu/deploy/log-backup
 fi
 
 # 실행
-nohup java -Duser.timezone=KST -jar "$JAR_NAME" > $REPOSITORY/nohup.out 2>&1 &
+sudo nohup java -Duser.timezone=KST -jar "$JAR_NAME" > $REPOSITORY/nohup.out 2>&1 &
