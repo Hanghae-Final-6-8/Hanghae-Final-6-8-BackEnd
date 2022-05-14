@@ -27,17 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class OauthCommonService {
 
     private final List<OauthUsersService> oauthUsersServiceList;
-    private final HttpServletResponse response;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public void request(OauthType oauthType) {
+    public String request(OauthType oauthType) {
         OauthUsersService oauthUsersService = this.findOauthByType(oauthType);
         String redirectURL = oauthUsersService.getOauthRedirectURL();
-        try {
-            response.sendRedirect(redirectURL);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        return redirectURL;
     }
 
     public LoginResponseDto doLogin(HttpServletResponse response, OauthType oauthType, String code) throws JsonProcessingException {
