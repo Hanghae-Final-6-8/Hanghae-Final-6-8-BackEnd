@@ -21,7 +21,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.usersRepository = usersRepository;
     }
 
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username){
         Users users = usersRepository.findAllByAuthId(username)
                 .orElseThrow(() -> new RestException(HttpStatus.BAD_REQUEST, "해당 사용자를 찾을 수 없습니다."));
 
