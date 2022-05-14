@@ -11,13 +11,17 @@ spring:
 
   config:
     activate:
-      on-profile: local
+      on-profile: prod
+
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
   cache:
     type: redis
 
   redis:
-    host: localhost
+    host: ${{ secrets.AWS_REDIS_HOST }}
     port: 6379
 
 
