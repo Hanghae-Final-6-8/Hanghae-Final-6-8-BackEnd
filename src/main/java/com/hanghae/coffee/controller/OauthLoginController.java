@@ -2,9 +2,12 @@ package com.hanghae.coffee.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanghae.coffee.dto.users.LoginResponseDto;
+import com.hanghae.coffee.dto.users.LogoutResponseDto;
+import com.hanghae.coffee.dto.users.UserInfoResponseDto;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.OauthCommonService;
+import com.hanghae.coffee.service.UserService;
 import io.swagger.annotations.Api;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OauthLoginController {
 
     private final OauthCommonService oauthCommonService;
+    private final UserService userService;
 
     /**
      * 사용자로부터 SNS 로그인 요청을 oauthType 을 받아 처리
@@ -56,11 +60,18 @@ public class OauthLoginController {
     }
 
     @GetMapping(value = "/logout")
-    public LoginResponseDto doLogout(HttpServletRequest request, @AuthenticationPrincipal UserDetailsImpl users){
+    public LogoutResponseDto doLogout(HttpServletRequest request, @AuthenticationPrincipal UserDetailsImpl users){
         //TODO : @AuthenticationPrincipal 에 왜 값이 안들어오는지 체크해야함.
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         return oauthCommonService.doLogout(request ,users.getUsername());
+
+    }
+
+    @GetMapping(value = "/auth")
+    public UserInfoResponseDto getUserInfo(@AuthenticationPrincipal UserDetailsImpl users){
+
+        return userService.getUserInfo(users.getUsername());
 
     }
 
