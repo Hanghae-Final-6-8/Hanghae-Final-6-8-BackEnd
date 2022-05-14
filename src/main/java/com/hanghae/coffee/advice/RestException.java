@@ -10,10 +10,10 @@ public class RestException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     private HttpStatus httpStatus;
-    private String message;
+    private String msg;
 
-    public RestException(HttpStatus httpStatus, String message) {
+    public RestException(HttpStatus httpStatus, String msg) {
         this.httpStatus = httpStatus;
-        this.message = message;
+        this.msg = msg;
     }
 }

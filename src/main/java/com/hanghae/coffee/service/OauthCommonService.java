@@ -3,6 +3,7 @@ package com.hanghae.coffee.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.users.LoginResponseDto;
+import com.hanghae.coffee.dto.users.LogoutResponseDto;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.security.UserDetailsImpl;
@@ -50,11 +51,11 @@ public class OauthCommonService {
     }
 
     @Transactional
-    public LoginResponseDto doLogout(HttpServletRequest request, String authId) {
+    public LogoutResponseDto doLogout(HttpServletRequest request, String authId) {
         String accessToken = jwtTokenProvider.resolveAccessToken(request);
         jwtTokenProvider.deleteRefreshToken(authId);
         jwtTokenProvider.saveLogoutAccessToken(accessToken);
-        return LoginResponseDto.builder()
+        return LogoutResponseDto.builder()
             .status(200)
             .msg("로그아웃 되었습니다.")
             .build();
