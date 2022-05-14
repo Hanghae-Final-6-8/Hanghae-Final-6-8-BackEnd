@@ -33,6 +33,7 @@ jobs:
       with:
         files: ./src/main/resources/application-prod.yml
       env:
+        AWS_EC2_DOMAIN: ${{ secrets.AWS_EC2_DOMAIN }}
         spring.datasource.url: ${{ secrets.DATABASE_URL }}
         spring.datasource.username: ${{ secrets.DATASOURCE_USERNAME }}
         spring.datasource.password: ${{ secrets.DATASOURCE_PASSWORD }}
