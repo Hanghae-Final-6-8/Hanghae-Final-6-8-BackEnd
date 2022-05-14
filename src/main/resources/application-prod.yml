@@ -35,14 +35,14 @@ oauth:
       id: ${{ secrets.OAUTH_KAKAO_CLIENT_ID }}
     oauth:
       request:
-        url: ${{ secrets.OAUTH_KAKAO_OAUTH_REQUEST_URL }}
+        url: https://kauth.kakao.com/oauth/authorize
     token:
-      url: ${{ secrets.OAUTH_KAKAO_TOKEN_URL }}
+      url: https://kauth.kakao.com/oauth/token
     user:
       info:
-        url: ${{ secrets.OAUTH_KAKAO_USER_INFO_URL }}
+        url: https://kapi.kakao.com/v2/user/me
     redirect:
-      url: ${{ secrets.OAUTH_KAKAO_REDIRECT_URL }}
+      url: http://${{ secrets.AWS_EC2_DOMAIN }}/api/user/login/kakao/callback
 
 
   naver:
@@ -51,11 +51,25 @@ oauth:
       secret: ${{ secrets.OAUTH_NAVER_CLIENT_SECRET}}
     oauth:
       request:
-        url: ${{ secrets.OAUTH_NAVER_OAUTH_REQUEST_URL}}
+        url: https://nid.naver.com/oauth2.0/authorize
     token:
-      url: ${{ secrets.OAUTH_NAVER_TOKEN_URL}}
+      url: https://nid.naver.com/oauth2.0/token
     user:
       info:
-        url: ${{ secrets.OAUTH_NAVER_USER_INFO_URL}}
+        url: https://openapi.naver.com/v1/nid/me
     redirect:
-      url: ${{ secrets.OAUTH_NAVER_REDIRECT_URL}}
+      url: http://${{ secrets.AWS_EC2_DOMAIN }}/api/user/login/naver/callback
+
+  google:
+    url: https://accounts.google.com/o/oauth2/v2/auth
+    client:
+      id: ${{ secrets.OAUTH_GOOGLE_CLIENT_ID }}
+      secret: ${{ secrets.OAUTH_GOOGLE_SECRET_KEY }}
+    callback:
+      url: http://${{ secrets.AWS_EC2_DOMAIN }}/api/user/login/google/callback
+    token:
+      url: https://oauth2.googleapis.com/token
+    scope: profile+email
+    user:
+      info:
+        url: https://www.googleapis.com/oauth2/v1/userinfo
