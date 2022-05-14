@@ -32,6 +32,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (ObjectUtils.isEmpty(isLogout)) {
                     // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장
                     this.setAuthentication(accessToken);
+                } else {
+                    this.setNullAuthentication();
+                    request.setAttribute("EXCEPTION", "NOT LOGIN STATUS");
                 }
             } else if (!jwtTokenProvider.validateToken(accessToken) && refreshToken != null) {
 
@@ -57,9 +60,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     jwtTokenProvider.saveRefreshToken(authId, newRefreshToken);
 
                 }
+                // Access 토큰 만료 및 refresh 토큰 없을 때
+            } else if (!jwtTokenProvider.validateToken(accessToken) && refreshToken == null) {
+
+                request.setAttribute("EXCEPTION", "ACCESS TOKEN EXPIRED");
+
             }
 
+        } else {
+
+            this.setNullAuthentication();
+            request.setAttribute("EXCEPTION", "NOT EXIST ACCESS TOKEN");
+
         }
+
         chain.doFilter(request, response);
     }
 
@@ -69,5 +83,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Authentication authentication = jwtTokenProvider.getAuthentication(token);
         // SecurityContext 에 Authentication 객체를 저장합니다.
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    private void setNullAuthentication() {
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+
     }
 }

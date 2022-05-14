@@ -19,6 +19,8 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("https://copick.site");
+        config.addAllowedOrigin("https://www.copick.site");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.addExposedHeader("ACCESS_TOKEN");

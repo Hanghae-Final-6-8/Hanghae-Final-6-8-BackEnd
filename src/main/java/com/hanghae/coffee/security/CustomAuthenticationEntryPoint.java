@@ -16,19 +16,35 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
         AuthenticationException authException) throws IOException, ServletException {
+        String msg;
+        int status = 0;
+        if ( request.getAttribute("EXCEPTION") != null ){
+            if("NOT LOGIN STATUS".equals(request.getAttribute("EXCEPTION"))){
+                status = 440;
+            }else if("ACCESS TOKEN EXPIRED".equals(request.getAttribute("EXCEPTION"))){
+                status = 441;
+            }else if("NOT EXIST ACCESS TOKEN".equals(request.getAttribute("EXCEPTION"))){
+                status = 442;
+            }
 
-        setResponse(response);
+            msg = (String) request.getAttribute("EXCEPTION");
+        }else {
+            status = HttpServletResponse.SC_UNAUTHORIZED;
+            msg = "Unauthorized";
+        }
+
+        setResponse(response, status, msg);
 
     }
 
     //한글 출력을 위해 getWriter() 사용
-    private void setResponse(HttpServletResponse response) throws IOException {
+    private void setResponse(HttpServletResponse response, int status, String msg) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setStatus(status);
 
         JSONObject responseJson = new JSONObject();
-        responseJson.put("message", "Unauthorized");
-        responseJson.put("status", HttpStatus.UNAUTHORIZED);
+        responseJson.put("msg", msg);
+        responseJson.put("status", status);
 
         response.getWriter().print(responseJson);
     }

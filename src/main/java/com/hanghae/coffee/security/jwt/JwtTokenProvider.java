@@ -121,7 +121,12 @@ public class JwtTokenProvider {
 
     // 어세스 토큰 헤더 설정
     public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
-        response.setHeader(ACCESS_TOKEN, BEARER_TYPE + " " + accessToken);
+//        response.setHeader(ACCESS_TOKEN, BEARER_TYPE + " " + accessToken);
+        Cookie cookie = new Cookie(ACCESS_TOKEN, accessToken);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        response.addCookie(cookie);
     }
 
     // 리프레시 토큰 쿠키 설정
