@@ -21,10 +21,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         if ( request.getAttribute("EXCEPTION") != null ){
             if("NOT LOGIN STATUS".equals(request.getAttribute("EXCEPTION"))){
                 status = 440;
-            }else if("ACCESS TOKEN EXPIRED".equals(request.getAttribute("EXCEPTION"))){
+            }else if("NOT VALIDATE ACCESS TOKEN".equals(request.getAttribute("EXCEPTION"))){
                 status = 441;
             }else if("NOT EXIST ACCESS TOKEN".equals(request.getAttribute("EXCEPTION"))){
                 status = 442;
+            }else if("NOT VALIDATE ACCESS TOKEN".equals(request.getAttribute("EXCEPTION"))){
+                status = 443;
             }
 
             msg = (String) request.getAttribute("EXCEPTION");
