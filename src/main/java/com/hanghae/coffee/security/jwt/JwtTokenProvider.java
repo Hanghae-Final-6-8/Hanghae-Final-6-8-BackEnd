@@ -123,16 +123,17 @@ public class JwtTokenProvider {
         return (expiration.getTime() - now);
     }
 
-    // 어세스 토큰 헤더 설정
+    // 어세스 토큰 쿠키 설정
     public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
 
         Cookie cookie = new Cookie(ACCESS_TOKEN, accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
+        cookie.setDomain("http://localhost:3000");
 
         response.addCookie(cookie);
 
-        addSameSiteCookieAttribute(response);
+//        addSameSiteCookieAttribute(response);
     }
 
     // 리프레시 토큰 쿠키 설정
@@ -147,28 +148,28 @@ public class JwtTokenProvider {
         Cookie cookie = new Cookie(REFRESH_TOKEN, refreshToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setDomain("localhost:3000");
+        cookie.setDomain("http://localhost:3000");
 
         response.addCookie(cookie);
 
-        addSameSiteCookieAttribute(response);
+//        addSameSiteCookieAttribute(response);
     }
 
-    private void addSameSiteCookieAttribute(HttpServletResponse response) {
-        Collection<String> headers = response.getHeaders(HttpHeaders.SET_COOKIE);
-        boolean firstHeader = true;
-        // there can be multiple Set-Cookie attributes
-        for (String header : headers) {
-            if (firstHeader) {
-                response.setHeader(HttpHeaders.SET_COOKIE,
-                    String.format("%s; %s", header, "SameSite=Strict"));
-                firstHeader = false;
-                continue;
-            }
-            response.addHeader(HttpHeaders.SET_COOKIE,
-                String.format("%s; %s", header, "SameSite=Strict"));
-        }
-    }
+//    private void addSameSiteCookieAttribute(HttpServletResponse response) {
+//        Collection<String> headers = response.getHeaders(HttpHeaders.SET_COOKIE);
+//        boolean firstHeader = true;
+//        // there can be multiple Set-Cookie attributes
+//        for (String header : headers) {
+//            if (firstHeader) {
+//                response.setHeader(HttpHeaders.SET_COOKIE,
+//                    String.format("%s; %s", header, "SameSite=None"));
+//                firstHeader = false;
+//                continue;
+//            }
+//            response.addHeader(HttpHeaders.SET_COOKIE,
+//                String.format("%s; %s", header, "SameSite=None"));
+//        }
+//    }
 
     @Transactional(readOnly = true)
     public String logoutTokenCheck(String accessToken) {
