@@ -5,7 +5,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.net.InetAddress;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Date;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
@@ -14,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -121,21 +125,49 @@ public class JwtTokenProvider {
 
     // 어세스 토큰 헤더 설정
     public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
-//        response.setHeader(ACCESS_TOKEN, BEARER_TYPE + " " + accessToken);
+
         Cookie cookie = new Cookie(ACCESS_TOKEN, accessToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
 
         response.addCookie(cookie);
+
+        addSameSiteCookieAttribute(response);
     }
 
     // 리프레시 토큰 쿠키 설정
     public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
+//        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN, refreshToken)
+//            .domain("localhost:3000")
+//            .sameSite("None")
+//            .secure(true)
+//            .path("/")
+//            .build();
+//        response.addHeader("Set-Cookie", cookie.toString());
         Cookie cookie = new Cookie(REFRESH_TOKEN, refreshToken);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
+        cookie.setDomain("localhost:3000");
 
         response.addCookie(cookie);
+
+        addSameSiteCookieAttribute(response);
+    }
+
+    private void addSameSiteCookieAttribute(HttpServletResponse response) {
+        Collection<String> headers = response.getHeaders(HttpHeaders.SET_COOKIE);
+        boolean firstHeader = true;
+        // there can be multiple Set-Cookie attributes
+        for (String header : headers) {
+            if (firstHeader) {
+                response.setHeader(HttpHeaders.SET_COOKIE,
+                    String.format("%s; %s", header, "SameSite=Strict"));
+                firstHeader = false;
+                continue;
+            }
+            response.addHeader(HttpHeaders.SET_COOKIE,
+                String.format("%s; %s", header, "SameSite=Strict"));
+        }
     }
 
     @Transactional(readOnly = true)

@@ -19,7 +19,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain chain) throws IOException, ServletException {
-
+        System.out.println(request.getRemoteHost());
+        System.out.println(request.getRemotePort());
         // 1. Request Header 에서 JWT 토큰 추출
         String accessToken = jwtTokenProvider.resolveAccessToken(request);
         String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
@@ -59,11 +60,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     // Refresh 토큰 생성
                     jwtTokenProvider.saveRefreshToken(authId, newRefreshToken);
 
+                } else {
+                    request.setAttribute("EXCEPTION", "NOT VALIDATE REFRESH TOKEN");
                 }
                 // Access 토큰 만료 및 refresh 토큰 없을 때
             } else if (!jwtTokenProvider.validateToken(accessToken) && refreshToken == null) {
 
-                request.setAttribute("EXCEPTION", "ACCESS TOKEN EXPIRED");
+                request.setAttribute("EXCEPTION", "NOT VALIDATE ACCESS TOKEN");
 
             }
 
@@ -73,7 +76,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             request.setAttribute("EXCEPTION", "NOT EXIST ACCESS TOKEN");
 
         }
-
         chain.doFilter(request, response);
     }
 
