@@ -11,7 +11,9 @@ sourceCompatibility = '17'
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
+
     }
+
 }
 
 repositories {
@@ -38,6 +40,9 @@ dependencies {
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'io.springfox:springfox-swagger-ui:3.0.0'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.1'
+
+
 
 }
 
