@@ -125,32 +125,37 @@ public class JwtTokenProvider {
 
     // 어세스 토큰 쿠키 설정
     public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
+        ResponseCookie cookie = ResponseCookie.from(ACCESS_TOKEN, accessToken)
+            .sameSite("None")
+            .secure(true)
+            .path("/")
+            .build();
+        response.addHeader("Set-Cookie", cookie.toString());
 
-        Cookie cookie = new Cookie(ACCESS_TOKEN, accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setDomain("http://localhost:3000");
-
-        response.addCookie(cookie);
+//        Cookie cookie = new Cookie(ACCESS_TOKEN, accessToken);
+//        cookie.setHttpOnly(true);
+//        cookie.setPath("/");
+//        cookie.setDomain("http://localhost:3000");
+//
+//        response.addCookie(cookie);
 
 //        addSameSiteCookieAttribute(response);
     }
 
     // 리프레시 토큰 쿠키 설정
     public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
-//        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN, refreshToken)
-//            .domain("localhost:3000")
-//            .sameSite("None")
-//            .secure(true)
-//            .path("/")
-//            .build();
-//        response.addHeader("Set-Cookie", cookie.toString());
-        Cookie cookie = new Cookie(REFRESH_TOKEN, refreshToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setDomain("http://localhost:3000");
+        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN, refreshToken)
+            .sameSite("None")
+            .secure(true)
+            .path("/")
+            .build();
+        response.addHeader("Set-Cookie", cookie.toString());
+//        Cookie cookie = new Cookie(REFRESH_TOKEN, refreshToken);
+//        cookie.setHttpOnly(true);
+//        cookie.setPath("/");
+//        cookie.setDomain("http://localhost:3000");
 
-        response.addCookie(cookie);
+//        response.addCookie(cookie);
 
 //        addSameSiteCookieAttribute(response);
     }
