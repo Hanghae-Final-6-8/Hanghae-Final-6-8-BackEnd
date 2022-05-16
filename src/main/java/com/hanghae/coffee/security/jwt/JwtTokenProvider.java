@@ -123,14 +123,15 @@ public class JwtTokenProvider {
         return (expiration.getTime() - now);
     }
 
-    // 어세스 토큰 쿠키 설정
+    // 어세스 토큰 헤더 설정
     public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
-        ResponseCookie cookie = ResponseCookie.from(ACCESS_TOKEN, accessToken)
-            .sameSite("None")
-            .secure(true)
-            .path("/")
-            .build();
-        response.addHeader("Set-Cookie", cookie.toString());
+        response.setHeader(ACCESS_TOKEN,accessToken);
+//        ResponseCookie cookie = ResponseCookie.from(ACCESS_TOKEN, accessToken)
+//            .sameSite("None")
+//            .secure(true)
+//            .path("/")
+//            .build();
+//        response.addHeader("Set-Cookie", cookie.toString());
 
 //        Cookie cookie = new Cookie(ACCESS_TOKEN, accessToken);
 //        cookie.setHttpOnly(true);
@@ -142,14 +143,15 @@ public class JwtTokenProvider {
 //        addSameSiteCookieAttribute(response);
     }
 
-    // 리프레시 토큰 쿠키 설정
+    // 리프레시 토큰 헤더 설정
     public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
-        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN, refreshToken)
-            .sameSite("None")
-            .secure(true)
-            .path("/")
-            .build();
-        response.addHeader("Set-Cookie", cookie.toString());
+        response.setHeader(REFRESH_TOKEN,refreshToken);
+//        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN, refreshToken)
+//            .sameSite("None")
+//            .secure(true)
+//            .path("/")
+//            .build();
+//        response.addHeader("Set-Cookie", cookie.toString());
 //        Cookie cookie = new Cookie(REFRESH_TOKEN, refreshToken);
 //        cookie.setHttpOnly(true);
 //        cookie.setPath("/");
