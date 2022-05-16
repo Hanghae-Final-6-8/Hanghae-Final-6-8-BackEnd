@@ -25,7 +25,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
                 status = 441;
             }else if("NOT EXIST ACCESS TOKEN".equals(request.getAttribute("EXCEPTION"))){
                 status = 442;
-            }else if("NOT VALIDATE ACCESS TOKEN".equals(request.getAttribute("EXCEPTION"))){
+            }else if("NOT VALIDATE REFRESH TOKEN".equals(request.getAttribute("EXCEPTION"))){
                 status = 443;
             }
 

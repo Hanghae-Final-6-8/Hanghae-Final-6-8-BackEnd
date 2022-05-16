@@ -25,6 +25,7 @@ public class CorsConfig {
         config.addAllowedMethod("*");
         config.addExposedHeader("ACCESS_TOKEN");
         config.addExposedHeader("REFRESH_TOKEN");
+        config.addExposedHeader("Set-Cookie");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
