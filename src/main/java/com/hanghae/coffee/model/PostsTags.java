@@ -34,6 +34,15 @@ public class PostsTags {
     @JoinColumn(name = "tags_id")
     private Tags tags;
 
+    public PostsTags(Posts posts, Tags tags){
+        this.posts = posts;
+        this.tags = tags;
+    }
+
+    public void update(Posts posts, Tags tags) {
+        this.posts = posts;
+        this.tags = tags;
+    }
 
 
 }

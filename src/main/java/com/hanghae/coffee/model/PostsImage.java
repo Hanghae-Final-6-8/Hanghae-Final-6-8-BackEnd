@@ -9,10 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 @Entity
 @Getter
@@ -31,5 +29,11 @@ public class PostsImage {
 
     @Column(nullable = false)
     private String imageUrl;
+
+    @Builder
+    public PostsImage(Posts posts, String imageUrl){
+        this.posts = posts;
+        this.imageUrl = imageUrl;
+    }
 
 }
