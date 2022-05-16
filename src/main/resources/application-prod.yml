@@ -77,3 +77,16 @@ oauth:
     user:
       info:
         url: https://www.googleapis.com/oauth2/v1/userinfo
+cloud:
+  aws:
+    credentials:
+      accessKey: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      secretKey: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  s3:
+    bucket: ${{ secrets.CLOUD_AWS_S3_BUCKET }}
+  region: 
+    static: ${{ secrets.CLOUD_AWS_REGION_STATIC }}
+  stack:
+    auto: false
+  credentials:
+    instanceProfile: true
