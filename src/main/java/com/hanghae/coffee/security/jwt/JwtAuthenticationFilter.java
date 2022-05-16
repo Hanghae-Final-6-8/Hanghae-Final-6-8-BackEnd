@@ -19,7 +19,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain chain) throws IOException, ServletException {
-
+        System.out.println(request.getRemoteHost());
+        System.out.println(request.getRemotePort());
         // 1. Request Header 에서 JWT 토큰 추출
         String accessToken = jwtTokenProvider.resolveAccessToken(request);
         String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
@@ -75,7 +76,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             request.setAttribute("EXCEPTION", "NOT EXIST ACCESS TOKEN");
 
         }
-
         chain.doFilter(request, response);
     }
 
