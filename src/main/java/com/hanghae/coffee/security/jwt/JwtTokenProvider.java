@@ -126,6 +126,7 @@ public class JwtTokenProvider {
     // 어세스 토큰 쿠키 설정
     public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
         ResponseCookie cookie = ResponseCookie.from(ACCESS_TOKEN, accessToken)
+            .httpOnly(true)
             .sameSite("None")
             .secure(true)
             .path("/")
@@ -145,6 +146,7 @@ public class JwtTokenProvider {
     // 리프레시 토큰 쿠키 설정
     public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
         ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN, refreshToken)
+            .httpOnly(true)
             .sameSite("None")
             .secure(true)
             .path("/")
