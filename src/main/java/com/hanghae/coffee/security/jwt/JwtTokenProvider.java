@@ -133,6 +133,7 @@ public class JwtTokenProvider {
         response.setHeader(REFRESH_TOKEN,refreshToken);
     }
 
+
     @Transactional(readOnly = true)
     public String logoutTokenCheck(String accessToken) {
         return redisUtils.getRedisData(accessToken);
