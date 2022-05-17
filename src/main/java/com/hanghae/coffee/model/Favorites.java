@@ -3,10 +3,6 @@ package com.hanghae.coffee.model;
 
 import static javax.persistence.FetchType.LAZY;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,10 +29,17 @@ public class Favorites {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "user_id")
-    private Users user;
+    private Users users;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "bean_id")
     private Beans beans;
+
+    public static Favorites createFavorites(Users users, Beans beans) {
+        Favorites favorites = new Favorites();
+        favorites.setUsers(users);
+        favorites.setBeans(beans);
+        return favorites;
+    }
 
 }
