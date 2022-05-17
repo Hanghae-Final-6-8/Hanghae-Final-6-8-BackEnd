@@ -44,4 +44,4 @@ else
 fi
 
 # 실행
-nohup java -Duser.timezone=KST -jar "$JAR_NAME" > $REPOSITORY/nohup.out 2>&1 &
+nohup java -Duser.timezone=KST -jar "$JAR_NAME" > $REPOSITORY/nohup.out /dev/null2>&1
