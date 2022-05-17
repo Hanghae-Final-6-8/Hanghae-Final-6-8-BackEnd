@@ -1,4 +1,4 @@
-package com.hanghae.coffee.repository;
+package com.hanghae.coffee.repository.users;
 
 import com.hanghae.coffee.model.Users;
 import java.util.Optional;

@@ -19,13 +19,14 @@ repositories {
 }
 
 dependencies {
+    implementation 'com.opencsv:opencsv:5.3'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'it.ozimov:embedded-redis:0.7.2'
+
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
     compileOnly 'org.projectlombok:lombok'
@@ -39,6 +40,24 @@ dependencies {
     implementation 'io.springfox:springfox-swagger-ui:3.0.0'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
+    // QueryDSL
+    implementation "com.querydsl:querydsl-jpa"
+    annotationProcessor(
+            // java.lang.NoClassDefFoundError(javax.annotation.Entity) 발생 대응
+            "javax.persistence:javax.persistence-api",
+            // java.lang.NoClassDefFoundError(javax.annotation.Generated) 발생 대응
+            "javax.annotation:javax.annotation-api",
+            // Querydsl JPAAnnotationProcessor 사용 지정
+            "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa")
+}
+
+// QueryDSL
+sourceSets {
+    main {
+        java {
+            srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated"]
+        }
+    }
 }
 
 test {

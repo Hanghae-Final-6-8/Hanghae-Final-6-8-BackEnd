@@ -3,7 +3,7 @@ package com.hanghae.coffee.service;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.users.UserInfoResponseDto;
 import com.hanghae.coffee.model.Users;
-import com.hanghae.coffee.repository.UsersRepository;
+import com.hanghae.coffee.repository.users.UsersRepository;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class UserService {
+public class UsersService {
 
     private final UsersRepository usersRepository;
 
@@ -27,7 +27,7 @@ public class UserService {
 
         return UserInfoResponseDto
             .builder()
-            .status(200)
+            .status(HttpStatus.OK)
             .msg("success")
             .data(result)
             .build();
