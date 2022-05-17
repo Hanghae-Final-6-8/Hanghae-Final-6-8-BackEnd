@@ -7,7 +7,7 @@ import com.hanghae.coffee.dto.users.UserInfoResponseDto;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.OauthCommonService;
-import com.hanghae.coffee.service.UserService;
+import com.hanghae.coffee.service.UsersService;
 import io.swagger.annotations.Api;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OauthLoginController {
 
     private final OauthCommonService oauthCommonService;
-    private final UserService userService;
+    private final UsersService userService;
 
     /**
      * 사용자로부터 SNS 로그인 요청을 oauthType 을 받아 처리

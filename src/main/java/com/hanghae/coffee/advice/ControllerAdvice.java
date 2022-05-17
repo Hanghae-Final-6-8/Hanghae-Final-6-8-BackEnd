@@ -12,7 +12,7 @@ public class ControllerAdvice {
     @ExceptionHandler(RestException.class)
     public ResponseEntity<Map<String, Object>> handler(RestException e) {
         Map<String, Object> resBody = new HashMap<>();
-        resBody.put("message", e.getMessage());
+        resBody.put("msg", e.getMsg());
 
         return new ResponseEntity<>(resBody, e.getHttpStatus());
     }

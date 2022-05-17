@@ -8,7 +8,6 @@ import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.security.jwt.JwtTokenProvider;
-import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,15 +36,12 @@ public class OauthCommonService {
     }
 
     public LoginResponseDto doLogin(HttpServletResponse response, OauthType oauthType, String code) throws JsonProcessingException {
-        HashMap<String, String> result = new HashMap<>();
         OauthUsersService oauthUsersService = this.findOauthByType(oauthType);
         Users users = oauthUsersService.doLogin(code);
-        String token = forceLogin(response, users);
-        result.put("token", token);
+        forceLogin(response, users);
 
         return LoginResponseDto.builder()
-            .data(result)
-            .status(200)
+            .status(HttpStatus.OK)
             .msg("로그인 되었습니다.")
             .build();
     }
@@ -56,7 +52,7 @@ public class OauthCommonService {
         jwtTokenProvider.deleteRefreshToken(authId);
         jwtTokenProvider.saveLogoutAccessToken(accessToken);
         return LogoutResponseDto.builder()
-            .status(200)
+            .status(HttpStatus.OK)
             .msg("로그아웃 되었습니다.")
             .build();
     }
