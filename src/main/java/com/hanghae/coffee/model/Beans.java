@@ -62,4 +62,6 @@ public class Beans {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
+
+
 }
