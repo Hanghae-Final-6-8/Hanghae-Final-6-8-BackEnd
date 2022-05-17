@@ -48,7 +48,7 @@ public class Posts extends Timestamped {
 
     @JsonIgnore
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostsImage> postsIamges = new ArrayList<>();
+    private List<PostsImage> postsImages = new ArrayList<>();
 
 
 
