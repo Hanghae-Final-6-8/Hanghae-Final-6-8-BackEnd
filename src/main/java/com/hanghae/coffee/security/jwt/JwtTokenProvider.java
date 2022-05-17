@@ -125,49 +125,12 @@ public class JwtTokenProvider {
 
     // 어세스 토큰 헤더 설정
     public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
-
-        Cookie cookie = new Cookie(ACCESS_TOKEN, accessToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-
-        response.addCookie(cookie);
-
-        addSameSiteCookieAttribute(response);
+        response.setHeader(ACCESS_TOKEN,accessToken);
     }
 
-    // 리프레시 토큰 쿠키 설정
+    // 리프레시 토큰 헤더 설정
     public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
-//        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN, refreshToken)
-//            .domain("localhost:3000")
-//            .sameSite("None")
-//            .secure(true)
-//            .path("/")
-//            .build();
-//        response.addHeader("Set-Cookie", cookie.toString());
-        Cookie cookie = new Cookie(REFRESH_TOKEN, refreshToken);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setDomain("localhost:3000");
-
-        response.addCookie(cookie);
-
-        addSameSiteCookieAttribute(response);
-    }
-
-    private void addSameSiteCookieAttribute(HttpServletResponse response) {
-        Collection<String> headers = response.getHeaders(HttpHeaders.SET_COOKIE);
-        boolean firstHeader = true;
-        // there can be multiple Set-Cookie attributes
-        for (String header : headers) {
-            if (firstHeader) {
-                response.setHeader(HttpHeaders.SET_COOKIE,
-                    String.format("%s; %s", header, "SameSite=Strict"));
-                firstHeader = false;
-                continue;
-            }
-            response.addHeader(HttpHeaders.SET_COOKIE,
-                String.format("%s; %s", header, "SameSite=Strict"));
-        }
+        response.setHeader(REFRESH_TOKEN,refreshToken);
     }
 
     @Transactional(readOnly = true)
