@@ -34,7 +34,7 @@ public class JwtTokenProvider {
     @Value("${secret.key}")
     private String SECRET_KEY;
 
-    private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
+    private static final String ACCESS_TOKEN = "Authorization";
     private static final String REFRESH_TOKEN = "REFRESH_TOKEN";
     private static final String BEARER_TYPE = "Bearer";
 
