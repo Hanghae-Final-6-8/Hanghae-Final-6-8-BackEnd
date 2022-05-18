@@ -11,9 +11,8 @@ import com.hanghae.coffee.model.Posts;
 
 import com.hanghae.coffee.model.PostsImage;
 import com.hanghae.coffee.repository.posts.PostsImageRepository;
-import com.hanghae.coffee.repository.posts.PostsRepository;
 import com.hanghae.coffee.utils.FilesUtils;
-import java.io.File;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,23 +40,8 @@ public class FileService extends Posts {
     public String uploadFile(Posts posts, MultipartFile multipartFile) throws IOException {
         log.info("uploadFile");
         // 파일 유효성 검사
-        validateFileExists(multipartFile);
-
-        // 파일 이름 설정
-        String fileName = FilesUtils.buildFileName(posts, multipartFile.getOriginalFilename());
-
-        // AWS S3 직렬화
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(multipartFile.getContentType());
-
-        InputStream inputStream = multipartFile.getInputStream();
-        byte[] bytes = IOUtils.toByteArray(inputStream);
-        objectMetadata.setContentLength(bytes.length);
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-
-        amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, byteArrayInputStream, objectMetadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-                PostsImage postsImage = new PostsImage(posts,amazonS3Client.getUrl(bucketName, fileName).toString());
+        String fileName = multipartfileToS3(posts, multipartFile);
+        PostsImage postsImage = new PostsImage(posts,amazonS3Client.getUrl(bucketName, fileName).toString());
 
 //        // 로컬 저장
 //        File storedFile;
@@ -80,19 +64,13 @@ public class FileService extends Posts {
         return amazonS3Client.getUrl(bucketName, fileName).toString();
     }
 
-    @Transactional
-    public String updateFile(Posts posts, MultipartFile multipartFile) throws IOException {
-        PostsImage postsImage = postsImageRepository.findByPosts_Id(posts.getId());
-        // 기존 파일 삭제
-        deleteFile(posts.getId());
-        postsImageRepository.deleteById(posts.getId());
-
-        // 파일 유효성 검사
+    private String multipartfileToS3(Posts posts, MultipartFile multipartFile) throws IOException {
         validateFileExists(multipartFile);
 
         // 파일 이름 설정
         String fileName = FilesUtils.buildFileName(posts, multipartFile.getOriginalFilename());
 
+        // AWS S3 직렬화
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(multipartFile.getContentType());
 
@@ -102,7 +80,19 @@ public class FileService extends Posts {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
 
         amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, byteArrayInputStream, objectMetadata)
-                .withCannedAcl(CannedAccessControlList.PublicRead));
+            .withCannedAcl(CannedAccessControlList.PublicRead));
+        return fileName;
+    }
+
+    @Transactional
+    public String updateFile(Posts posts, MultipartFile multipartFile) throws IOException {
+        PostsImage postsImage = postsImageRepository.findByPosts_Id(posts.getId());
+        // 기존 파일 삭제
+        deleteFile(posts.getId());
+        postsImageRepository.deleteById(posts.getId());
+
+        // 파일 유효성 검사
+        String fileName = multipartfileToS3(posts, multipartFile);
 
         postsImage = new PostsImage(posts,amazonS3Client.getUrl(bucketName, fileName).toString());
         postsImageRepository.save(postsImage);
