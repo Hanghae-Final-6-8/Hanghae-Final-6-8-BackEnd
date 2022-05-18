@@ -1,10 +1,12 @@
 package com.hanghae.coffee.dto.comments;
 
+import com.hanghae.coffee.model.Posts;
 import lombok.Getter;
 
 @Getter
 public class CommentsRequestDto {
-	private Long posts_id;
+	private Posts posts;
+	private Long comments_id;
 	private String content;
 
 }
