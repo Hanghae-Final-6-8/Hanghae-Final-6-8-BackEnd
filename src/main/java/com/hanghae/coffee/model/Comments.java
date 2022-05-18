@@ -38,4 +38,10 @@ public class Comments extends Timestamped {
     @JoinColumn(name = "posts_id")
     private Posts posts;
 
+    public Comments(String content,Posts posts,Users users){
+        this.content = content;
+        this.posts = posts;
+        this.users = users;
+    }
+
 }
