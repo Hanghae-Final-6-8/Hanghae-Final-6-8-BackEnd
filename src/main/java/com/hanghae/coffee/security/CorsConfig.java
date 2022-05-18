@@ -2,12 +2,10 @@ package com.hanghae.coffee.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.format.FormatterRegistry;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 //@EnableWebMvc
 @Configuration
@@ -25,7 +23,6 @@ public class CorsConfig {
         config.addAllowedMethod("*");
         config.addExposedHeader("ACCESS_TOKEN");
         config.addExposedHeader("REFRESH_TOKEN");
-        config.addExposedHeader("Set-Cookie");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
