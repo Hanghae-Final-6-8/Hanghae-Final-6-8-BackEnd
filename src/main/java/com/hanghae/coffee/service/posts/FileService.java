@@ -33,7 +33,7 @@ public class FileService extends Posts {
     private final AmazonS3Client amazonS3Client;
     private final PostsImageRepository postsImageRepository;
 
-    @Value("${cloud.aws.s3.bucket}")
+    @Value("${{ secrets.CLOUD_AWS_S3_BUCKET }}")
     private String bucketName;
 
     // 이미지 파일 업로드 및 컨텐츠 내용 저장
