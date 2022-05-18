@@ -26,6 +26,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
     private final CorsFilter corsFilter;
 
+    private static final String[] PERMIT_URL_ARRAY = {
+        /* swagger v2 */
+        "/v2/api-docs",
+        "/swagger-resources",
+        "/swagger-resources/**",
+        "/configuration/ui",
+        "/configuration/security",
+        "/swagger-ui.html",
+        "/webjars/**",
+        /* swagger v3 */
+        "/v3/api-docs/**",
+        "/swagger-ui/**",
+        "/springfox-swagger-ui/**",
+        /* js, css, image */
+        "/index.html",
+        "/favicon.ico",
+        "/image/**"
+    };
+
     // authenticationManager를 Bean 등록합니다.
     @Bean
     @Override
@@ -43,17 +62,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         web     // 스웨거 사용 허용
-            .ignoring() .mvcMatchers("/swagger-ui.html/**",
-                "/configuration/**", "/swagger-resources/**",
-                "/v2/api-docs","/webjars/**",
-                "/webjars/springfox-swagger-ui/*.{js,css}")
-
+            .ignoring()
             // h2-console 사용에 대한 허용 (CSRF, FrameOptions 무시)
             .antMatchers("/h2-console/**");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         // cors 정책의 설정파일 등록하는 부분
         http
             .cors()
@@ -67,11 +83,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             // JwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 전에 넣는다
             .authorizeRequests()
-            .antMatchers(HttpMethod.GET, "/image/**").permitAll()
+            .antMatchers(PERMIT_URL_ARRAY).permitAll()
             // 회원 관리 처리 API 전부를 login 없이 허용
             .antMatchers("/api/user/login/**").permitAll()
             // Get 요청 login 없이 허용
-            .antMatchers(HttpMethod.GET, "/api/beans/lists","/api/beans/random","/api/beans/:bean_id").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/beans/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/cafe/**").permitAll()
             .antMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
             //antMatchers로 설정한 조건 외의 어떤 요청이든 '인증'해야 한다
             .anyRequest().authenticated()
