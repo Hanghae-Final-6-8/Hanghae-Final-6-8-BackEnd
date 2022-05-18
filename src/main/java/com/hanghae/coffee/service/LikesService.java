@@ -1,13 +1,11 @@
 package com.hanghae.coffee.service;
 import com.hanghae.coffee.dto.likes.LikesInterfaceJoinVO;
+import com.hanghae.coffee.dto.likes.LikesRequestDto;
 import com.hanghae.coffee.repository.LikesRepository;
 import com.hanghae.coffee.dto.global.DefaultResponseDto;
 import com.hanghae.coffee.dto.likes.LikesSliceResponseDto;
 import com.hanghae.coffee.model.Likes;
-import com.hanghae.coffee.model.Posts;
-import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.security.UserDetailsImpl;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -34,17 +32,15 @@ public class LikesService {
 				.build();
 	}
 
-	public DefaultResponseDto deleteComment(Map<String, Long> param,
+	public DefaultResponseDto deleteComment(LikesRequestDto requestDto,
 			UserDetailsImpl userDetails) {
-		Long posts_id = param.get("posts_id");
+		Long posts_id = requestDto.getPosts().getId();
 
 		Likes likes = likesRepository.findByPosts_Id(posts_id);
 
 		if(likes == null){
 			// 등록
-			Posts posts = new Posts(posts_id);
-			Users users = new Users(userDetails.getUser().getId());
-			likes = new Likes(posts,users);
+			likes = new Likes(requestDto.getPosts(),userDetails.getUser());
 			likesRepository.save(likes);
 
 			return DefaultResponseDto

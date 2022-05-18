@@ -1,6 +1,7 @@
 package com.hanghae.coffee.controller;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.global.DefaultResponseDto;
+import com.hanghae.coffee.dto.posts.PostsRequestDto;
 import com.hanghae.coffee.dto.posts.PostsResponseDto;
 import com.hanghae.coffee.dto.posts.PostsSliceResponseDto;
 import com.hanghae.coffee.model.Posts;
@@ -22,7 +23,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
-import java.util.Map;
 
 @Controller
 @RequestMapping("api")
@@ -135,9 +135,9 @@ public class PostsController {
     // 유저 정보 확인 후 권한 확인
     @ResponseBody
     @PostMapping("posts/delete")
-    public DefaultResponseDto deletePost(@RequestBody Map<String, Long> param,
+    public DefaultResponseDto deletePost(@RequestBody PostsRequestDto requestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails){
-        Long posts_id = (Long) param.get("posts_id");
+        Long posts_id = requestDto.getPosts().getId();
 
         Posts posts = postsRepository.findById(posts_id).orElseThrow(
             () -> new NullPointerException("fail")

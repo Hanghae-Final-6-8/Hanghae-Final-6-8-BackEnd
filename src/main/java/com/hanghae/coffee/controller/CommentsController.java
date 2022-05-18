@@ -61,7 +61,7 @@ public class CommentsController {
 //        @RequestPart(value = "content") String content,
         @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         log.info("writePost");
-        Comments comments = commentsService.writeComment(requestDto.getContent(), requestDto.getPosts_id(),userDetails);
+        Comments comments = commentsService.writeComment(requestDto,userDetails);
 
         return DefaultResponseDto
             .builder()

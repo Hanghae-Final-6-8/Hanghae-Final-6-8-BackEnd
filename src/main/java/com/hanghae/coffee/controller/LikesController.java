@@ -1,6 +1,7 @@
 package com.hanghae.coffee.controller;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.global.DefaultResponseDto;
+import com.hanghae.coffee.dto.likes.LikesRequestDto;
 import com.hanghae.coffee.dto.likes.LikesSliceResponseDto;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.LikesService;
@@ -42,9 +43,9 @@ public class LikesController {
     // 좋아요 등록 & 삭제
     @ResponseBody
     @PostMapping
-    public DefaultResponseDto deleteComment(@RequestBody Map<String, Long> param,
+    public DefaultResponseDto deleteComment(@RequestBody LikesRequestDto requestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails){
-			return likesService.deleteComment(param, userDetails);
+			return likesService.deleteComment(requestDto, userDetails);
 		}
 
 
