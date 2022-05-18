@@ -33,4 +33,9 @@ public class Likes {
     @JoinColumn(name = "user_id")
     private Users users;
 
+    public Likes(Posts posts, Users users){
+        this.posts = posts;
+        this.users = users;
+    }
+
 }

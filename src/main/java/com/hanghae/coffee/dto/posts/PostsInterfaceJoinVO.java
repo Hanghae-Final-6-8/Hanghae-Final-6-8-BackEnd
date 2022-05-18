@@ -1,4 +1,4 @@
-package com.hanghae.coffee.model;
+package com.hanghae.coffee.dto.posts;
 
 import java.time.LocalDateTime;
 
