@@ -60,10 +60,6 @@ public class Posts extends Timestamped {
         this.users = users;
     }
 
-    public Posts(Long post_id){
-        this.id = post_id;
-    }
-
  
     public void update(String title, String content, Users users) {
         this.title = title;

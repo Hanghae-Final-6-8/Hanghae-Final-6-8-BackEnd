@@ -2,13 +2,13 @@ package com.hanghae.coffee.service;
 
 
 import com.hanghae.coffee.dto.comments.CommentsInterfaceJoinVO;
+import com.hanghae.coffee.dto.comments.CommentsRequestDto;
+import com.hanghae.coffee.dto.global.DefaultResponseDto;
 import com.hanghae.coffee.repository.CommentsRepository;
 import com.hanghae.coffee.dto.comments.CommentsSliceResponseDto;
 import com.hanghae.coffee.model.Comments;
-import com.hanghae.coffee.model.Posts;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import java.io.IOException;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -50,29 +50,34 @@ public class CommentsService {
             .build();
     }
 
-    public Comments writeComment(String content, Long post_id, UserDetailsImpl userDetails) throws IOException {
+    public Comments writeComment(CommentsRequestDto requestDto, UserDetailsImpl userDetails) throws IOException {
         log.info("writePost");
-        Posts posts = new Posts(post_id);
-        Comments comments = new Comments(content,posts,userDetails.getUser());
+        Comments comments = new Comments(requestDto.getContent(), requestDto.getPosts(),userDetails.getUser());
 
         return commentsRepository.save(comments);
 
     }
 
-    private String deleteComment(Map<String, Long> param, UserDetailsImpl userDetails) {
-        Long comments_id = (Long) param.get("comments_id");
-
-        Comments comments = commentsRepository.findById(comments_id).orElseThrow(
+    private DefaultResponseDto deleteComment(CommentsRequestDto requestDto, UserDetailsImpl userDetails) {
+        Comments comments = commentsRepository.findById(requestDto.getComments_id()).orElseThrow(
             () -> new NullPointerException("fail")
         );
         Long id = comments.getUsers().getId();
 
         if(id.equals( userDetails.getUser().getId())){
-            commentsRepository.deleteById(comments_id);
+            commentsRepository.deleteById(requestDto.getComments_id());
+            return DefaultResponseDto
+                .builder()
+                .status(HttpStatus.OK)
+                .msg("success")
+                .build();
         } else{
-            return "forbidden";
+            return DefaultResponseDto
+                .builder()
+                .status(HttpStatus.FORBIDDEN)
+                .msg("forbidden")
+                .build();
         }
-        return null;
     }
 
 
