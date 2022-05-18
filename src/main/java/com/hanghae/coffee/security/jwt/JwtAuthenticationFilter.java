@@ -12,6 +12,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -19,12 +20,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain chain) throws IOException, ServletException {
-        System.out.println(request.getRemoteHost());
-        System.out.println(request.getRemotePort());
         // 1. Request Header 에서 JWT 토큰 추출
         String accessToken = jwtTokenProvider.resolveAccessToken(request);
         String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
 
+        log.info("accessToken :: ", accessToken);
+        log.info("refreshToken :: ", refreshToken);
+        
         // 2. validateToken 으로 토큰 유효성 검사
         if (accessToken != null) {
             if (jwtTokenProvider.validateToken(accessToken)) {
