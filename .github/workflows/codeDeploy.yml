@@ -45,13 +45,13 @@ jobs:
         spring.redis.port : 6379
         secret.key : ${{ secrets.JWT_SECRET_KEY }}
         oauth.kakao.client.id: ${{ secrets.OAUTH_KAKAO_CLIENT_ID }}
-        oauth.kakao.redirect.url: http://${{ secrets.AWS_EC2_DOMAIN }}/api/user/login/kakao/callback
+        oauth.kakao.redirect.url: ${{ secrets.AWS_EC2_DOMAIN }}/api/user/login/kakao/callback
         oauth.naver.client.id: ${{ secrets.OAUTH_NAVER_CLIENT_ID}}
         oauth.naver.client.secret: ${{ secrets.OAUTH_NAVER_CLIENT_SECRET}}
-        oauth.naver.redirect.url: http://${{ secrets.AWS_EC2_DOMAIN }}/api/user/login/naver/callback
+        oauth.naver.redirect.url: ${{ secrets.AWS_EC2_DOMAIN }}/api/user/login/naver/callback
         oauth.google.client.id: ${{ secrets.OAUTH_GOOGLE_CLIENT_ID }}
         oauth.google.client.secret : ${{ secrets.OAUTH_GOOGLE_SECRET_KEY }}
-        oauth.google.callback.url: http://${{ secrets.AWS_EC2_DOMAIN }}/api/user/login/google/callback
+        oauth.google.callback.url: ${{ secrets.AWS_EC2_DOMAIN }}/api/user/login/google/callback
         
         
     - name: Build with Gradle
