@@ -5,8 +5,8 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.ObjectUtils;
@@ -24,10 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 1. Request Header 에서 JWT 토큰 추출
         String accessToken = jwtTokenProvider.resolveAccessToken(request);
         String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
-
-        log.info("accessToken :: ", accessToken);
-        log.info("refreshToken :: ", refreshToken);
-        
+        log.info("Authorization :: ", accessToken);
         // 2. validateToken 으로 토큰 유효성 검사
         if (accessToken != null) {
             if (jwtTokenProvider.validateToken(accessToken)) {

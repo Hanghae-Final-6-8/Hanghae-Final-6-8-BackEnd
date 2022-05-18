@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 //@EnableWebMvc
 @Configuration
@@ -21,6 +20,7 @@ public class CorsConfig {
         config.addAllowedOrigin("https://www.copick.site");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+        config.addExposedHeader("Authorization");
         config.addExposedHeader("ACCESS_TOKEN");
         config.addExposedHeader("REFRESH_TOKEN");
         source.registerCorsConfiguration("/**", config);
