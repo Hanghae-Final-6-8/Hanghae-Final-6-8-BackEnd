@@ -1,14 +1,13 @@
 package com.hanghae.coffee.dto.users;
 
 import com.hanghae.coffee.dto.global.DefaultResponseDto;
-import java.util.HashMap;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
 @SuperBuilder
-public class UserInfoResponseDto extends DefaultResponseDto {
+public class CountInfoByUserResponseDto extends DefaultResponseDto {
 
-    private UserInfoDto data;
+    private CountInfoByUserDto data;
 
 }

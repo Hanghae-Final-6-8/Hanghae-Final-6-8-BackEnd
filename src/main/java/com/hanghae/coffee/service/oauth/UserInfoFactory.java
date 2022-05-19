@@ -1,4 +1,4 @@
-package com.hanghae.coffee.service;
+package com.hanghae.coffee.service.oauth;
 
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.oauthProperties.GoogleUserInfoDto;
