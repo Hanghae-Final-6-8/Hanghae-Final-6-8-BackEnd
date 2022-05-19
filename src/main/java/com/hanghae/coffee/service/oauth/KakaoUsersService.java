@@ -147,7 +147,6 @@ public class KakaoUsersService implements OauthUsersService {
         } else {
 
             kakaoUsers = Users.updateUsers(kakaoUsers, userInfoDto);
-//            usersRepository.save(kakaoUsers);     //dirty checking 으로 생략가능..?
 
         }
 
