@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CafeDto {
 
-    private Long id;
+    private Long cafeId;
 
     private String cafeName;
 
