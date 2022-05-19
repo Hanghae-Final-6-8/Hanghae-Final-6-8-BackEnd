@@ -7,22 +7,16 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
 import com.hanghae.coffee.model.Posts;
-
-
-import com.hanghae.coffee.model.PostsImage;
-import com.hanghae.coffee.repository.posts.PostsImageRepository;
 import com.hanghae.coffee.utils.FilesUtils;
-
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.transaction.Transactional;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 @Service
 @Transactional
@@ -31,17 +25,16 @@ import java.io.InputStream;
 public class FileService extends Posts {
 
     private final AmazonS3Client amazonS3Client;
-    private final PostsImageRepository postsImageRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
     // 이미지 파일 업로드 및 컨텐츠 내용 저장
-    public String uploadFile(Posts posts, MultipartFile multipartFile) throws IOException {
+    public String uploadFile(Long uniqueId, MultipartFile multipartFile, String dirName)
+        throws IOException {
         log.info("uploadFile");
         // 파일 유효성 검사
-        String fileName = multipartfileToS3(posts, multipartFile);
-        PostsImage postsImage = new PostsImage(posts,amazonS3Client.getUrl(bucketName, fileName).toString());
+        String fileName = multipartfileToS3(uniqueId, multipartFile, dirName);
 
 //        // 로컬 저장
 //        File storedFile;
@@ -59,16 +52,17 @@ public class FileService extends Posts {
 //        PostsImage postsImage = new PostsImage(posts,filePath + fileName);
 
         // 시작
-        postsImageRepository.save(postsImage);
 
         return amazonS3Client.getUrl(bucketName, fileName).toString();
     }
 
-    private String multipartfileToS3(Posts posts, MultipartFile multipartFile) throws IOException {
+    private String multipartfileToS3(Long uniqueId, MultipartFile multipartFile, String dirName)
+        throws IOException {
         validateFileExists(multipartFile);
 
         // 파일 이름 설정
-        String fileName = FilesUtils.buildFileName(posts, multipartFile.getOriginalFilename());
+        String fileName = FilesUtils.buildFileName(uniqueId, multipartFile.getOriginalFilename(),
+            dirName);
 
         // AWS S3 직렬화
         ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -79,23 +73,19 @@ public class FileService extends Posts {
         objectMetadata.setContentLength(bytes.length);
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
 
-        amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, byteArrayInputStream, objectMetadata)
-            .withCannedAcl(CannedAccessControlList.PublicRead));
+        amazonS3Client.putObject(
+            new PutObjectRequest(bucketName, fileName, byteArrayInputStream, objectMetadata)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
         return fileName;
     }
 
-    @Transactional
-    public String updateFile(Posts posts, MultipartFile multipartFile) throws IOException {
-        PostsImage postsImage = postsImageRepository.findByPosts_Id(posts.getId());
+    public String updateFile(Long uniqueId, String url, MultipartFile multipartFile, String dirName)
+        throws IOException {
         // 기존 파일 삭제
-        deleteFile(posts.getId());
-        postsImageRepository.deleteById(posts.getId());
+        deleteFile(url);
 
         // 파일 유효성 검사
-        String fileName = multipartfileToS3(posts, multipartFile);
-
-        postsImage = new PostsImage(posts,amazonS3Client.getUrl(bucketName, fileName).toString());
-        postsImageRepository.save(postsImage);
+        String fileName = multipartfileToS3(uniqueId, multipartFile, dirName);
 
 
         return amazonS3Client.getUrl(bucketName, fileName).toString();
@@ -109,9 +99,8 @@ public class FileService extends Posts {
     }
 
     //파일 삭제
-    public void deleteFile(Long post_id){
-        String fileName = postsImageRepository.findByPosts_Id(post_id).getImageUrl();
-        DeleteObjectRequest request = new DeleteObjectRequest(bucketName, fileName);
+    public void deleteFile(String fileUrl) {
+        DeleteObjectRequest request = new DeleteObjectRequest(bucketName, fileUrl);
         amazonS3Client.deleteObject(request);
 
     }
