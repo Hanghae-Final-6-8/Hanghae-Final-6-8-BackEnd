@@ -30,9 +30,11 @@ public class PostsService {
     private final PostsTagsRepository postsTagsRepository;
 //    private final LikeRepository likeRepository;
 
-    public PostsSliceResponseDto getPostList(Pageable pageable) {
+    public PostsSliceResponseDto getPostList(Long user_id, Pageable pageable) {
 
-        Slice<PostsInterfaceJoinVO> postsInterfaceJoinVO = postsRepository.findAllWithPostImagesPageing(pageable);
+
+        Slice<PostsInterfaceJoinVO> postsInterfaceJoinVO = postsRepository.findAllWithPostImagesPageing(user_id, pageable);
+
 
         return PostsSliceResponseDto
             .builder()
@@ -42,9 +44,10 @@ public class PostsService {
             .build();
     }
 
-    public PostsSliceResponseDto getMyPostList(Long id, Pageable pageable) {
+    public PostsSliceResponseDto getMyPostList(Long user_id, Pageable pageable) {
 
-        Slice<PostsInterfaceJoinVO> postsInterfaceJoinVO = postsRepository.findAllByUsers_Id(id, pageable);
+
+        Slice<PostsInterfaceJoinVO> postsInterfaceJoinVO = postsRepository.findAllByUsers_Id(user_id, pageable);
 
         return PostsSliceResponseDto
             .builder()
@@ -56,12 +59,12 @@ public class PostsService {
 
 
 
-    public PostsResponseDto getDetailPost(Long post_id) {
+    public PostsResponseDto getDetailPost(Long post_id, Long user_id) {
 
 //        boolean Like = likeRepository.findByUseridAndPostid(user_id,post_id);
 
 //        return new PostsRequestDto(board,Like);
-        PostsInterfaceJoinVO postsInterfaceJoinVO = postsRepository.findPostsByIdWithPostImages(post_id);
+        PostsInterfaceJoinVO postsInterfaceJoinVO = postsRepository.findPostsByIdWithPostImages(post_id, user_id);
 
 
         return PostsResponseDto

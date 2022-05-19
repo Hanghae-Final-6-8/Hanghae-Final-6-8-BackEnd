@@ -44,7 +44,8 @@ public class PostsController {
      */
     @ResponseBody
     @GetMapping("posts")
-    public PostsSliceResponseDto getPost(@PageableDefault(size = 4, sort = "id", direction = Direction.ASC) Pageable pageable){
+    public PostsSliceResponseDto getPost(@PageableDefault(size = 4, sort = "id", direction = Direction.ASC) Pageable pageable,
+        @AuthenticationPrincipal UserDetailsImpl userDetails){
 //            List<Posts> posts = postsRepository.findAllByOrderByModifiedAtDesc();
 //            return postsRepository.findAllByOrderByModifiedAtDesc();
 //        List<PostsJoinVO> posts = postsRepository.findAllWithPostImages();
@@ -52,15 +53,27 @@ public class PostsController {
 //            .map(p -> new PostsJoinVO(p))
 //            .collect(Collectors.toList());
 //        return result;
-
-        return postsService.getPostList(pageable);
+        Long user_id;
+        if(userDetails == null){
+            user_id = 0L;
+        } else{
+            user_id = userDetails.getUser().getId();
+        }
+        return postsService.getPostList(user_id, pageable);
     }
 
     // 게시글 세부 조회
     @ResponseBody
     @GetMapping("posts/{post_id}")
-    public PostsResponseDto getDetailPost(@PathVariable Long post_id) throws RestException{
-        return postsService.getDetailPost(post_id);
+    public PostsResponseDto getDetailPost(@PathVariable Long post_id,
+        @AuthenticationPrincipal UserDetailsImpl userDetails) throws RestException{
+        Long user_id;
+        if(userDetails == null){
+            user_id = 0L;
+        } else{
+            user_id = userDetails.getUser().getId();
+        }
+        return postsService.getDetailPost(post_id,user_id);
     }
 
     // 내 게시글 전체 조회
@@ -68,8 +81,13 @@ public class PostsController {
     @GetMapping("posts/mine")
     public PostsSliceResponseDto getMyPost(
         @AuthenticationPrincipal UserDetailsImpl userDetails, @PageableDefault(page = 0,size = 3, sort = "id", direction = Direction.ASC) Pageable pageable) throws RestException{
-
-        return postsService.getMyPostList(userDetails.getUser().getId(), pageable);
+        Long user_id;
+        if(userDetails == null){
+            user_id = 0L;
+        } else{
+            user_id = userDetails.getUser().getId();
+        }
+        return postsService.getMyPostList(user_id, pageable);
     }
 
     //게시글 추가
@@ -137,7 +155,7 @@ public class PostsController {
     @PostMapping("posts/delete")
     public DefaultResponseDto deletePost(@RequestBody PostsRequestDto requestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails){
-        Long posts_id = requestDto.getPosts().getId();
+        Long posts_id = requestDto.getPosts_id();
 
         Posts posts = postsRepository.findById(posts_id).orElseThrow(
             () -> new NullPointerException("fail")

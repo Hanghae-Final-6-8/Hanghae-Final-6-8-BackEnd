@@ -43,22 +43,7 @@ public class FileService extends Posts {
         String fileName = multipartfileToS3(posts, multipartFile);
         PostsImage postsImage = new PostsImage(posts,amazonS3Client.getUrl(bucketName, fileName).toString());
 
-//        // 로컬 저장
-//        File storedFile;
-//        String storedFileName;
-//
-//        String filePath = "C:\\sparta\\image\\";
-//
-//        do{
-//            storedFile = new File(filePath + fileName);
-//        }while(storedFile.exists());
-//
-//        storedFile.getParentFile().mkdirs();
-//        multipartFile.transferTo(storedFile);
-//
-//        PostsImage postsImage = new PostsImage(posts,filePath + fileName);
-
-        // 시작
+        // db 저장
         postsImageRepository.save(postsImage);
 
         return amazonS3Client.getUrl(bucketName, fileName).toString();
