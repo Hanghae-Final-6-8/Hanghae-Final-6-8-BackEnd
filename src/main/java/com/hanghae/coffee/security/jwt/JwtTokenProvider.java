@@ -20,6 +20,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,8 @@ public class JwtTokenProvider {
     @Value("${secret.key}")
     private String SECRET_KEY;
 
-    private static final String ACCESS_TOKEN = "Authorization";
+    private static final String Authorization = "Authorization";
+    private static final String ACCESS_TOKEN = "ACCESS_TOKEN";
     private static final String REFRESH_TOKEN = "REFRESH_TOKEN";
     private static final String BEARER_TYPE = "Bearer";
 
@@ -86,19 +88,10 @@ public class JwtTokenProvider {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
     }
 
-    // Request Header에서 access token 정보 추출 "ACCESS_TOKEN" : "TOKEN값'
-    public String resolveAccessToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(ACCESS_TOKEN);
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(Authorization);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
             return bearerToken.substring(7);
-        }
-        return null;
-    }
-
-    // Request Header에서 refresh token 정보 추출 "REFRESH_TOKEN" : "TOKEN값'
-    public String resolveRefreshToken(HttpServletRequest request) {
-        if (request.getHeader(REFRESH_TOKEN) != null) {
-            return request.getHeader(REFRESH_TOKEN);
         }
         return null;
     }
@@ -157,6 +150,20 @@ public class JwtTokenProvider {
         Long expiration = getExpiration(refreshToken);
         // refreshToken Redis 저장
         redisUtils.setDataExpire("RT:" + authId, refreshToken, expiration);
+    }
+
+    // SecurityContext 에 Authentication 객체를 저장합니다.
+    public void setAuthentication(String token) {
+        // 토큰으로부터 유저 정보를 받아옵니다.
+        Authentication authentication = getAuthentication(token);
+        // SecurityContext 에 Authentication 객체를 저장합니다.
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    public void setNullAuthentication() {
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+
     }
 
 }

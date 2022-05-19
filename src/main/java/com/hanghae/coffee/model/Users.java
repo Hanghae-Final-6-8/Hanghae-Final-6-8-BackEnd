@@ -11,7 +11,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +24,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 // 캐싱시 문제가 발생하지 않도록 proxy false 설정
 //@Proxy(lazy=false)
+@Table(indexes = {
+    @Index(name="idx_authid", columnList = "authId", unique = true)
+})
 public class Users extends Timestamped {
 
     @Id
