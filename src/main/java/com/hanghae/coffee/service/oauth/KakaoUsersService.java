@@ -1,4 +1,4 @@
-package com.hanghae.coffee.service;
+package com.hanghae.coffee.service.oauth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -147,7 +147,6 @@ public class KakaoUsersService implements OauthUsersService {
         } else {
 
             kakaoUsers = Users.updateUsers(kakaoUsers, userInfoDto);
-//            usersRepository.save(kakaoUsers);     //dirty checking 으로 생략가능..?
 
         }
 

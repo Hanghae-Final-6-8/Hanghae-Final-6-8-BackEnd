@@ -15,22 +15,18 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
-        AuthenticationException authException) throws IOException, ServletException {
+        AuthenticationException authException) throws IOException {
         String msg;
         int status = 0;
-        if ( request.getAttribute("EXCEPTION") != null ){
-            if("NOT LOGIN STATUS".equals(request.getAttribute("EXCEPTION"))){
+        if (request.getAttribute("EXCEPTION") != null) {
+            if ("NOT LOGIN STATUS".equals(request.getAttribute("EXCEPTION"))) {
                 status = 440;
-            }else if("NOT VALIDATE ACCESS TOKEN".equals(request.getAttribute("EXCEPTION"))){
+            } else if ("NOT VALIDATE TOKEN".equals(request.getAttribute("EXCEPTION"))) {
                 status = 441;
-            }else if("NOT EXIST ACCESS TOKEN".equals(request.getAttribute("EXCEPTION"))){
-                status = 442;
-            }else if("NOT VALIDATE REFRESH TOKEN".equals(request.getAttribute("EXCEPTION"))){
-                status = 443;
             }
 
             msg = (String) request.getAttribute("EXCEPTION");
-        }else {
+        } else {
             status = HttpServletResponse.SC_UNAUTHORIZED;
             msg = "Unauthorized";
         }
@@ -40,7 +36,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     }
 
     //한글 출력을 위해 getWriter() 사용
-    private void setResponse(HttpServletResponse response, int status, String msg) throws IOException {
+    private void setResponse(HttpServletResponse response, int status, String msg)
+        throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(status);
 

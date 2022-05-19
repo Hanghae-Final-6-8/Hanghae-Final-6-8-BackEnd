@@ -4,7 +4,7 @@ import com.hanghae.coffee.model.Users;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UsersRepository extends JpaRepository<Users,Long> {
+public interface UsersRepository extends JpaRepository<Users,Long>,UsersCustomRepository {
 
     Optional<Users> findAllByAuthId(String authId);
 
