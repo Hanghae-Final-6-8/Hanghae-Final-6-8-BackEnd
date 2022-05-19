@@ -2,6 +2,8 @@ package com.hanghae.coffee.service.taste;
 
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.beans.BeansDto;
+import com.hanghae.coffee.dto.beans.BeansListDto;
+import com.hanghae.coffee.dto.beans.BeansListResponseDto;
 import com.hanghae.coffee.dto.beans.BeansResponseDto;
 import com.hanghae.coffee.dto.taste.TasteDto;
 import com.hanghae.coffee.dto.taste.TasteRequestDto;
@@ -73,6 +75,23 @@ public class TasteService {
             .status(HttpStatus.OK)
             .msg("success")
             .data(beansDto)
+            .build();
+    }
+
+    public BeansListResponseDto findTasteListByUserTaste(Users users){
+
+        Long userId = users.getId();
+
+        TasteDto tasteDto = tasteRepository.findTasteByUser(userId).orElse(null);
+
+        //임시 쿼리
+        List<BeansListDto> beansListDto = tasteRepository.findTasteListByUserTaste(tasteDto);
+
+        return BeansListResponseDto
+            .builder()
+            .status(HttpStatus.OK)
+            .msg("success")
+            .data(beansListDto)
             .build();
     }
 

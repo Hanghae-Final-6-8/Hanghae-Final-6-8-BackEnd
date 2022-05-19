@@ -26,20 +26,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/user")
+@RequestMapping(value = "/api/user/login")
 @Slf4j
-@Api(tags = {"LOGIN API"})
+@Api(tags = {"OAUTH API"})
 public class OauthLoginController {
 
     private final OauthCommonService oauthCommonService;
-    private final UsersService userService;
 
     /**
      * 사용자로부터 SNS 로그인 요청을 oauthType 을 받아 처리
      *
      * @param oauthType (GOOGLE, KAKAO, NAVER)
      */
-    @GetMapping(value = "/login/{oauth}")
+    @GetMapping(value = "/{oauth}")
     public String oauthLogin(
         @PathVariable(name = "oauth") String oauthType) {
         log.info(">> 사용자로부터 SNS 로그인 요청을 받음 :: {} oauthLogin", oauthType);
@@ -54,7 +53,7 @@ public class OauthLoginController {
      * @param code      API Server 로부터 넘어노는 code
      * @return SNS Login 요청 결과로 받은 Json 형태의 String 문자열 (access_token, refresh_token 등)
      */
-    @GetMapping(value = "/login/{oauth}/callback")
+    @GetMapping(value = "/{oauth}/callback")
     public LoginResponseDto oauthLoginCallback(
         HttpServletResponse response,
         @PathVariable(name = "oauth") String oauthType,
@@ -62,44 +61,6 @@ public class OauthLoginController {
         log.info(">> 소셜 로그인 API 서버로부터 받은 code :: {}", code);
         return oauthCommonService.doLogin(response, OauthType.valueOf(oauthType.toUpperCase()),
             code);
-    }
-
-    @GetMapping(value = "/logout")
-    public DefaultResponseDto doLogout(HttpServletRequest request,
-        @AuthenticationPrincipal UserDetailsImpl users) {
-        //TODO : @AuthenticationPrincipal 에 왜 값이 안들어오는지 체크해야함.
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        return oauthCommonService.doLogout(request, users.getUsername());
-
-    }
-
-    @GetMapping(value = "/auth")
-    public UserInfoResponseDto getUserAuth(@AuthenticationPrincipal UserDetailsImpl users) {
-
-        return userService.getUserAuth(users.getUsername());
-
-    }
-
-    @PostMapping(value = "/delete")
-    public DefaultResponseDto doUserDelete(@AuthenticationPrincipal UserDetailsImpl users) {
-
-        return oauthCommonService.doUserDelete(users.getUser());
-
-    }
-
-    @GetMapping(value = "/info")
-    public CountInfoByUserResponseDto getUserInfo(@AuthenticationPrincipal UserDetailsImpl users) {
-
-        return userService.getCountInfoByUser(users.getUser());
-
-    }
-
-    @GetMapping(value = "/reissue")
-    public DefaultResponseDto reissue(HttpServletResponse response,@AuthenticationPrincipal UserDetailsImpl users) {
-
-        return oauthCommonService.reissue(response, users.getUsername());
-
     }
 
 

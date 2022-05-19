@@ -41,7 +41,7 @@ public class JwtTokenProvider {
     private static final String BEARER_TYPE = "Bearer";
 
     // 토큰 유효시간 30분
-    private final long ACCESS_TOKEN_VALID_TIME = 30 * 60 * 1000L;   // 30분
+    private final long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 24 * 1000L;   // 24시간
     private final long REFRESH_TOKEN_VALID_TIME = 60 * 60 * 24 * 7 * 1000L;   // 1주
 
     private final UserDetailsService userDetailsService;
