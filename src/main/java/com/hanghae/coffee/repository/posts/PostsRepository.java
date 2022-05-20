@@ -65,8 +65,8 @@ public interface PostsRepository extends JpaRepository<Posts,Long> {
         + "Left JOIN fetch PostsImage pi ON p.id = pi.posts.id "
         + "Left JOIN fetch PostsTags pt ON p.id = pt.posts.id "
         + "Left JOIN fetch Tags t ON pt.tags.id = t.id "
-        + "order by p.createdAt "
-        + "asc" )
+        + "order by p.modifiedAt "
+        + "desc" )
     Slice<PostsInterfaceJoinVO> findAllWithPostImagesPageing(Long id, Pageable pageable);
 
 
