@@ -7,7 +7,7 @@ import com.hanghae.coffee.dto.oauthProperties.OauthKakaoPropertiesDto;
 import com.hanghae.coffee.dto.oauthProperties.UserInfoDto;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.model.Users;
-import com.hanghae.coffee.repository.users.UsersRepository;
+import com.hanghae.coffee.service.users.users.UsersRepository;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;

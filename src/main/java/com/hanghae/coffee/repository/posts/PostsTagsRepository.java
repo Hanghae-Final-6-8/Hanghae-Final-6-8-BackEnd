@@ -9,6 +9,4 @@ public interface PostsTagsRepository extends JpaRepository<PostsTags,Long> {
 	PostsTags deleteByPosts_Id(Long postsId);
 
 	Optional<PostsTags> findByPosts_Id(Long id);
-
-	void deleteAllByPosts_Id(Long id);
 }
