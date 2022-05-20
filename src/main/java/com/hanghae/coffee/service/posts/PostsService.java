@@ -98,12 +98,12 @@ public class PostsService {
 
     public Posts getPosts(Long postId, Long userId) {
         Posts posts = postsRepository.findById(postId).orElseThrow(
-            () -> new RestException(HttpStatus.BAD_REQUEST, "해당 게시물이 없습니다.")
+            () -> new RestException(HttpStatus.BAD_REQUEST, "bad request")
         );
 
         if (!posts.getUsers().getId().equals(userId)) {
 
-            new RestException(HttpStatus.BAD_REQUEST, "유저 정보가 일치하지 않습니다.");
+            throw new RestException(HttpStatus.FORBIDDEN, "forbidden");
 
         }
 
