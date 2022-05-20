@@ -1,10 +1,9 @@
 package com.hanghae.coffee.service.users;
 
-import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.global.DefaultResponseDto;
 import com.hanghae.coffee.dto.users.CountInfoByUserDto;
 import com.hanghae.coffee.dto.users.CountInfoByUserResponseDto;
-import com.hanghae.coffee.dto.users.UserInfoDto;
+import com.hanghae.coffee.dto.users.UserAuthDto;
 import com.hanghae.coffee.dto.users.UserInfoResponseDto;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.users.UsersRepository;
@@ -51,7 +50,7 @@ public class UsersService {
     }
 
     @Transactional
-    public DefaultResponseDto reissue(HttpServletResponse response ,String authId) {
+    public DefaultResponseDto reissue(HttpServletResponse response, String authId) {
 
         // 새로운 accessToken 발급
         String newAccessToken = jwtTokenProvider.createAccessToken(authId);
@@ -77,21 +76,15 @@ public class UsersService {
     }
 
 
-    public UserInfoResponseDto getUserAuth(String authId) {
+    public UserInfoResponseDto getUserAuth(Long userId) {
 
-        Users user = usersRepository.findAllByAuthId(authId).orElseThrow(
-            () -> new RestException(HttpStatus.UNAUTHORIZED, "Unauthorized")
-        );
-        UserInfoDto userInfoDto = new UserInfoDto();
-
-        userInfoDto.setNickname(user.getNickname());
-        userInfoDto.setProfile_url(user.getProfileUrl());
+        UserAuthDto userAuthDto = usersRepository.getUserAuth(userId);
 
         return UserInfoResponseDto
             .builder()
             .status(HttpStatus.OK)
             .msg("success")
-            .data(userInfoDto)
+            .data(userAuthDto)
             .build();
     }
 
@@ -106,6 +99,17 @@ public class UsersService {
             .data(countInfoByUserDto)
             .build();
 
+    }
+
+    public DefaultResponseDto doUserInfoUpdate(Users users, String url, String nickname) {
+
+        Users.updateUsersProfile(users, url, nickname);
+
+        return DefaultResponseDto
+            .builder()
+            .status(HttpStatus.OK)
+            .msg("success")
+            .build();
     }
 
 }
