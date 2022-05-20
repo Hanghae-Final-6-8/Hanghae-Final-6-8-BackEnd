@@ -7,11 +7,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserInfoDto {
+public class UserAuthDto {
 
     private String nickname;
 
     private String profile_url;
 
+    private Long tasteId;
 
 }

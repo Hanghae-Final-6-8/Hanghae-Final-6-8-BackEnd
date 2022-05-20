@@ -9,6 +9,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class UserInfoResponseDto extends DefaultResponseDto {
 
-    private UserInfoDto data;
+    private UserAuthDto data;
 
 }

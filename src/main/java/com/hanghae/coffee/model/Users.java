@@ -97,6 +97,15 @@ public class Users extends Timestamped {
         return users;
     }
 
+    //==생성 메서드==//
+    public static Users updateUsersProfile(Users users, String profileUrl, String nickname) {
+
+        users.setNickname(nickname);
+        users.setProfileUrl(profileUrl);
+
+        return users;
+    }
+
     //==연관관계 메서드==//
     public void createPosts(Posts post) {
         posts.add(post);
