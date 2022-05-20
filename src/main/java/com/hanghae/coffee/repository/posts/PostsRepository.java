@@ -61,11 +61,12 @@ public interface PostsRepository extends JpaRepository<Posts,Long> {
         + "(SELECT count(posts_id) FROM Likes l where l.posts.id = posts_id group by posts_id) as likes_count, "
         + "(SELECT l.users.id FROM Likes l where p.id = l.posts.id and l.users.id = :id) as isLikes "
         + "FROM Posts p "
-        + "JOIN fetch PostsImage pi ON p.id = pi.posts.id "
-        + "JOIN fetch PostsTags pt ON p.id = pt.posts.id "
-        + "JOIN fetch Tags t ON pt.tags.id = t.id "
-        + "order by p.createdAt "
-        + "asc" )
+        + "Left JOIN fetch PostsImage pi ON p.id = pi.posts.id "
+        + "Left JOIN fetch PostsTags pt ON p.id = pt.posts.id "
+        + "Left JOIN fetch Tags t ON pt.tags.id = t.id "
+        + "order by p.modifiedAt "
+        + "desc" )
+
     Slice<PostsInterfaceJoinVO> findAllWithPostImagesPageing(Long id, Pageable pageable);
 
 
