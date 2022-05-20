@@ -49,9 +49,8 @@ public interface PostsRepository extends JpaRepository<Posts,Long> {
         + "JOIN fetch Tags t ON pt.tags.id = t.id" )
     Slice<PostsInterfaceJoinVO> findAllWithPostImages();
 
-    // 전체 게시물 반환
-    @Query("SELECT "
-        + "p.id as posts_id, "
+    // 전체 게시물 반환 페이징 테스트
+    @Query("SELECT p.id as posts_id, "
         + "p.title as title, "
         + "p.content as content, "
         + "p.createdAt as created_at,"
@@ -62,12 +61,13 @@ public interface PostsRepository extends JpaRepository<Posts,Long> {
         + "(SELECT count(p.id) FROM Likes l where l.posts.id = p.id group by p.id) as likes_count, "
         + "(SELECT l.users.id FROM Likes l where p.id = l.posts.id and l.users.id = :id) as isLikes "
         + "FROM Posts p "
-        + "Left JOIN fetch PostsImage pi ON p.id = pi.posts.id "
-        + "Left JOIN fetch PostsTags pt ON p.id = pt.posts.id "
-        + "Left JOIN fetch Tags t ON pt.tags.id = t.id "
+        + "JOIN fetch PostsImage pi ON p.id = pi.posts.id "
+        + "JOIN fetch PostsTags pt ON p.id = pt.posts.id "
+        + "JOIN fetch Tags t ON pt.tags.id = t.id "
         + "order by p.createdAt "
         + "asc" )
     Slice<PostsInterfaceJoinVO> findAllWithPostImagesPageing(Long id, Pageable pageable);
+
 
 
 
@@ -88,6 +88,8 @@ public interface PostsRepository extends JpaRepository<Posts,Long> {
         + "JOIN fetch Tags t ON pt.tags.id = t.id "
         + "where p.id = :id")
     PostsInterfaceJoinVO findPostsByIdWithPostImages(Long id, Long user_id);
+
+
 
 
 
