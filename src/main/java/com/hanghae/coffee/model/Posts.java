@@ -19,6 +19,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -52,6 +54,8 @@ public class Posts extends Timestamped {
     @JsonIgnore
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostsTags> postsTags = new ArrayList<>();
+
+    
 
     @Builder
     public Posts(String title, String content, Users users){

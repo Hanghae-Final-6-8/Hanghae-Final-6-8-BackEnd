@@ -9,5 +9,5 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class LikesRequestDto  {
-	private Posts posts;
+	private Long posts_id;
 }

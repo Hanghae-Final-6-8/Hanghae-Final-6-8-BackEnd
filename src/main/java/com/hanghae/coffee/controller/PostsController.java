@@ -13,6 +13,7 @@ import com.hanghae.coffee.service.posts.PostsImageService;
 import com.hanghae.coffee.service.posts.PostsService;
 import com.hanghae.coffee.service.posts.PostsTagsService;
 import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -134,7 +135,7 @@ public class PostsController {
     public DefaultResponseDto updatePost(Long post_id,
         @RequestPart(value = "title") String title,
         @RequestPart(value = "content") String content,
-        @RequestPart(value = "tag_name") String tagName,
+        @RequestPart(value = "tag_name") List<String> tagName,
         @RequestPart(value = "posts_image", required = false) MultipartFile picture,
         @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
 

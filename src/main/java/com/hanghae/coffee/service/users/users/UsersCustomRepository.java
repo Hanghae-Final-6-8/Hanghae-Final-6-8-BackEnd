@@ -1,4 +1,4 @@
-package com.hanghae.coffee.repository.users;
+package com.hanghae.coffee.service.users.users;
 
 import com.hanghae.coffee.dto.users.CountInfoByUserDto;
 

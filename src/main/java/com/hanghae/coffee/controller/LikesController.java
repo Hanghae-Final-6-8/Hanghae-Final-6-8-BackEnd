@@ -3,6 +3,7 @@ import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.global.DefaultResponseDto;
 import com.hanghae.coffee.dto.likes.LikesRequestDto;
 import com.hanghae.coffee.dto.likes.LikesSliceResponseDto;
+import com.hanghae.coffee.dto.posts.PostsSliceResponseDto;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.LikesService;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class LikesController {
     // 내가 누른 좋아요 조회
     @ResponseBody
     @GetMapping
-    public LikesSliceResponseDto getMylikes(
+    public PostsSliceResponseDto getMylikes(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @PageableDefault(size = 4, sort = "id", direction = Direction.DESC) Pageable pageable) throws RestException{
 

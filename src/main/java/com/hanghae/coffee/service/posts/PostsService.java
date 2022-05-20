@@ -34,6 +34,7 @@ public class PostsService {
 
 
         Slice<PostsInterfaceJoinVO> postsInterfaceJoinVO = postsRepository.findAllWithPostImagesPageing(user_id, pageable);
+        System.out.println(postsInterfaceJoinVO.getContent());
 
 
         return PostsSliceResponseDto
