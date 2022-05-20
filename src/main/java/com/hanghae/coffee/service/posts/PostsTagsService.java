@@ -6,6 +6,7 @@ import com.hanghae.coffee.model.PostsTags;
 import com.hanghae.coffee.model.Tags;
 import com.hanghae.coffee.repository.posts.PostsTagsRepository;
 import com.hanghae.coffee.repository.posts.TagsRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
@@ -24,26 +25,30 @@ public class PostsTagsService {
     // 게시물 태그 업데이트
     @Transactional
     public void updatePostsTags(Posts posts, List<String> tagName){
-//        for(String name:tagName){
-//            Tags tags = tagsRepository.findByTagName(name);
-//            if(tags == null){
-//                tags = new Tags(name);
-//                tagsRepository.save(tags);
-//            }
-//        }
-//        Optional<PostsTags> postsTags = postsTagsRepository.findByPosts_Id(posts.getId());
-//        Tags newTagname = tagsRepository.findById(postsTags.get().getTags().getId()).orElseThrow(
-//            () -> new RestException(HttpStatus.BAD_REQUEST, "해당 태그가 없습니다.")
-//        );
-//
-//        newTagname.updateTags(tagName);
+        postsTagsRepository.deleteAllByPosts_Id(posts.getId());
+        for(String name:tagName){
+            Tags tags = tagsRepository.findByTagName(name);
+            if(tags == null){
+                tags = new Tags(name);
+                tagsRepository.save(tags);
+            }
+
+            PostsTags newpostsTags = new PostsTags(posts,tags);
+            postsTagsRepository.save(newpostsTags);
+        }
     }
 
     // 게시물 태그 저장
-    public void putPostsTags(Posts posts, String tagName){
-        Tags tags = tagsRepository.save(new Tags(tagName));
-        PostsTags postsTags = new PostsTags(posts,tags);
-        postsTagsRepository.save(postsTags);
+    public void putPostsTags(Posts posts, List<String> tagName){
+        for(String name:tagName){
+            Tags tags = tagsRepository.findByTagName(name);
+            if(tags == null){
+                tags = new Tags(name);
+                tagsRepository.save(tags);
+            }
+            PostsTags postsTags = new PostsTags(posts,tags);
+            postsTagsRepository.save(postsTags);
+        }
     }
 
 

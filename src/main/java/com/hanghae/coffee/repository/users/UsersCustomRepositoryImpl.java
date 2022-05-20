@@ -1,4 +1,4 @@
-package com.hanghae.coffee.service.users.users;
+package com.hanghae.coffee.repository.users;
 
 import static com.hanghae.coffee.model.QFavorites.favorites;
 import static com.hanghae.coffee.model.QLikes.likes;
