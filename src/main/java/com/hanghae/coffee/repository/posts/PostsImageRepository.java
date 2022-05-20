@@ -6,6 +6,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostsImageRepository extends JpaRepository<PostsImage, Long> {
     Optional<PostsImage> findByPosts_Id(Long id);
-
-    void deleteByPosts_Id(Long postId);
 }

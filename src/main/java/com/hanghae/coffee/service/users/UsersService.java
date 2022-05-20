@@ -7,7 +7,7 @@ import com.hanghae.coffee.dto.users.UserAuthDto;
 import com.hanghae.coffee.dto.users.UserInfoResponseDto;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.security.jwt.JwtTokenProvider;
-import com.hanghae.coffee.service.users.users.UsersRepository;
+import com.hanghae.coffee.repository.users.UsersRepository;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

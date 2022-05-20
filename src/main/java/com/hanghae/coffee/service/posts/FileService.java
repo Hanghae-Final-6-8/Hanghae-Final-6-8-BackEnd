@@ -36,7 +36,20 @@ public class FileService extends Posts {
         // 파일 유효성 검사
         String fileName = multipartfileToS3(uniqueId, multipartFile, dirName);
 
-
+//        // 로컬 저장
+//        File storedFile;
+//        String storedFileName;
+//
+//        String filePath = "C:\\sparta\\image\\";
+//
+//        do{
+//            storedFile = new File(filePath + fileName);
+//        }while(storedFile.exists());
+//
+//        storedFile.getParentFile().mkdirs();
+//        multipartFile.transferTo(storedFile);
+//
+//        PostsImage postsImage = new PostsImage(posts,filePath + fileName);
 
         // 시작
 
