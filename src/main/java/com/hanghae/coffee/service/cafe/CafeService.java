@@ -31,7 +31,7 @@ public class CafeService {
 
         for (Cafe cafe : cafeList) {
             CafeDto cafeDto = new CafeDto();
-            cafeDto.setId(cafe.getId());
+            cafeDto.setCafeId(cafe.getId());
             cafeDto.setCafeName(cafe.getCafeName());
 
             cafeDtoList.add(cafeDto);

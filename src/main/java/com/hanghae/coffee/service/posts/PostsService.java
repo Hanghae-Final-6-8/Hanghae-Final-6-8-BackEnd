@@ -30,9 +30,11 @@ public class PostsService {
     private final PostsTagsRepository postsTagsRepository;
 //    private final LikeRepository likeRepository;
 
-    public PostsSliceResponseDto getPostList(Pageable pageable) {
+    public PostsSliceResponseDto getPostList(Long user_id, Pageable pageable) {
 
-        Slice<PostsInterfaceJoinVO> postsInterfaceJoinVO = postsRepository.findAllWithPostImagesPageing(pageable);
+
+        Slice<PostsInterfaceJoinVO> postsInterfaceJoinVO = postsRepository.findAllWithPostImagesPageing(user_id, pageable);
+
 
         return PostsSliceResponseDto
             .builder()
@@ -42,9 +44,10 @@ public class PostsService {
             .build();
     }
 
-    public PostsSliceResponseDto getMyPostList(Long id, Pageable pageable) {
+    public PostsSliceResponseDto getMyPostList(Long user_id, Pageable pageable) {
 
-        Slice<PostsInterfaceJoinVO> postsInterfaceJoinVO = postsRepository.findAllByUsers_Id(id, pageable);
+
+        Slice<PostsInterfaceJoinVO> postsInterfaceJoinVO = postsRepository.findAllByUsers_Id(user_id, pageable);
 
         return PostsSliceResponseDto
             .builder()
@@ -56,12 +59,12 @@ public class PostsService {
 
 
 
-    public PostsResponseDto getDetailPost(Long post_id) {
+    public PostsResponseDto getDetailPost(Long post_id, Long user_id) {
 
 //        boolean Like = likeRepository.findByUseridAndPostid(user_id,post_id);
 
 //        return new PostsRequestDto(board,Like);
-        PostsInterfaceJoinVO postsInterfaceJoinVO = postsRepository.findPostsByIdWithPostImages(post_id);
+        PostsInterfaceJoinVO postsInterfaceJoinVO = postsRepository.findPostsByIdWithPostImages(post_id, user_id);
 
 
         return PostsResponseDto
@@ -72,32 +75,42 @@ public class PostsService {
             .build();
     }
 
-    public Posts writePost(String title, String content, UserDetailsImpl userDetails) throws IOException {
+    public Posts writePost(String title, String content, UserDetailsImpl userDetails)
+        throws IOException {
         log.info("writePost");
-        Posts posts = new Posts(title,content,userDetails.getUser());
+        Posts posts = new Posts(title, content, userDetails.getUser());
 
         return postsRepository.save(posts);
 
     }
 
     @Transactional
-    public Posts updatePost(Long post_id,String title, String content, UserDetailsImpl userDetails) {
+    public Posts updatePost(Long post_id, String title, String content,
+        UserDetailsImpl userDetails) {
         Posts posts = postsRepository.findById(post_id).orElseThrow(
-                () -> new RestException(HttpStatus.BAD_REQUEST, "해당하는 게시물이 존재하지 않습니다.")
+            () -> new RestException(HttpStatus.BAD_REQUEST, "해당하는 게시물이 존재하지 않습니다.")
         );
-        posts.update(title,content,userDetails.getUser());
+        posts.update(title, content, userDetails.getUser());
 
         return posts;
     }
 
+    public Posts getPosts(Long postId, Long userId) {
+        Posts posts = postsRepository.findById(postId).orElseThrow(
+            () -> new RestException(HttpStatus.BAD_REQUEST, "해당 게시물이 없습니다.")
+        );
 
+        if (!posts.getUsers().getId().equals(userId)) {
 
+            new RestException(HttpStatus.BAD_REQUEST, "유저 정보가 일치하지 않습니다.");
 
+        }
 
-
+        return posts;
+    }
 
 //    public PostsRequestDto getMyPost(Long user_id) {
 //        Posts posts = (Posts) postsRepository.findAllByOrderByUser_id(user_id);
 //        return posts;
-    }
+}
 

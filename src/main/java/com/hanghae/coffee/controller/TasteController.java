@@ -1,5 +1,6 @@
 package com.hanghae.coffee.controller;
 
+import com.hanghae.coffee.dto.beans.BeansListResponseDto;
 import com.hanghae.coffee.dto.beans.BeansResponseDto;
 import com.hanghae.coffee.dto.taste.TasteRequestDto;
 import com.hanghae.coffee.dto.taste.TasteResponseDto;
@@ -33,9 +34,15 @@ public class TasteController {
 
     @GetMapping(value = "/tests")
     public TasteResponseDto findTasteByUser(@AuthenticationPrincipal UserDetailsImpl users) {
-//        @AuthenticationPrincipal UserDetailsImpl users
 
         return tasteService.findTasteByUser(users.getUser());
+
+    }
+
+    @GetMapping(value = "/beans")
+    public BeansListResponseDto findTasteByBeans(@AuthenticationPrincipal UserDetailsImpl users) {
+
+        return tasteService.findTasteListByUserTaste(users.getUser());
 
     }
 

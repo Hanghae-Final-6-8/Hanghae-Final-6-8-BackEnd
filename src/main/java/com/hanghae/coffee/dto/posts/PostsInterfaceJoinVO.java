@@ -11,6 +11,9 @@ public interface PostsInterfaceJoinVO {
 	 String getTag_name();
 	 LocalDateTime getCreated_at();
 	 LocalDateTime getModified_at();
+	 Long getLikes_count();
+	 Long getIsLikes();
+
 
 	PostsInterfaceJoinVO orElseThrow(Object 해당_내용이_없습니다);
 }
