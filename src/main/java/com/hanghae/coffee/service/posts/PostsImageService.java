@@ -26,13 +26,13 @@ public class PostsImageService {
 
         PostsImage postsImage = postsImageRepository.findByPosts_Id(postId).orElse(null);
 
-        return postsImage != null ? postsImage.getImageUrl() : null;
+        return postsImage.getImageUrl();
 
     }
 
     @Transactional(readOnly = false)
     public void imageDelete(Long postId){
-        postsImageRepository.deleteByPosts_Id(postId);
+        postsImageRepository.deleteById(postId);
     }
 
 
