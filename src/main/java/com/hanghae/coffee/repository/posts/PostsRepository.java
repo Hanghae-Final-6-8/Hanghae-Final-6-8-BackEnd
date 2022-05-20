@@ -41,13 +41,13 @@ public interface PostsRepository extends JpaRepository<Posts,Long> {
         + "p.users.nickname as nickname, "
         + "pi.imageUrl as posts_image, "
         + "pt.tags.tagName as tag_name, "
-        + "(SELECT count(p.id) FROM Likes l where l.posts.id = p.id group by p.id) as likes_count, "
+        + "(SELECT count(posts_id) FROM Likes l where l.posts.id = posts_id group by posts_id) as likes_count, "
         + "(SELECT l.users.id FROM Likes l where p.id = l.posts.id and l.users.id = :id) as isLikes "
         + "FROM Posts p "
         + "JOIN fetch PostsImage pi ON p.id = pi.posts.id "
         + "JOIN fetch PostsTags pt ON p.id = pt.posts.id "
         + "JOIN fetch Tags t ON pt.tags.id = t.id" )
-    Slice<PostsInterfaceJoinVO> findAllWithPostImages();
+    Slice<PostsInterfaceJoinVO> findAllWithPostImages(Long id, Pageable pageable);
 
     // 전체 게시물 반환
     @Query("SELECT "
@@ -59,7 +59,7 @@ public interface PostsRepository extends JpaRepository<Posts,Long> {
         + "p.users.nickname as nickname, "
         + "pi.imageUrl as posts_image, "
         + "pt.tags.tagName as tag_name, "
-        + "(SELECT count(p.id) FROM Likes l where l.posts.id = p.id group by p.id) as likes_count, "
+        + "(SELECT count(posts_id) FROM Likes l where l.posts.id = posts_id group by posts_id) as likes_count, "
         + "(SELECT l.users.id FROM Likes l where p.id = l.posts.id and l.users.id = :id) as isLikes "
         + "FROM Posts p "
         + "Left JOIN fetch PostsImage pi ON p.id = pi.posts.id "

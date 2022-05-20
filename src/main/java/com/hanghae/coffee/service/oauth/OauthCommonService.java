@@ -7,7 +7,6 @@ import com.hanghae.coffee.dto.users.LoginResponseDto;
 import com.hanghae.coffee.dto.users.LogoutResponseDto;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.model.Users;
-import com.hanghae.coffee.repository.users.UsersRepository;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.security.jwt.JwtTokenProvider;
 import java.util.List;
