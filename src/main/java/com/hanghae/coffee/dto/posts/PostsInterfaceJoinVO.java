@@ -14,5 +14,6 @@ public interface PostsInterfaceJoinVO {
 	 Long getLikes_count();
 	 Long getIsLikes();
 
+
 	PostsInterfaceJoinVO orElseThrow(Object 해당_내용이_없습니다);
 }
