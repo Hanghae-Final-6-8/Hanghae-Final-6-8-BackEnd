@@ -37,8 +37,8 @@ jobs:
         spring.datasource.url: ${{ secrets.DATABASE_URL }}
         spring.datasource.username: ${{ secrets.DATASOURCE_USERNAME }}
         spring.datasource.password: ${{ secrets.DATASOURCE_PASSWORD }}
-        cloud.aws.credentials.access-key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        cloud.aws.credentials.secret-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        cloud.aws.credentials.accessKey: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        cloud.aws.credentials.secretey: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         cloud.aws.s3.bucket: ${{ secrets.CLOUD_AWS_S3_BUCKET }}
         cloud.aws.region.static: ${{ secrets.CLOUD_AWS_REGION_STATIC }}
         spring.redis.host : ${{ secrets.AWS_REDIS_HOST }}
