@@ -1,18 +1,11 @@
 package com.hanghae.coffee.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.global.DefaultResponseDto;
-import com.hanghae.coffee.dto.posts.PostsInterfaceJoinVO;
 import com.hanghae.coffee.dto.posts.PostsRequestDto;
 import com.hanghae.coffee.dto.posts.PostsResponseDto;
-import com.hanghae.coffee.dto.posts.PostsResponseDtoVO;
 import com.hanghae.coffee.dto.posts.PostsSliceResponseDto;
 import com.hanghae.coffee.model.Posts;
-import com.hanghae.coffee.model.PostsImage;
-import com.hanghae.coffee.model.PostsTags;
 import com.hanghae.coffee.repository.posts.PostsRepository;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.posts.FileService;
@@ -63,13 +56,7 @@ public class PostsController {
     @GetMapping("posts")
     public PostsSliceResponseDto getPost(@PageableDefault(size = 4, sort = "id", direction = Direction.ASC) Pageable pageable,
         @AuthenticationPrincipal UserDetailsImpl userDetails){
-//            List<Posts> posts = postsRepository.findAllByOrderByModifiedAtDesc();
-//            return postsRepository.findAllByOrderByModifiedAtDesc();
-//        List<PostsJoinVO> posts = postsRepository.findAllWithPostImages();
-//        List<PostsJoinVO> result = posts.stream()
-//            .map(p -> new PostsJoinVO(p))
-//            .collect(Collectors.toList());
-//        return result;
+
         Long user_id;
         if(userDetails == null){
             user_id = 0L;
@@ -110,53 +97,53 @@ public class PostsController {
     //게시글 추가
     @ResponseBody
     @PostMapping(value = "posts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public PostsResponseDto writePost(
+    public DefaultResponseDto writePost(
         @RequestPart(value = "title") String title,
-        @RequestPart(value = "content", required = false) String content,
-        @RequestPart(value = "tag_name", required = false) String tagName,
+        @RequestPart(value = "content") String content,
+        @RequestPart(value = "tag_name") String tagName,
         @RequestPart(value = "posts_image", required = false) MultipartFile posts_image,
         @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-
-        List<String> tagNameList = List.of(tagName.split(","));
-
+        log.info("writePost");
+        log.info(String.valueOf(posts_image));
 
         Posts posts = postsService.writePost(title, content, userDetails);
-        postsTagsService.putPostsTags(posts,tagNameList);
-
+        postsTagsService.putPostsTags(posts, tagName);
 
         if (posts_image != null) {
+
             String url = fileService.uploadFile(posts.getId(), posts_image, DIRECTORY_URL);
             postsImageService.imageSave(posts, url);
+
         }
 
-        return postsService.getDetailPost(posts.getId(),posts.getUsers().getId());
+        return DefaultResponseDto
+            .builder()
+            .status(HttpStatus.OK)
+            .msg("success")
+            .build();
     }
 
     //게시글 수정
     @ResponseBody
     @PostMapping("posts/update")
-    public PostsResponseDto updatePost( Long posts_id,
+    public DefaultResponseDto updatePost(Long post_id,
         @RequestPart(value = "title") String title,
-        @RequestPart(value = "content", required = false) String content,
-        @RequestPart(value = "tag_name", required = false) String tagName,
+        @RequestPart(value = "content") String content,
+        @RequestPart(value = "tag_name") List<String> tagName,
         @RequestPart(value = "posts_image", required = false) MultipartFile picture,
         @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        Posts posts = postsService.getPosts(posts_id, userDetails.getUser().getId());
-        List<String> tagNameList = List.of(tagName.split(","));
 
-
-
+        Posts posts = postsService.getPosts(post_id, userDetails.getUser().getId());
 
         // 업로드 이미지가 있으면
         if (picture != null) {
             //기존에 저장되어 있는 이미지 찾아오기
-            String url = postsImageService.getImageUrl(posts_id);
+            String url = postsImageService.getImageUrl(post_id);
             //기존 이미지가 있으면
             if (url != null) {
                 //이미지 업데이트
-                postsImageService.imageDelete(posts_id);
-                String newUrl = fileService.updateFile(posts_id, url, picture, DIRECTORY_URL);
-
+                postsImageService.imageDelete(post_id);
+                String newUrl = fileService.updateFile(post_id, url, picture, DIRECTORY_URL);
                 postsImageService.imageSave(posts, newUrl);
 
             } else {
@@ -166,10 +153,14 @@ public class PostsController {
             }
 
         }
-        postsTagsService.updatePostsTags(posts, tagNameList);
-        postsService.updatePost(posts_id, title, content, userDetails);
+        postsTagsService.updatePostsTags(posts, tagName);
+        postsService.updatePost(post_id, title, content, userDetails);
 
-        return postsService.getDetailPost(posts.getId(),posts.getUsers().getId());
+        return DefaultResponseDto
+            .builder()
+            .status(HttpStatus.OK)
+            .msg("success")
+            .build();
 
     }
 
