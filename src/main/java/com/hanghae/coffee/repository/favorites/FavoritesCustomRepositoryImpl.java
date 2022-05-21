@@ -22,6 +22,7 @@ public class FavoritesCustomRepositoryImpl implements FavoritesCustomRepository 
                     beans.id.as("beanId"),
                     beans.beanName,
                     beans.type,
+                    beans.beanImage,
                     beans.description)
             )
             .from(favorites)

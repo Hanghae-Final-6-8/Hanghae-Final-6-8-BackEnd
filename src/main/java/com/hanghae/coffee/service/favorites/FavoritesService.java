@@ -3,7 +3,7 @@ package com.hanghae.coffee.service.favorites;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.beans.BeansListDto;
 import com.hanghae.coffee.dto.beans.BeansListResponseDto;
-import com.hanghae.coffee.dto.favorites.FavoritesResponseDto;
+import com.hanghae.coffee.dto.global.DefaultResponseDto;
 import com.hanghae.coffee.model.Beans;
 import com.hanghae.coffee.model.Favorites;
 import com.hanghae.coffee.model.Users;
@@ -37,7 +37,7 @@ public class FavoritesService {
             .build();
     }
     @Transactional(readOnly = false)
-    public FavoritesResponseDto doFavoritesByUser(Long beanId, Users users) {
+    public DefaultResponseDto doFavoritesByUser(Long beanId, Users users) {
 
         Favorites favorites = favoritesRepository.findByBeansIdAndUsersId(beanId, users.getId())
             .orElse(null);
@@ -57,7 +57,7 @@ public class FavoritesService {
 
         }
 
-        return FavoritesResponseDto
+        return DefaultResponseDto
             .builder()
             .status(HttpStatus.OK)
             .msg("success")

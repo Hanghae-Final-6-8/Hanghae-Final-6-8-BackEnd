@@ -2,7 +2,7 @@ package com.hanghae.coffee.controller;
 
 import com.hanghae.coffee.dto.beans.BeansListResponseDto;
 import com.hanghae.coffee.dto.favorites.FavoritesRequestDto;
-import com.hanghae.coffee.dto.favorites.FavoritesResponseDto;
+import com.hanghae.coffee.dto.global.DefaultResponseDto;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.favorites.FavoritesService;
 import io.swagger.annotations.Api;
@@ -36,7 +36,7 @@ public class FavoritesController {
      * 즐겨찾기 저장
      */
     @PostMapping("/beans")
-    public FavoritesResponseDto doFavoritesByUser(@RequestBody FavoritesRequestDto favoritesRequestDto, @AuthenticationPrincipal UserDetailsImpl users) {
+    public DefaultResponseDto doFavoritesByUser(@RequestBody FavoritesRequestDto favoritesRequestDto, @AuthenticationPrincipal UserDetailsImpl users) {
 
         return favoritesService.doFavoritesByUser(favoritesRequestDto.getBean_id(),users.getUser());
 

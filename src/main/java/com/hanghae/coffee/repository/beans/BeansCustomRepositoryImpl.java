@@ -25,6 +25,7 @@ public class BeansCustomRepositoryImpl implements BeansCustomRepository {
                 Projections.bean(BeansDto.class,
                     beans.id.as("beanId"),
                     beans.beanName,
+                    beans.beanImage,
                     beans.type,
                     beans.acidity,
                     beans.sweetness,
@@ -37,7 +38,8 @@ public class BeansCustomRepositoryImpl implements BeansCustomRepository {
                     beans.nuttyFlavor,
                     cafe.id.as("cafeId"),
                     cafe.cafeName,
-                    cafe.cafeImage,
+                    cafe.cafeLogoImage,
+                    cafe.cafeBackGroundImage,
                     beans.description)
             )
             .from(beans)
@@ -56,6 +58,7 @@ public class BeansCustomRepositoryImpl implements BeansCustomRepository {
                     beans.id.as("beanId"),
                     beans.beanName,
                     beans.type,
+                    beans.beanImage,
                     beans.description)
             )
             .from(beans)
@@ -69,6 +72,7 @@ public class BeansCustomRepositoryImpl implements BeansCustomRepository {
                 Projections.bean(BeansDto.class,
                     beans.id.as("beanId"),
                     beans.beanName,
+                    beans.beanImage,
                     beans.type,
                     beans.acidity,
                     beans.sweetness,
@@ -105,6 +109,7 @@ public class BeansCustomRepositoryImpl implements BeansCustomRepository {
                     beans.id.as("beanId"),
                     beans.beanName,
                     beans.type,
+                    beans.beanImage,
                     beans.description)
             )
             .from(beans)

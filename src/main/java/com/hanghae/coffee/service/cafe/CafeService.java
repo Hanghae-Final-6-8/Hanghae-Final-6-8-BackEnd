@@ -58,6 +58,7 @@ public class CafeService {
             beansListDto.setBeanId(beans.getId());
             beansListDto.setBeanName(beans.getBeanName());
             beansListDto.setType(beans.getType());
+            beansListDto.setBeanImage(beans.getBeanImage());
             beansListDto.setDescription(beans.getDescription());
 
             resultDto.add(beansListDto);

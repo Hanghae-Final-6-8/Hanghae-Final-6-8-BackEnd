@@ -13,4 +13,8 @@ public class CafeDto {
 
     private String cafeName;
 
+    private String cafeLogoImage;
+
+    private String cafeBackGroundImage;
+
 }
