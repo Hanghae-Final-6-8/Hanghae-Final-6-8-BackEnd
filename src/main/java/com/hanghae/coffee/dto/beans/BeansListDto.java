@@ -15,6 +15,8 @@ public class BeansListDto {
 
     private int type;
 
+    private String beanImage;
+
     private String description;
 
 }

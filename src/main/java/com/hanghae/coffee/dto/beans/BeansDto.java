@@ -13,6 +13,8 @@ public class BeansDto {
 
     private String beanName;
 
+    private String beanImage;
+
     private int type;
 
     private int acidity;
@@ -37,7 +39,9 @@ public class BeansDto {
 
     private String cafeName;
 
-    private String cafeImage;
+    private String cafeLogoImage;
+
+    private String cafeBackGroundImage;
 
     private String description;
 
