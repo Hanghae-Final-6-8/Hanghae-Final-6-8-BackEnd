@@ -25,6 +25,7 @@ public class TasteCustomRepositoryImpl implements TasteCustomRepository {
                 Projections.bean(TasteDto.class,
                     beans.id.as("beanId"),
                     beans.beanName,
+                    beans.beanImage,
                     beans.type,
                     beans.acidity,
                     beans.sweetness,
@@ -37,7 +38,8 @@ public class TasteCustomRepositoryImpl implements TasteCustomRepository {
                     beans.nuttyFlavor,
                     cafe.id.as("cafeId"),
                     cafe.cafeName,
-                    cafe.cafeImage,
+                    cafe.cafeLogoImage,
+                    cafe.cafeBackGroundImage,
                     beans.description)
             )
             .from(taste)
@@ -59,6 +61,7 @@ public class TasteCustomRepositoryImpl implements TasteCustomRepository {
                     beans.id.as("beanId"),
                     beans.beanName,
                     beans.type,
+                    beans.beanImage,
                     beans.description)
             ).
             from(beans)
@@ -75,6 +78,7 @@ public class TasteCustomRepositoryImpl implements TasteCustomRepository {
 
                 ))
             .orderBy(OrderByNull.DEFAULT)
+            .offset(0)
             .limit(4)
             .fetch();
 
