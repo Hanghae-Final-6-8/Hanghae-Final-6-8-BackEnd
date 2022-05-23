@@ -19,8 +19,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.web.PageableDefault;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -56,7 +55,7 @@ public class PostsController {
      */
     @ResponseBody
     @GetMapping("posts")
-    public PostsSliceResponseDto getPost(@PageableDefault(size = 4, sort = "id", direction = Direction.ASC) Pageable pageable,
+    public PostsSliceResponseDto getPost(Pageable pageable,
         @AuthenticationPrincipal UserDetailsImpl userDetails){
 //            List<Posts> posts = postsRepository.findAllByOrderByModifiedAtDesc();
 //            return postsRepository.findAllByOrderByModifiedAtDesc();
@@ -92,7 +91,7 @@ public class PostsController {
     @ResponseBody
     @GetMapping("posts/mine")
     public PostsSliceResponseDto getMyPost(
-        @AuthenticationPrincipal UserDetailsImpl userDetails, @PageableDefault(page = 0,size = 3, sort = "id", direction = Direction.ASC) Pageable pageable) throws RestException{
+        @AuthenticationPrincipal UserDetailsImpl userDetails, Pageable pageable) throws RestException{
         Long user_id;
         if(userDetails == null){
             user_id = 0L;
