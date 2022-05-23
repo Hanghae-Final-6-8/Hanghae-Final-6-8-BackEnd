@@ -25,6 +25,8 @@ public class Beans {
     @Column(nullable = false)
     private String beanName;
 
+    private String beanImage;
+
     @Column(nullable = false)
     private int type;
 
@@ -61,6 +63,8 @@ public class Beans {
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
+
+
 
 
 

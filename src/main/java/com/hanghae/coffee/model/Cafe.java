@@ -25,17 +25,20 @@ public class Cafe {
     @Column(nullable = false)
     private String cafeName;
 
-    private String cafeImage;
+    private String cafeLogoImage;
+
+    private String cafeBackGroundImage;
 
     @JsonIgnore
     @OneToMany(mappedBy = "cafe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Beans> beans = new ArrayList<>();
 
     @Builder
-    public Cafe(Long id, String cafeName, String cafeImage) {
+    public Cafe(Long id, String cafeName, String cafeLogoImage, String cafeBackGroundImage) {
         this.id = id;
         this.cafeName = cafeName;
-        this.cafeImage = cafeImage;
+        this.cafeLogoImage = cafeLogoImage;
+        this.cafeBackGroundImage = cafeBackGroundImage;
     }
 
 }
