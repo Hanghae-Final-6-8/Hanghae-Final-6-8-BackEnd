@@ -33,7 +33,7 @@ public class PostsService {
     public PostsSliceResponseDto getPostList(Long user_id, Pageable pageable) {
 
 
-        Slice<PostsInterfaceJoinVO> postsInterfaceJoinVO = postsRepository.findAllWithPostImagesPageing(user_id, pageable);
+        Slice<PostsInterfaceJoinVO> postsInterfaceJoinVO = postsRepository.findAllWithPostImages(user_id, pageable);
         System.out.println(postsInterfaceJoinVO.getContent());
 
 
