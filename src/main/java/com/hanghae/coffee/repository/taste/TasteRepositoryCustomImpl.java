@@ -14,7 +14,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class TasteCustomRepositoryImpl implements TasteCustomRepository {
+public class TasteRepositoryCustomImpl implements TasteRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 

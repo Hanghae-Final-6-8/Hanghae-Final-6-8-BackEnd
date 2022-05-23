@@ -17,4 +17,6 @@ public class CafeDto {
 
     private String cafeBackGroundImage;
 
+    private Long beansCount;
+
 }

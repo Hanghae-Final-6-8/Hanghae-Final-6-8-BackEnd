@@ -1,20 +1,20 @@
 package com.hanghae.coffee.controller;
 
-import com.hanghae.coffee.dto.global.DefaultResponseDto;
-import com.hanghae.coffee.dto.users.CountInfoByUserResponseDto;
-import com.hanghae.coffee.dto.users.UserInfoResponseDto;
+import com.hanghae.coffee.advice.RestException;
+import com.hanghae.coffee.dto.global.ResponseFormat;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.posts.FileService;
 import com.hanghae.coffee.service.users.UsersService;
 import io.swagger.annotations.Api;
 import java.io.IOException;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,59 +34,76 @@ public class UsersController {
     private final FileService fileService;
 
     @GetMapping(value = "/auth")
-    public UserInfoResponseDto getUserAuth(@AuthenticationPrincipal UserDetailsImpl users) {
+    public ResponseEntity<?> getUserAuth(@AuthenticationPrincipal UserDetailsImpl users) {
 
-        return usersService.getUserAuth(users.getUser().getId());
+        ResponseFormat responseFormat = new ResponseFormat().of(
+            usersService.getUserAuth(users.getUser().getId()), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
     }
 
     @GetMapping(value = "/logout")
-    public DefaultResponseDto doLogout(HttpServletRequest request,
+    public ResponseEntity<?> doLogout(HttpServletRequest request,
         @AuthenticationPrincipal UserDetailsImpl users) {
-        //TODO : @AuthenticationPrincipal 에 왜 값이 안들어오는지 체크해야함.
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        usersService.doLogout(request, users.getUsername());
+        ResponseFormat responseFormat = new ResponseFormat().of("로그아웃 되었습니다.");
 
-        return usersService.doLogout(request, users.getUsername());
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
     }
 
     @PostMapping(value = "/delete")
-    public DefaultResponseDto doUserDelete(@AuthenticationPrincipal UserDetailsImpl users) {
+    public ResponseEntity<?> doUserDelete(@AuthenticationPrincipal UserDetailsImpl users) {
 
-        return usersService.doUserDelete(users.getUser());
+        usersService.doUserDelete(users.getUser());
+        ResponseFormat responseFormat = new ResponseFormat().of("탈퇴 되었습니다.");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
     }
 
     @GetMapping(value = "/info")
-    public CountInfoByUserResponseDto getUserInfo(@AuthenticationPrincipal UserDetailsImpl users) {
+    public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal UserDetailsImpl users) {
 
-        return usersService.getCountInfoByUser(users.getUser());
+        ResponseFormat responseFormat = new ResponseFormat().of(
+            usersService.getCountInfoByUser(users.getUser()), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
     }
 
     @GetMapping(value = "/reissue")
-    public DefaultResponseDto reissue(HttpServletResponse response,
+    public ResponseEntity<?> reissue(HttpServletResponse response,
         @AuthenticationPrincipal UserDetailsImpl users) {
 
-        return usersService.reissue(response, users.getUsername());
+        usersService.reissue(response, users.getUsername());
+        ResponseFormat responseFormat = new ResponseFormat().of("Access Token 재발급 성공");
+
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
     }
 
     @PostMapping("/update")
-    public DefaultResponseDto doUserInfoUpdate(
+    public ResponseEntity<?> doUserInfoUpdate(
         @RequestParam("nickname") String nickname,
-        @RequestParam(value = "imageFile", required = false) MultipartFile file,
+        @RequestParam(value = "imageFile", required = false) Optional<MultipartFile> file,
         @AuthenticationPrincipal UserDetailsImpl users) throws IOException {
 
         Users user = users.getUser();
         String url = null;
-        if (file != null) {
 
-            url = fileService.updateFile(user.getId(), user.getProfileUrl(), file, DIRECTORY_URL);
+        if (!file.isPresent()) {
+            try {
+                url = fileService.updateFile(user.getId(), user.getProfileUrl(), file.get(),
+                    DIRECTORY_URL);
+            } catch (IOException e) {
+                throw new RestException(HttpStatus.BAD_REQUEST, "파일 에러");
+            }
 
         }
+        usersService.doUserInfoUpdate(user, url, nickname);
+        ResponseFormat responseFormat = new ResponseFormat().of("success");
 
-        return usersService.doUserInfoUpdate(user, url, nickname);
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
+
     }
 
 }

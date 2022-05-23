@@ -16,7 +16,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class UsersCustomRepositoryImpl implements UsersCustomRepository {
+public class UsersRepositoryCustomImpl implements UsersRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 

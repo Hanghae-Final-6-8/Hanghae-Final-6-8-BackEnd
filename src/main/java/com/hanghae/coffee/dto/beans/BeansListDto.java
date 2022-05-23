@@ -19,4 +19,13 @@ public class BeansListDto {
 
     private String description;
 
+    public BeansListDto(BeansListDto beansListDto) {
+
+        this.beanId = beansListDto.getBeanId();
+        this.beanName = beansListDto.getBeanName();
+        this.type = beansListDto.getType();
+        this.beanImage = beansListDto.getBeanImage();
+        this.description = beansListDto.getDescription();
+
+    }
 }

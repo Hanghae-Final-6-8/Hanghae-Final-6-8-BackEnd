@@ -2,17 +2,12 @@ package com.hanghae.coffee.service.oauth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanghae.coffee.advice.RestException;
-import com.hanghae.coffee.dto.global.DefaultResponseDto;
-import com.hanghae.coffee.dto.users.LoginResponseDto;
-import com.hanghae.coffee.dto.users.LogoutResponseDto;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.security.jwt.JwtTokenProvider;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lombok.Builder.Default;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,15 +31,11 @@ public class OauthCommonService {
         return redirectURL;
     }
 
-    public LoginResponseDto doLogin(HttpServletResponse response, OauthType oauthType, String code) throws JsonProcessingException {
+    public void doLogin(HttpServletResponse response, OauthType oauthType, String code) throws JsonProcessingException {
         OauthUsersService oauthUsersService = this.findOauthByType(oauthType);
         Users users = oauthUsersService.doLogin(code);
         forceLogin(response, users);
 
-        return LoginResponseDto.builder()
-            .status(HttpStatus.OK)
-            .msg("로그인 되었습니다.")
-            .build();
     }
 
     private String forceLogin(HttpServletResponse response, Users users){

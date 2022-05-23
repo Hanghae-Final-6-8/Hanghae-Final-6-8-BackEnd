@@ -3,11 +3,8 @@ package com.hanghae.coffee.service.taste;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.beans.BeansDto;
 import com.hanghae.coffee.dto.beans.BeansListDto;
-import com.hanghae.coffee.dto.beans.BeansListResponseDto;
-import com.hanghae.coffee.dto.beans.BeansResponseDto;
 import com.hanghae.coffee.dto.taste.TasteDto;
 import com.hanghae.coffee.dto.taste.TasteRequestDto;
-import com.hanghae.coffee.dto.taste.TasteResponseDto;
 import com.hanghae.coffee.model.Beans;
 import com.hanghae.coffee.model.Taste;
 import com.hanghae.coffee.model.Users;
@@ -27,22 +24,13 @@ public class TasteService {
     private final TasteRepository tasteRepository;
     private final BeansRepository beansRepository;
 
-    public TasteResponseDto findTasteByUser(Users users) {
+    public TasteDto findTasteByUser(Users users) {
 
-        Long userId = users.getId();
-
-        TasteDto tasteDto = tasteRepository.findTasteByUser(userId).orElse(null);
-
-        return TasteResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(tasteDto)
-            .build();
+        return tasteRepository.findTasteByUser(users.getId()).orElse(null);
     }
 
     @Transactional(readOnly = false)
-    public BeansResponseDto doTasteByUser(Users users,TasteRequestDto tasteRequestDto){
+    public BeansDto doTasteByUser(Users users,TasteRequestDto tasteRequestDto){
 
         List<BeansDto> beansDtoList = beansRepository.getBeansByBeanTaste(tasteRequestDto);
 
@@ -60,7 +48,7 @@ public class TasteService {
         Taste taste = tasteRepository.findByUsersId(users.getId()).orElse(null);
 
         if(taste != null){
-            taste.updateTaste(taste, users, beans);
+            taste.updateTaste(users, beans);
 
         }else {
             taste = Taste.createTaste(users, beans);
@@ -70,15 +58,10 @@ public class TasteService {
         BeansDto beansDto = beansRepository.getBeansByBeanId(beans.getId())
             .orElseThrow(() -> new RestException(HttpStatus.OK,"원두 정보가 없습니다."));
 
-        return BeansResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(beansDto)
-            .build();
+        return beansDto;
     }
 
-    public BeansListResponseDto findTasteListByUserTaste(Users users){
+    public List<BeansListDto> findTasteListByUserTaste(Users users){
 
         Long userId = users.getId();
 
@@ -87,12 +70,7 @@ public class TasteService {
         //임시 쿼리
         List<BeansListDto> beansListDto = tasteRepository.findTasteListByUserTaste(tasteDto);
 
-        return BeansListResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(beansListDto)
-            .build();
+        return beansListDto;
     }
 
 }
