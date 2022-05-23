@@ -3,12 +3,12 @@ package com.hanghae.coffee.service.beans;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.beans.BeansDto;
 import com.hanghae.coffee.dto.beans.BeansListDto;
-import com.hanghae.coffee.dto.beans.BeansListResponseDto;
-import com.hanghae.coffee.dto.beans.BeansResponseDto;
 import com.hanghae.coffee.repository.beans.BeansRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,48 +21,23 @@ public class BeansService {
 
     private final BeansRepository beansRepository;
 
-    public BeansResponseDto getBeansByBeanId(Long id) {
+    public BeansDto getBeansByBeanId(Long id) {
 
-        BeansDto beansDto = beansRepository.getBeansByBeanId(id).orElse(null);
-
-        if (beansDto == null) {
-            throw new RestException(HttpStatus.BAD_REQUEST, "원두 정보가 없습니다");
-        }
-
-        return BeansResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(beansDto)
-            .build();
+        return beansRepository.getBeansByBeanId(id).orElseThrow(
+            () -> new RestException(HttpStatus.BAD_REQUEST, "원두 정보가 없습니다")
+        );
 
     }
 
-    public BeansListResponseDto getBeansList() {
+    public Page<BeansListDto> getBeansList(String type, Pageable pageable) {
 
-        List<BeansListDto> beansList = beansRepository.getBeansList();
-
-        return BeansListResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(beansList)
-            .build();
-
+        return beansRepository.getBeansList(type, pageable).map(BeansListDto::new);
     }
 
-    public BeansListResponseDto getBeansListByKeyword(String keyword) {
+    public List<BeansListDto> getBeansListByKeyword(String keyword) {
 
-        List<BeansListDto> beansList = beansRepository.getBeansListByKeyword(keyword);
-
-        return BeansListResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(beansList)
-            .build();
+        return beansRepository.getBeansListByKeyword(keyword);
 
     }
-
-
 }
+

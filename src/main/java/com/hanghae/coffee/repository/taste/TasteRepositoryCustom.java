@@ -5,7 +5,7 @@ import com.hanghae.coffee.dto.taste.TasteDto;
 import java.util.List;
 import java.util.Optional;
 
-public interface TasteCustomRepository {
+public interface TasteRepositoryCustom {
 
     Optional<TasteDto> findTasteByUser(Long userId);
 

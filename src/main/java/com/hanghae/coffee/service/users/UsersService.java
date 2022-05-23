@@ -1,17 +1,13 @@
 package com.hanghae.coffee.service.users;
 
-import com.hanghae.coffee.dto.global.DefaultResponseDto;
 import com.hanghae.coffee.dto.users.CountInfoByUserDto;
-import com.hanghae.coffee.dto.users.CountInfoByUserResponseDto;
 import com.hanghae.coffee.dto.users.UserAuthDto;
-import com.hanghae.coffee.dto.users.UserInfoResponseDto;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.users.UsersRepository;
 import com.hanghae.coffee.security.jwt.JwtTokenProvider;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,33 +20,27 @@ public class UsersService {
     private final UsersRepository usersRepository;
 
     @Transactional
-    public DefaultResponseDto doLogout(HttpServletRequest request, String authId) {
+    public void doLogout(HttpServletRequest request, String authId) {
+
         String token = jwtTokenProvider.resolveToken(request);
         jwtTokenProvider.deleteRefreshToken(authId);
         jwtTokenProvider.saveLogoutAccessToken(token);
         jwtTokenProvider.setNullAuthentication();
-        return DefaultResponseDto.builder()
-            .status(HttpStatus.OK)
-            .msg("로그아웃 되었습니다.")
-            .build();
+
     }
 
 
     @Transactional
-    public DefaultResponseDto doUserDelete(Users users) {
+    public void doUserDelete(Users users) {
 
         usersRepository.delete(users);
         jwtTokenProvider.deleteRefreshToken(users.getAuthId());
         jwtTokenProvider.setNullAuthentication();
 
-        return DefaultResponseDto.builder()
-            .status(HttpStatus.OK)
-            .msg("탈퇴 되었습니다.")
-            .build();
     }
 
     @Transactional
-    public DefaultResponseDto reissue(HttpServletResponse response, String authId) {
+    public void reissue(HttpServletResponse response, String authId) {
 
         // 새로운 accessToken 발급
         String newAccessToken = jwtTokenProvider.createAccessToken(authId);
@@ -68,48 +58,25 @@ public class UsersService {
         // Refresh 토큰 생성
         jwtTokenProvider.saveRefreshToken(authId, newRefreshToken);
 
-        return DefaultResponseDto.builder()
-            .status(HttpStatus.OK)
-            .msg("Access Token 재발급 성공")
-            .build();
-
     }
 
 
-    public UserInfoResponseDto getUserAuth(Long userId) {
+    public UserAuthDto getUserAuth(Long userId) {
 
-        UserAuthDto userAuthDto = usersRepository.getUserAuth(userId);
-
-        return UserInfoResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(userAuthDto)
-            .build();
-    }
-
-    public CountInfoByUserResponseDto getCountInfoByUser(Users users) {
-
-        CountInfoByUserDto countInfoByUserDto = usersRepository.getCountInfoByUser(users.getId());
-
-        return CountInfoByUserResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(countInfoByUserDto)
-            .build();
+        return usersRepository.getUserAuth(userId);
 
     }
 
-    public DefaultResponseDto doUserInfoUpdate(Users users, String url, String nickname) {
+    public CountInfoByUserDto getCountInfoByUser(Users users) {
 
-        Users.updateUsersProfile(users, url, nickname);
+        return usersRepository.getCountInfoByUser(users.getId());
 
-        return DefaultResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .build();
+    }
+
+    public void doUserInfoUpdate(Users users, String url, String nickname) {
+
+        users.updateUsersProfile(url, nickname);
+
     }
 
 }

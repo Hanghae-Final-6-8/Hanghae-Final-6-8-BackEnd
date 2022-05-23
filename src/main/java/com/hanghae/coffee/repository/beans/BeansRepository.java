@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface BeansRepository extends JpaRepository<Beans, Long>, BeansCustomRepository {
+public interface BeansRepository extends JpaRepository<Beans, Long>, BeansRepositoryCustom {
 
     Optional<Beans> findById(Long id);
 
