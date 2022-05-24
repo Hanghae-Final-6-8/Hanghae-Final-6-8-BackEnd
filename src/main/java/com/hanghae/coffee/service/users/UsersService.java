@@ -1,5 +1,6 @@
 package com.hanghae.coffee.service.users;
 
+import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.users.CountInfoByUserDto;
 import com.hanghae.coffee.dto.users.UserAuthDto;
 import com.hanghae.coffee.model.Users;
@@ -8,6 +9,7 @@ import com.hanghae.coffee.security.jwt.JwtTokenProvider;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,9 +75,14 @@ public class UsersService {
 
     }
 
+    @Transactional
     public void doUserInfoUpdate(Users users, String url, String nickname) {
 
-        users.updateUsersProfile(url, nickname);
+        Users user = usersRepository.findAllByAuthId(users.getAuthId()).orElseThrow(
+            () -> new RestException(HttpStatus.BAD_REQUEST,"해당 사용자를 찾을 수 없습니다.")
+        );
+
+        user.updateUsersProfile(url, nickname);
 
     }
 

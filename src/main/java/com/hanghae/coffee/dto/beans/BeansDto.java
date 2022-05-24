@@ -45,6 +45,8 @@ public class BeansDto {
 
     private String description;
 
+    private Long favoritesId;
+
 //    @QueryProjection
 //    public BeansDto(Beans beans) {
 //        this.beanId = beans.getId();

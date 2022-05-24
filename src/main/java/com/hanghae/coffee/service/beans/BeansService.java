@@ -21,9 +21,9 @@ public class BeansService {
 
     private final BeansRepository beansRepository;
 
-    public BeansDto getBeansByBeanId(Long id) {
+    public BeansDto getBeansByBeanId(Long userId, Long beanId) {
 
-        return beansRepository.getBeansByBeanId(id).orElseThrow(
+        return beansRepository.getBeansByBeanId(userId, beanId).orElseThrow(
             () -> new RestException(HttpStatus.BAD_REQUEST, "원두 정보가 없습니다")
         );
 
