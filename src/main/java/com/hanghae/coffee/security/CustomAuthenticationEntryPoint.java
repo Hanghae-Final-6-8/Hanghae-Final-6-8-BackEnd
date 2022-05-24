@@ -1,12 +1,11 @@
 package com.hanghae.coffee.security;
 
 import java.io.IOException;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
@@ -16,9 +15,10 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
         AuthenticationException authException) throws IOException {
-        String msg;
+        String msg = "";
         int status = 0;
-        if (request.getAttribute("EXCEPTION") != null) {
+        String getException = (String) request.getAttribute("EXCEPTION");
+        if (!StringUtils.isEmpty(getException)) {
             if ("NOT LOGIN STATUS".equals(request.getAttribute("EXCEPTION"))) {
                 status = 440;
             } else if ("NOT VALIDATE TOKEN".equals(request.getAttribute("EXCEPTION"))) {
@@ -26,9 +26,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             }
 
             msg = (String) request.getAttribute("EXCEPTION");
-        } else {
-            status = HttpServletResponse.SC_UNAUTHORIZED;
-            msg = "Unauthorized";
         }
 
         setResponse(response, status, msg);

@@ -29,9 +29,8 @@ public class TasteController {
     @PostMapping(value = "/tests")
     public ResponseEntity<?> doTasteByUser(@RequestBody TasteRequestDto tasteRequestDto,
         @AuthenticationPrincipal UserDetailsImpl users) {
-
-        ResponseFormat responseFormat = new ResponseFormat().of(
-            tasteService.doTasteByUser(users.getUser(), tasteRequestDto), "success");
+        tasteService.doTasteByUser(users.getUser(), tasteRequestDto);
+        ResponseFormat responseFormat = new ResponseFormat().of(tasteService.findTasteByUser(users.getUser()), "success");
         return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
     }
@@ -47,7 +46,7 @@ public class TasteController {
     @GetMapping(value = "/beans")
     public ResponseEntity<?> findTasteByBeans(@AuthenticationPrincipal UserDetailsImpl users) {
 
-        ResponseFormat responseFormat = new ResponseFormat().of(tasteService.findTasteListByUserTaste(users.getUser()), "로그인 되었습니다.");
+        ResponseFormat responseFormat = new ResponseFormat().of(tasteService.findTasteListByUserTaste(users.getUser()), "success");
         return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
     }
