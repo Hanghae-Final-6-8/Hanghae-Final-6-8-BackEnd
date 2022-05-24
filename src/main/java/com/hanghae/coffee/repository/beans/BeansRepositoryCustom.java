@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface BeansRepositoryCustom {
 
-    Optional<BeansDto> getBeansByBeanId(Long beanId);
+    Optional<BeansDto> getBeansByBeanId(Long userId, Long beanId);
 
     Page<BeansListDto> getBeansList(String type, Pageable pageable);
 

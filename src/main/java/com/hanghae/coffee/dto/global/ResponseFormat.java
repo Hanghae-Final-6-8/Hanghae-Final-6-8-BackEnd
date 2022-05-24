@@ -8,6 +8,7 @@ public class ResponseFormat {
     private String msg;
 
     public ResponseFormat of(String msg){
+        this.data = "";
         this.msg = msg;
         return this;
     }
