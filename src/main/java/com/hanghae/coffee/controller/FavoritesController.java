@@ -1,12 +1,13 @@
 package com.hanghae.coffee.controller;
 
-import com.hanghae.coffee.dto.beans.BeansListResponseDto;
 import com.hanghae.coffee.dto.favorites.FavoritesRequestDto;
-import com.hanghae.coffee.dto.global.DefaultResponseDto;
+import com.hanghae.coffee.dto.global.ResponseFormat;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.favorites.FavoritesService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,9 +27,10 @@ public class FavoritesController {
      * 즐겨찾기 목록 조회
      */
     @GetMapping("/beans")
-    public BeansListResponseDto getFavoritesByUser(@AuthenticationPrincipal UserDetailsImpl users) {
+    public ResponseEntity<?> getFavoritesByUser(@AuthenticationPrincipal UserDetailsImpl users) {
 
-        return favoritesService.getFavoritesByUser(users.getUser());
+        ResponseFormat responseFormat = new ResponseFormat().of(favoritesService.getFavoritesByUser(users.getUser()), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
     }
 
@@ -36,9 +38,12 @@ public class FavoritesController {
      * 즐겨찾기 저장
      */
     @PostMapping("/beans")
-    public DefaultResponseDto doFavoritesByUser(@RequestBody FavoritesRequestDto favoritesRequestDto, @AuthenticationPrincipal UserDetailsImpl users) {
+    public ResponseEntity<?> doFavoritesByUser(@RequestBody FavoritesRequestDto favoritesRequestDto, @AuthenticationPrincipal UserDetailsImpl users) {
 
-        return favoritesService.doFavoritesByUser(favoritesRequestDto.getBean_id(),users.getUser());
+        favoritesService.doFavoritesByUser(favoritesRequestDto.getBean_id(),users.getUser());
+
+        ResponseFormat responseFormat = new ResponseFormat().of("저장 되었습니다.");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
     }
 

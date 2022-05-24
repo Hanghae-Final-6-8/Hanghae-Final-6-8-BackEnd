@@ -46,7 +46,7 @@ public class Taste extends Timestamped {
         return taste;
     }
 
-    public Taste updateTaste(Taste taste, Users users, Beans beans) {
+    public Taste updateTaste(Users users, Beans beans) {
         this.setUsers(users);
         this.setBeans(beans);
         return this;

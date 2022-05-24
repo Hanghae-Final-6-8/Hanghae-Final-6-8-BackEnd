@@ -87,29 +87,23 @@ public class Users extends Timestamped {
     }
 
     //==생성 메서드==//
-    public static Users updateUsers(Users users, UserInfoDto userInfoDto) {
+    public Users updateUsers(UserInfoDto userInfoDto) {
 
-        users.setNickname(userInfoDto.getNickname());
-        users.setEmail(userInfoDto.getEmail());
-        users.setProfileUrl(userInfoDto.getProfileUrl());
-        users.setOauthType(userInfoDto.getOauthType());
+        this.setNickname(userInfoDto.getNickname());
+        this.setEmail(userInfoDto.getEmail());
+        this.setProfileUrl(userInfoDto.getProfileUrl());
+        this.setOauthType(userInfoDto.getOauthType());
 
-        return users;
+        return this;
     }
 
     //==생성 메서드==//
-    public static Users updateUsersProfile(Users users, String profileUrl, String nickname) {
+    public Users updateUsersProfile(String profileUrl, String nickname) {
 
-        users.setNickname(nickname);
-        users.setProfileUrl(profileUrl);
+        this.setNickname(nickname);
+        this.setProfileUrl(profileUrl);
 
-        return users;
-    }
-
-    //==연관관계 메서드==//
-    public void createPosts(Posts post) {
-        posts.add(post);
-        post.setUsers(this);
+        return this;
     }
 
 }

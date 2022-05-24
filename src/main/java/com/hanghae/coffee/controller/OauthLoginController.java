@@ -1,25 +1,17 @@
 package com.hanghae.coffee.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.hanghae.coffee.dto.global.DefaultResponseDto;
-import com.hanghae.coffee.dto.users.CountInfoByUserResponseDto;
-import com.hanghae.coffee.dto.users.LoginResponseDto;
-import com.hanghae.coffee.dto.users.UserInfoResponseDto;
+import com.hanghae.coffee.dto.global.ResponseFormat;
 import com.hanghae.coffee.model.OauthType;
-import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.oauth.OauthCommonService;
-import com.hanghae.coffee.service.users.UsersService;
 import io.swagger.annotations.Api;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,13 +46,17 @@ public class OauthLoginController {
      * @return SNS Login 요청 결과로 받은 Json 형태의 String 문자열 (access_token, refresh_token 등)
      */
     @GetMapping(value = "/{oauth}/callback")
-    public LoginResponseDto oauthLoginCallback(
+    public ResponseEntity<?> oauthLoginCallback(
         HttpServletResponse response,
         @PathVariable(name = "oauth") String oauthType,
         @RequestParam(name = "code") String code) throws JsonProcessingException {
         log.info(">> 소셜 로그인 API 서버로부터 받은 code :: {}", code);
-        return oauthCommonService.doLogin(response, OauthType.valueOf(oauthType.toUpperCase()),
-            code);
+
+        oauthCommonService.doLogin(response, OauthType.valueOf(oauthType.toUpperCase()), code);
+
+        ResponseFormat responseFormat = new ResponseFormat().of("로그인 되었습니다.");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
+
     }
 
 

@@ -124,10 +124,10 @@ public class KakaoUsersService implements OauthUsersService {
             jsonNode.get("kakao_account").has("email") ?
                 jsonNode.get("kakao_account").get("email").asText() : null;
 
-        String profile_image_url = null;
-//            jsonNode.get("kakao_account").get("profile").has("profile_image_url") ?
-//                jsonNode.get("kakao_account").get("profile").get("profile_image_url").asText()
-//                : null;
+        String profile_image_url =
+            jsonNode.get("kakao_account").get("profile").has("profile_image_url") ?
+                jsonNode.get("kakao_account").get("profile").get("profile_image_url").asText()
+                : null;
 
         log.info("카카오 사용자 정보: " + id + ", " + nickname + ", " + email + ", " + profile_image_url);
         return UserInfoFactory.getOAuth2UserInfo(OauthType.KAKAO, id, nickname, email, profile_image_url);
@@ -144,9 +144,10 @@ public class KakaoUsersService implements OauthUsersService {
 
             kakaoUsers = Users.createUsers(userInfoDto);
             usersRepository.save(kakaoUsers);
+
         } else {
 
-            kakaoUsers = Users.updateUsers(kakaoUsers, userInfoDto);
+            kakaoUsers = kakaoUsers.updateUsers(userInfoDto);
 
         }
 

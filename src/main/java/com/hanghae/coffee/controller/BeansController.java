@@ -1,12 +1,15 @@
 package com.hanghae.coffee.controller;
 
-import com.hanghae.coffee.dto.beans.BeansListResponseDto;
-import com.hanghae.coffee.dto.beans.BeansResponseDto;
+import com.hanghae.coffee.dto.global.ResponseFormat;
 import com.hanghae.coffee.service.beans.BeansService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,9 +24,10 @@ public class BeansController {
      *
      */
     @GetMapping("/{beanId}")
-    public BeansResponseDto getBeansByBeanId(@PathVariable Long beanId) {
+    public ResponseEntity<?> getBeansByBeanId(@PathVariable Long beanId) {
 
-        return beansService.getBeansByBeanId(beanId);
+        ResponseFormat responseFormat = new ResponseFormat().of(beansService.getBeansByBeanId(beanId), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
     }
     /**
@@ -31,8 +35,9 @@ public class BeansController {
      *
      */
     @GetMapping("/list")
-    public BeansListResponseDto getBeansList(){
-        return beansService.getBeansList();
+    public ResponseEntity<?> getBeansList(Pageable pageable, @RequestParam(value="type", defaultValue = "") String type)  {
+        ResponseFormat responseFormat = new ResponseFormat().of(beansService.getBeansList(type, pageable), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
     }
 
     /**
@@ -40,8 +45,9 @@ public class BeansController {
      *
      */
     @GetMapping("/list/{keyword}")
-    public BeansListResponseDto getBeansListByKeyword(@PathVariable(required = false) String keyword){
-        return beansService.getBeansListByKeyword(keyword);
+    public ResponseEntity<?> getBeansListByKeyword(@PathVariable(required = false) String keyword){
+        ResponseFormat responseFormat = new ResponseFormat().of(beansService.getBeansListByKeyword(keyword), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
     }
 
 
