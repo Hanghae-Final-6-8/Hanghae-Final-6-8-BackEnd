@@ -2,10 +2,8 @@ package com.hanghae.coffee.service.comments;
 import com.hanghae.coffee.advice.RestException;
 
 import com.hanghae.coffee.dto.comments.CommentsRequestDto;
-import com.hanghae.coffee.dto.global.DefaultResponseDto;
 import com.hanghae.coffee.model.Posts;
 import com.hanghae.coffee.repository.comments.CommentsRepository;
-import com.hanghae.coffee.dto.comments.CommentsSliceResponseDto;
 import com.hanghae.coffee.model.Comments;
 import com.hanghae.coffee.repository.posts.PostsRepository;
 import com.hanghae.coffee.security.UserDetailsImpl;
@@ -26,29 +24,15 @@ public class CommentsService {
     private final PostsRepository postsRepository;
 
 
-    public CommentsSliceResponseDto getComment(Long posts_id, Pageable pageable) {
+    public Slice<Comments> getComment(Long posts_id, Pageable pageable) {
 
-        Slice<Comments> comments = commentsRepository.findAllByPosts_Id(posts_id,pageable);
-
-        return CommentsSliceResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(comments)
-            .build();
+        return commentsRepository.findAllByPosts_Id(posts_id,pageable);
     }
 
 
-    public CommentsSliceResponseDto getMyComment(Long id, Pageable pageable) {
+    public Slice<Comments> getMyComment(Long id, Pageable pageable) {
 
-        Slice<Comments> comments = commentsRepository.findAllByUsers_Id(id, pageable);
-
-        return CommentsSliceResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(comments)
-            .build();
+        return commentsRepository.findAllByUsers_Id(id, pageable);
     }
 
     public Comments writeComment(CommentsRequestDto requestDto, UserDetailsImpl userDetails){
@@ -65,27 +49,18 @@ public class CommentsService {
 
     }
 
-    public DefaultResponseDto deleteComment(CommentsRequestDto requestDto,
+    public String deleteComment(CommentsRequestDto requestDto,
         UserDetailsImpl userDetails) {
         Comments comments = commentsRepository.findById(requestDto.getComments_id()).orElseThrow(
             () -> new NullPointerException("fail")
         );
         Long id = comments.getUsers().getId();
 
-        if(id.equals( userDetails.getUser().getId())){
+        if(id.equals( userDetails.getUser().getId())) {
             commentsRepository.deleteById(requestDto.getComments_id());
-            return DefaultResponseDto
-                .builder()
-                .status(HttpStatus.OK)
-                .msg("success")
-                .build();
-        } else{
-            return DefaultResponseDto
-                .builder()
-                .status(HttpStatus.FORBIDDEN)
-                .msg("forbidden")
-                .build();
-        }
+            return "success";
+        } throw new RestException(HttpStatus.FORBIDDEN,"forbidden");
+
     }
 
 

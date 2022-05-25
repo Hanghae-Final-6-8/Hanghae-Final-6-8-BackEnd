@@ -1,14 +1,15 @@
 package com.hanghae.coffee.controller;
 import com.hanghae.coffee.advice.RestException;
-import com.hanghae.coffee.model.Comments;
+import com.hanghae.coffee.dto.global.ResponseFormat;
 import com.hanghae.coffee.dto.comments.CommentsRequestDto;
-import com.hanghae.coffee.dto.comments.CommentsSliceResponseDto;
-import com.hanghae.coffee.dto.global.DefaultResponseDto;
+
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.comments.CommentsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,26 +31,33 @@ public class CommentsController {
     // 댓글 목록 조회
     @ResponseBody
     @GetMapping("comments/{posts_id}")
-    public CommentsSliceResponseDto getComment(@PathVariable Long posts_id,Pageable pageable){
-        return commentsService.getComment(posts_id,pageable);
+    public ResponseEntity<?> getComment(@PathVariable Long posts_id,Pageable pageable){
+        ResponseFormat responseFormat = new ResponseFormat().of(
+            commentsService.getComment(posts_id,pageable), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
     }
 
 
     // 내 댓글 전체 조회
     @ResponseBody
     @GetMapping("comments/mine")
-    public CommentsSliceResponseDto getMyComment(
+    public ResponseEntity<?> getMyComment(
         @AuthenticationPrincipal UserDetailsImpl userDetails,Pageable pageable) throws RestException{
-        return commentsService.getMyComment(userDetails.getUser().getId(), pageable);
+
+        ResponseFormat responseFormat = new ResponseFormat().of(
+            commentsService.getMyComment(userDetails.getUser().getId(), pageable), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
     }
 
     //댓글 추가
     @ResponseBody
     @PostMapping(value = "comments")
-    public Comments writeComment(@RequestBody CommentsRequestDto requestDto,
+    public ResponseEntity<?> writeComment(@RequestBody CommentsRequestDto requestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails) throws RestException {
         log.info("writePost");
-        return commentsService.writeComment(requestDto,userDetails);
+        ResponseFormat responseFormat = new ResponseFormat().of(
+            commentsService.writeComment(requestDto,userDetails), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
     }
 
@@ -58,9 +66,11 @@ public class CommentsController {
     // @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     @PostMapping("comments/delete")
-    public DefaultResponseDto deleteComment(@RequestBody CommentsRequestDto requestDto,
+    public ResponseEntity<?> deleteComment(@RequestBody CommentsRequestDto requestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return commentsService.deleteComment(requestDto, userDetails);
+        ResponseFormat responseFormat = new ResponseFormat().of(
+            commentsService.deleteComment(requestDto, userDetails));
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
     }
 
 

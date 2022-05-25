@@ -4,8 +4,6 @@ package com.hanghae.coffee.service.posts;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.posts.PostsDto;
 import com.hanghae.coffee.dto.posts.PostsRequestDto;
-import com.hanghae.coffee.dto.posts.PostsResponseDto;
-import com.hanghae.coffee.dto.posts.PostsSliceResponseDto;
 import com.hanghae.coffee.model.Posts;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.posts.PostsRepository;
@@ -36,46 +34,24 @@ public class PostsService {
     private final FileService fileService;
     private final PostsTagsService postsTagsService;
 
-    public PostsSliceResponseDto getPostList(UserDetailsImpl userDetails, Pageable pageable) {
+    public Slice<PostsDto> getPostList(UserDetailsImpl userDetails, Pageable pageable) {
         Long user_id = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).map(Users::getId).orElse(0L);
 
-        Slice<PostsDto> postsDtoSlice = postsRepository.getAllWithPostImages(user_id, pageable);
-
-
-        return PostsSliceResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(postsDtoSlice)
-            .build();
+        return postsRepository.getAllWithPostImages(user_id, pageable);
     }
 
-    public PostsSliceResponseDto getMyPostList(UserDetailsImpl userDetails, Pageable pageable) {
+    public Slice<PostsDto>  getMyPostList(UserDetailsImpl userDetails, Pageable pageable) {
         Long user_id = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).map(Users::getId).orElse(0L);
 
-        Slice<PostsDto> postsDtoSlice = postsRepository.getPostsAllByUsers_Id(user_id, pageable);
-
-        return PostsSliceResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(postsDtoSlice)
-            .build();
+        return postsRepository.getPostsAllByUsers_Id(user_id, pageable);
     }
 
 
 
-    public PostsResponseDto getDetailPost(Long post_id, UserDetailsImpl userDetails) {
+    public PostsDto getDetailPost(Long post_id, UserDetailsImpl userDetails) {
         Long user_id = Optional.ofNullable(userDetails).map(UserDetailsImpl::getUser).map(Users::getId).orElse(0L);
-        PostsDto postsDto = postsRepository.getPostsByIdWithPostImages(post_id, user_id);
 
-
-        return PostsResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(postsDto)
-            .build();
+        return postsRepository.getPostsByIdWithPostImages(post_id, user_id);
     }
 
     public Posts writePosts(String title, String content, String tagName, MultipartFile posts_image,
