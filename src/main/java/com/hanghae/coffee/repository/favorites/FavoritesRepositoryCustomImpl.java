@@ -10,7 +10,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class FavoritesCustomRepositoryImpl implements FavoritesCustomRepository {
+public class FavoritesRepositoryCustomImpl implements FavoritesRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 

@@ -2,14 +2,13 @@ package com.hanghae.coffee.service.favorites;
 
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.beans.BeansListDto;
-import com.hanghae.coffee.dto.beans.BeansListResponseDto;
-import com.hanghae.coffee.dto.global.DefaultResponseDto;
 import com.hanghae.coffee.model.Beans;
 import com.hanghae.coffee.model.Favorites;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.beans.BeansRepository;
 import com.hanghae.coffee.repository.favorites.FavoritesRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,45 +22,24 @@ public class FavoritesService {
     private final FavoritesRepository favoritesRepository;
     private final BeansRepository beansRepository;
 
-    public BeansListResponseDto getFavoritesByUser(Users users) {
+    public List<BeansListDto> getFavoritesByUser(Users users) {
 
-        Long userId = users.getId();
-
-        List<BeansListDto> beansList = favoritesRepository.getFavoritesByUser(userId);
-
-        return BeansListResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(beansList)
-            .build();
+        return favoritesRepository.getFavoritesByUser(users.getId());
     }
+
     @Transactional(readOnly = false)
-    public DefaultResponseDto doFavoritesByUser(Long beanId, Users users) {
+    public void doFavoritesByUser(Long beanId, Users users) {
 
-        Favorites favorites = favoritesRepository.findByBeansIdAndUsersId(beanId, users.getId())
-            .orElse(null);
+        Optional<Favorites> favorites = Optional.ofNullable(
+            favoritesRepository.findByBeansIdAndUsersId(beanId,
+                users.getId()));
 
-        if (favorites != null) {
+        Beans beans = beansRepository.findById(beanId)
+            .orElseThrow(() -> new RestException(HttpStatus.BAD_REQUEST, "원두 정보가 없습니다."));
 
-            favoritesRepository.delete(favorites);
-
-        } else {
-
-            Beans beans = beansRepository.findById(beanId)
-                .orElseThrow(() -> new RestException(HttpStatus.BAD_REQUEST, "원두 정보가 없습니다."));
-
-            favorites = Favorites.createFavorites(users, beans);
-
-            favoritesRepository.save(favorites);
-
-        }
-
-        return DefaultResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .build();
+        favorites.ifPresentOrElse(f -> favoritesRepository.deleteById(f.getId()),
+            () -> favoritesRepository.save(Favorites.createFavorites(users, beans))
+        );
 
     }
 

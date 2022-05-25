@@ -1,98 +1,243 @@
 package com.hanghae.coffee.service.taste;
 
-import com.hanghae.coffee.advice.RestException;
-import com.hanghae.coffee.dto.beans.BeansDto;
 import com.hanghae.coffee.dto.beans.BeansListDto;
-import com.hanghae.coffee.dto.beans.BeansListResponseDto;
-import com.hanghae.coffee.dto.beans.BeansResponseDto;
 import com.hanghae.coffee.dto.taste.TasteDto;
 import com.hanghae.coffee.dto.taste.TasteRequestDto;
-import com.hanghae.coffee.dto.taste.TasteResponseDto;
 import com.hanghae.coffee.model.Beans;
 import com.hanghae.coffee.model.Taste;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.beans.BeansRepository;
 import com.hanghae.coffee.repository.taste.TasteRepository;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class TasteService {
 
     private final TasteRepository tasteRepository;
     private final BeansRepository beansRepository;
 
-    public TasteResponseDto findTasteByUser(Users users) {
+    public TasteDto findTasteByUser(Users users) {
 
-        Long userId = users.getId();
-
-        TasteDto tasteDto = tasteRepository.findTasteByUser(userId).orElse(null);
-
-        return TasteResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(tasteDto)
-            .build();
+        return tasteRepository.findTasteByUser(users.getId()).orElse(null);
     }
 
     @Transactional(readOnly = false)
-    public BeansResponseDto doTasteByUser(Users users,TasteRequestDto tasteRequestDto){
+    public void doTasteByUser(Users users, TasteRequestDto tasteRequestDto) {
 
-        List<BeansDto> beansDtoList = beansRepository.getBeansByBeanTaste(tasteRequestDto);
+        List<Beans> originBeansList = beansRepository.findAll();
 
-        Beans beans;
+        // 1차
+        List<Beans> beansFlavor = getBeansFlavor(originBeansList, tasteRequestDto, "1");
 
-        //임시.. 알고리즘 적용해야함
-        if(beansDtoList.size() == 0){
-            beans = beansRepository.findById(6L)
-                .orElseThrow(() -> new RestException(HttpStatus.BAD_REQUEST,"원두 정보가 없습니다."));
-        }else {
-            beans = beansRepository.findById(beansDtoList.get(0).getBeanId())
-                .orElseThrow(() -> new RestException(HttpStatus.BAD_REQUEST,"원두 정보가 없습니다."));
+        if (beansFlavor.size() < 1) {
+            beansFlavor = getBeansFlavor(originBeansList, tasteRequestDto, "2");
+        }
+
+        Optional<Beans> beans = getBeansTasteRepeat(beansFlavor, tasteRequestDto);
+
+        // 2차
+        if (beans.isEmpty()) {
+            beansFlavor = getBeansFlavor(originBeansList, tasteRequestDto, "2");
+
+            beans = getBeansTasteRepeat(beansFlavor, tasteRequestDto);
         }
 
         Taste taste = tasteRepository.findByUsersId(users.getId()).orElse(null);
 
-        if(taste != null){
-            taste.updateTaste(taste, users, beans);
+        if (taste != null) {
+            taste.updateTaste(users, beans.get());
 
-        }else {
-            taste = Taste.createTaste(users, beans);
+        } else {
+            taste = Taste.createTaste(users, beans.get());
             tasteRepository.save(taste);
         }
 
-        BeansDto beansDto = beansRepository.getBeansByBeanId(beans.getId())
-            .orElseThrow(() -> new RestException(HttpStatus.OK,"원두 정보가 없습니다."));
-
-        return BeansResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(beansDto)
-            .build();
     }
 
-    public BeansListResponseDto findTasteListByUserTaste(Users users){
+    private List<Beans> getBeansFlavor(List<Beans> beans, TasteRequestDto tasteRequestDto,
+        String type) {
+
+        if (type.equals("1")) {
+
+            return beans.stream().filter(
+                b ->
+                    b.getFloral() == tasteRequestDto.getFloral() &&
+                        b.getFruitFlavor() == tasteRequestDto.getFruit_flavor() &&
+                        b.getCocoaFlavor() == tasteRequestDto.getCocoa_flavor() &&
+                        b.getNuttyFlavor() == tasteRequestDto.getNutty_flavor()
+            ).toList();
+
+        } else if (type.equals("2")) {
+
+            return beans.stream().filter(
+                b ->
+                    (tasteRequestDto.getFloral() == 1 ||
+                        b.getFloral() == tasteRequestDto.getFloral()) &&
+                        (tasteRequestDto.getFruit_flavor() == 1 ||
+                            b.getFruitFlavor() == tasteRequestDto.getFruit_flavor()) &&
+                        (tasteRequestDto.getCocoa_flavor() == 1 ||
+                            b.getCocoaFlavor() == tasteRequestDto.getCocoa_flavor()) &&
+                        (tasteRequestDto.getNutty_flavor() == 1 ||
+                            b.getNuttyFlavor() == tasteRequestDto.getNutty_flavor())
+            ).toList();
+
+        }
+
+        return beans;
+
+    }
+
+    //사용자 취향 기준 원두 선정하기
+    private Optional<Beans> getBeansTaste(List<Beans> beans, TasteRequestDto tasteRequestDto,
+        String type) {
+        List<Beans> beansList = new ArrayList<>();
+        if (type.equals("1")) {
+            beansList = beans.stream().filter(
+                b ->
+                    b.getAcidity() == tasteRequestDto.getAcidity() &&
+                        b.getBitter() == tasteRequestDto.getBitter() &&
+                        b.getSweetness() == tasteRequestDto.getSweetness() &&
+                        b.getBody() == tasteRequestDto.getBody() &&
+                        b.getNutty() == tasteRequestDto.getNutty()
+            ).toList();
+
+        } else if (type.equals("2")) {
+
+            beansList = beans.stream().filter(
+                b ->
+                    (getAbs(b.getAcidity(), tasteRequestDto.getAcidity()) < 2 ||
+                        b.getAcidity() == tasteRequestDto.getAcidity()) &&
+                        (getAbs(b.getBitter(), tasteRequestDto.getBitter()) < 2 ||
+                            b.getBitter() == tasteRequestDto.getBitter()) &&
+                        (getAbs(b.getSweetness(), tasteRequestDto.getSweetness()) < 2 ||
+                            b.getSweetness() == tasteRequestDto.getSweetness()) &&
+                        (getAbs(b.getBody(), tasteRequestDto.getBody()) < 2 ||
+                            b.getBody() == tasteRequestDto.getBody()) &&
+                        (getAbs(b.getNutty(), tasteRequestDto.getNutty()) < 2 ||
+                            b.getNutty() == tasteRequestDto.getNutty())
+
+            ).toList();
+
+        }
+
+        beansList.stream().map(b -> b.getBeanName()).forEach(System.out::println);
+        System.out.println("--------------------------------------------------------------------");
+
+        if (beansList.size() > 0) {
+            Random rand = new Random();
+            return Optional.ofNullable(beansList.get(rand.nextInt(beansList.size())));
+        }
+        return Optional.empty();
+    }
+
+    private Optional<Beans> getBeansTasteRepeat(List<Beans> beansFlavor,
+        TasteRequestDto tasteRequestDto) {
+
+        Optional<Beans> beans = getBeansTaste(beansFlavor, tasteRequestDto, "1");
+
+        if (beans.isEmpty()) {
+            beans = getBeansTaste(beansFlavor, tasteRequestDto, "2");
+        }
+
+        return beans;
+    }
+
+    private int getAbs(int x, int y) {
+        return Math.abs(x - y);
+    }
+
+
+    public List<BeansListDto> findTasteListByUserTaste(Users users) {
+
+        List<BeansListDto> beansListDtoList = new LinkedList<>();
 
         Long userId = users.getId();
 
         TasteDto tasteDto = tasteRepository.findTasteByUser(userId).orElse(null);
 
-        //임시 쿼리
-        List<BeansListDto> beansListDto = tasteRepository.findTasteListByUserTaste(tasteDto);
+        List<Beans> originBeansList = beansRepository.findAll();
 
-        return BeansListResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(beansListDto)
-            .build();
+        TasteRequestDto tasteRequestDto = new TasteRequestDto();
+        tasteRequestDto.setAcidity(tasteDto.getAcidity());
+        tasteRequestDto.setSweetness(tasteDto.getSweetness());
+        tasteRequestDto.setBitter(tasteDto.getBitter());
+        tasteRequestDto.setBody(tasteDto.getBody());
+        tasteRequestDto.setNutty(tasteDto.getNutty());
+        tasteRequestDto.setFloral(tasteDto.getFloral());
+        tasteRequestDto.setFruit_flavor(tasteDto.getFruitFlavor());
+        tasteRequestDto.setCocoa_flavor(tasteDto.getCocoaFlavor());
+        tasteRequestDto.setNutty_flavor(tasteDto.getNuttyFlavor());
+
+        originBeansList.stream()
+            .filter(beans -> beans.getId().equals(tasteDto.getBeanId()))
+            .collect(Collectors.toList())
+            .forEach(li -> originBeansList.remove(li));
+
+        List<Beans> beans = getBeansFlavor(originBeansList, tasteRequestDto, "2");
+
+        beans = beans.stream().filter(
+            b ->
+                (getAbs(b.getAcidity(), tasteRequestDto.getAcidity()) < 2 ||
+                    b.getAcidity() == tasteRequestDto.getAcidity()) &&
+                    (getAbs(b.getBitter(), tasteRequestDto.getBitter()) < 2 ||
+                        b.getBitter() == tasteRequestDto.getBitter()) &&
+                    (getAbs(b.getSweetness(), tasteRequestDto.getSweetness()) < 2 ||
+                        b.getSweetness() == tasteRequestDto.getSweetness()) &&
+                    (getAbs(b.getBody(), tasteRequestDto.getBody()) < 2 ||
+                        b.getBody() == tasteRequestDto.getBody()) &&
+                    (getAbs(b.getNutty(), tasteRequestDto.getNutty()) < 2 ||
+                        b.getNutty() == tasteRequestDto.getNutty())
+
+        ).toList();
+
+        if (beans.size() > 4) {
+            beans = getRandomElement(beans, 4);
+        }
+
+        for (Beans b : beans) {
+            BeansListDto beansListDto = new BeansListDto();
+            beansListDto.setBeanId(b.getId());
+            beansListDto.setBeanName(b.getBeanName());
+            beansListDto.setType(b.getType());
+            beansListDto.setDescription(b.getDescription());
+            beansListDto.setBeanImage(b.getBeanImage());
+
+            beansListDtoList.add(beansListDto);
+        }
+
+
+        return beansListDtoList;
+    }
+
+    private List<Beans> getRandomElement(List<Beans> list, int totalItems) {
+
+        List<Beans> beans = new LinkedList<>();
+
+        Random r = new Random();
+
+        for (int i = 0; i < totalItems; i++) {
+
+            Beans e = list.get(r.nextInt(list.size()));
+            beans.add(e);
+            log.info(String.valueOf(e.getBeanName()));
+            list = list.stream().filter(b -> !b.getId().equals(e.getId())).toList();
+
+        }
+
+        return beans;
+
     }
 
 }

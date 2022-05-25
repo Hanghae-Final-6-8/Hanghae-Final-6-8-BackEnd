@@ -5,12 +5,14 @@ import com.hanghae.coffee.dto.beans.BeansListDto;
 import com.hanghae.coffee.dto.taste.TasteRequestDto;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-public interface BeansCustomRepository {
+public interface BeansRepositoryCustom {
 
-    Optional<BeansDto> getBeansByBeanId(Long beanId);
+    Optional<BeansDto> getBeansByBeanId(Long userId, Long beanId);
 
-    List<BeansListDto> getBeansList();
+    Page<BeansListDto> getBeansList(String type, Pageable pageable);
 
     List<BeansDto> getBeansByBeanTaste(TasteRequestDto tasteRequestDto);
 

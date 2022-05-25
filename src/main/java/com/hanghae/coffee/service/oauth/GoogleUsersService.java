@@ -146,7 +146,7 @@ public class GoogleUsersService implements OauthUsersService {
                 usersRepository.save(googleUsers);
 
             } else {
-                googleUsers = Users.updateUsers(googleUsers, userInfoDto);
+                googleUsers = googleUsers.updateUsers(userInfoDto);
 
             }
             return googleUsers;

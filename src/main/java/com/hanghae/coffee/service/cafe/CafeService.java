@@ -1,17 +1,14 @@
 package com.hanghae.coffee.service.cafe;
 
 import com.hanghae.coffee.dto.beans.BeansListDto;
-import com.hanghae.coffee.dto.beans.BeansListResponseDto;
 import com.hanghae.coffee.dto.cafe.CafeDto;
-import com.hanghae.coffee.dto.cafe.CafeResponseDto;
 import com.hanghae.coffee.model.Beans;
 import com.hanghae.coffee.model.Cafe;
-import com.hanghae.coffee.repository.cafe.CafeRepository;
 import com.hanghae.coffee.repository.beans.BeansRepository;
+import com.hanghae.coffee.repository.cafe.CafeRepository;
 import java.util.LinkedList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +20,7 @@ public class CafeService {
     private final CafeRepository cafeRepository;
     private final BeansRepository beansRepository;
 
-    public CafeResponseDto getCafeList() {
+    public List<CafeDto> getCafeList() {
 
         List<CafeDto> cafeDtoList = new LinkedList<>();
 
@@ -38,16 +35,11 @@ public class CafeService {
 
         }
 
-        return CafeResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(cafeDtoList)
-            .build();
+        return cafeDtoList;
 
     }
 
-    public BeansListResponseDto getBeansListByCafeId(Long cafeId) {
+    public List<BeansListDto> getBeansListByCafeId(Long cafeId) {
 
         List<BeansListDto> resultDto = new LinkedList<>();
 
@@ -65,13 +57,12 @@ public class CafeService {
 
         }
 
-        return BeansListResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .data(resultDto)
-            .build();
+        return resultDto;
 
+    }
+
+    public List<CafeDto> getBeansTotalByCafe() {
+        return cafeRepository.getBeansTotalByCafe();
     }
 
 }

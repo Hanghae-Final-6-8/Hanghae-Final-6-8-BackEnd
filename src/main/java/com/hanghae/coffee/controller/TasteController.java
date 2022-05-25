@@ -1,13 +1,13 @@
 package com.hanghae.coffee.controller;
 
-import com.hanghae.coffee.dto.beans.BeansListResponseDto;
-import com.hanghae.coffee.dto.beans.BeansResponseDto;
+import com.hanghae.coffee.dto.global.ResponseFormat;
 import com.hanghae.coffee.dto.taste.TasteRequestDto;
-import com.hanghae.coffee.dto.taste.TasteResponseDto;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.taste.TasteService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,22 +27,27 @@ public class TasteController {
      * 유저의 커피 취향 조사 결과 확인
      */
     @PostMapping(value = "/tests")
-    public BeansResponseDto doTasteByUser(@RequestBody TasteRequestDto tasteRequestDto, @AuthenticationPrincipal UserDetailsImpl users) {
+    public ResponseEntity<?> doTasteByUser(@RequestBody TasteRequestDto tasteRequestDto,
+        @AuthenticationPrincipal UserDetailsImpl users) {
+        tasteService.doTasteByUser(users.getUser(), tasteRequestDto);
+        ResponseFormat responseFormat = new ResponseFormat().of(tasteService.findTasteByUser(users.getUser()), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
-        return tasteService.doTasteByUser(users.getUser(), tasteRequestDto);
     }
 
     @GetMapping(value = "/tests")
-    public TasteResponseDto findTasteByUser(@AuthenticationPrincipal UserDetailsImpl users) {
+    public ResponseEntity<?> findTasteByUser(@AuthenticationPrincipal UserDetailsImpl users) {
 
-        return tasteService.findTasteByUser(users.getUser());
+        ResponseFormat responseFormat = new ResponseFormat().of(tasteService.findTasteByUser(users.getUser()), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
     }
 
     @GetMapping(value = "/beans")
-    public BeansListResponseDto findTasteByBeans(@AuthenticationPrincipal UserDetailsImpl users) {
+    public ResponseEntity<?> findTasteByBeans(@AuthenticationPrincipal UserDetailsImpl users) {
 
-        return tasteService.findTasteListByUserTaste(users.getUser());
+        ResponseFormat responseFormat = new ResponseFormat().of(tasteService.findTasteListByUserTaste(users.getUser()), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
     }
 

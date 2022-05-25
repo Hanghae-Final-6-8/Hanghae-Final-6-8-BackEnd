@@ -143,7 +143,7 @@ public class NaverUsersService implements OauthUsersService {
             naverUsers = Users.createUsers(userInfoDto);
             usersRepository.save(naverUsers);
         } else {
-            naverUsers = Users.updateUsers(naverUsers, userInfoDto);
+            naverUsers = naverUsers.updateUsers(userInfoDto);
 //            usersRepository.save(naverUsers);     //dirty checking 으로 생략가능
 
         }

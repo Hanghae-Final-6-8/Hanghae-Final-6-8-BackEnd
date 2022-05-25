@@ -45,4 +45,6 @@ public class TasteDto {
 
     private String description;
 
+    private Long favoritesId;
+
 }
