@@ -54,7 +54,8 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                             .join(likes.posts, posts)
                             .on(likes.posts.id.eq(posts.id))
                             .on(likes.users.id.eq(id))
-                        , "isLikes"),
+                        , "isLikes")
+                ,
                 ExpressionUtils.
                     as(JPAExpressions
                             .select(Expressions.stringTemplate("group_concat({0})", tags.tagName)
@@ -89,7 +90,8 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                 posts.users.nickname,
                 posts.createdAt.as("created_at"),
                 posts.modifiedAt.as("modified_at"),
-                postsImage.imageUrl.as("posts_image"),
+                postsImage.imageUrl.as("posts_image")
+                ,
                 ExpressionUtils.
                     as(JPAExpressions
                         .select(likes.posts.id.count())
@@ -104,9 +106,8 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                     as(JPAExpressions
                             .select(likes.users.id)
                             .from(likes)
-                            .join(likes.posts, posts)
-                            .on(likes.posts.id.eq(posts.id))
-                            .on(likes.users.id.eq(id))
+                            .where(posts.id.eq(likes.posts.id))
+                            .where(likes.users.id.eq(id))
                         , "isLikes"),
                 ExpressionUtils.
                     as(JPAExpressions
