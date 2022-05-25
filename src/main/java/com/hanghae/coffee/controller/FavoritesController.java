@@ -40,9 +40,9 @@ public class FavoritesController {
     @PostMapping("/beans")
     public ResponseEntity<?> doFavoritesByUser(@RequestBody FavoritesRequestDto favoritesRequestDto, @AuthenticationPrincipal UserDetailsImpl users) {
 
-        favoritesService.doFavoritesByUser(favoritesRequestDto.getBean_id(),users.getUser());
+        String msg = favoritesService.doFavoritesByUser(favoritesRequestDto.getBean_id(),users.getUser());
 
-        ResponseFormat responseFormat = new ResponseFormat().of("저장 되었습니다.");
+        ResponseFormat responseFormat = new ResponseFormat().of(msg);
         return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
     }
