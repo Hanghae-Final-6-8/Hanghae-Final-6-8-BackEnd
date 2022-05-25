@@ -91,7 +91,12 @@ public class JwtTokenProvider {
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(Authorization);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
-            return bearerToken.substring(7);
+            String token = bearerToken.substring(7);
+            if(token.equals("undefined")){
+                return null;
+            }else {
+                return token;
+            }
         }
         return null;
     }

@@ -28,18 +28,26 @@ public class FavoritesService {
     }
 
     @Transactional(readOnly = false)
-    public void doFavoritesByUser(Long beanId, Users users) {
+    public String doFavoritesByUser(Long beanId, Users users) {
 
-        Optional<Favorites> favorites = Optional.ofNullable(
-            favoritesRepository.findByBeansIdAndUsersId(beanId,
-                users.getId()));
+        Optional<Favorites> favorites = favoritesRepository.findByBeansIdAndUsersId(beanId, users.getId());
 
         Beans beans = beansRepository.findById(beanId)
             .orElseThrow(() -> new RestException(HttpStatus.BAD_REQUEST, "원두 정보가 없습니다."));
 
-        favorites.ifPresentOrElse(f -> favoritesRepository.deleteById(f.getId()),
-            () -> favoritesRepository.save(Favorites.createFavorites(users, beans))
-        );
+        if(favorites.isPresent()){
+            favoritesRepository.deleteById(favorites.get().getId());
+            return "삭제 되었습니다.";
+        }else {
+            favoritesRepository.save(Favorites.createFavorites(users, beans));
+            return "등록 되었습니다.";
+        }
+
+//        favorites.ifPresentOrElse(f -> {
+//            favoritesRepository.deleteById(f.getId());
+//            },
+//            () -> favoritesRepository.save(Favorites.createFavorites(users, beans))
+//        );
 
     }
 

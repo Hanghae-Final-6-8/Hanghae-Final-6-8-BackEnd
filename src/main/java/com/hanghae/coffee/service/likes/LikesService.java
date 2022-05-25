@@ -1,17 +1,14 @@
-package com.hanghae.coffee.service;
+package com.hanghae.coffee.service.likes;
 import com.hanghae.coffee.advice.RestException;
-import com.hanghae.coffee.dto.likes.LikesInterfaceJoinVO;
+import com.hanghae.coffee.dto.likes.LikesDto;
 import com.hanghae.coffee.dto.likes.LikesRequestDto;
-import com.hanghae.coffee.dto.posts.PostsInterfaceJoinVO;
-import com.hanghae.coffee.dto.posts.PostsSliceResponseDto;
-import com.hanghae.coffee.model.Posts;
-import com.hanghae.coffee.repository.LikesRepository;
-import com.hanghae.coffee.dto.global.DefaultResponseDto;
 import com.hanghae.coffee.dto.likes.LikesSliceResponseDto;
+import com.hanghae.coffee.model.Posts;
+import com.hanghae.coffee.repository.likes.LikesRepository;
+import com.hanghae.coffee.dto.global.DefaultResponseDto;
 import com.hanghae.coffee.model.Likes;
 import com.hanghae.coffee.repository.posts.PostsRepository;
 import com.hanghae.coffee.security.UserDetailsImpl;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -27,14 +24,14 @@ public class LikesService {
 	private final LikesRepository likesRepository;
 	private final PostsRepository postsRepository;
 
-	public PostsSliceResponseDto getComment(Long id, Pageable pageable) {
+	public LikesSliceResponseDto getComment(Long id, Pageable pageable) {
 
-		Slice<PostsInterfaceJoinVO> likesInterfaceJoinVOSlice = likesRepository.findAllByOrderByUser_IdwithPosts(id, pageable);
-		return PostsSliceResponseDto
+		Slice<LikesDto> likesDto = likesRepository.getAllByOrderByUser_IdwithPosts(id, pageable);
+		return LikesSliceResponseDto
 				.builder()
 				.status(HttpStatus.OK)
 				.msg("success")
-				.data(likesInterfaceJoinVOSlice)
+				.data(likesDto)
 				.build();
 	}
 

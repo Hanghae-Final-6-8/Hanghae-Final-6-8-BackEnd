@@ -1,6 +1,4 @@
 package com.hanghae.coffee.model;
-
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+
 
 @Entity
 @Getter
@@ -39,6 +36,7 @@ public class Posts extends Timestamped {
     @Column(nullable = false)
     private String content; // text로 자료형 변경
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Users users;
@@ -72,7 +70,7 @@ public class Posts extends Timestamped {
     }
 
     //==생성 메서드==//
-    public static Posts createPosts(Posts posts,List<PostsImage> postsImages,List<PostsTags> postsTags) {
+    public Posts createPosts(Posts posts,List<PostsImage> postsImages,List<PostsTags> postsTags) {
         posts.setPostsImages(postsImages);
         posts.setPostsTags(postsTags);
 

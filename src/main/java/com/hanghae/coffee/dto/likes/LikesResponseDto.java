@@ -9,5 +9,5 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 public class LikesResponseDto extends DefaultResponseDto {
-	private LikesInterfaceJoinVO data;
+	private LikesDto data;
 }

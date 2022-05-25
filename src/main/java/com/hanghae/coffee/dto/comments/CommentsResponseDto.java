@@ -9,5 +9,5 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 public class CommentsResponseDto extends DefaultResponseDto {
-	private CommentsInterfaceJoinVO data;
+	private CommentsDto data;
 }

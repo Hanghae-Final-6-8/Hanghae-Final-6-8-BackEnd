@@ -57,13 +57,6 @@ public class PostsController {
     @GetMapping("posts")
     public PostsSliceResponseDto getPost(Pageable pageable,
         @AuthenticationPrincipal UserDetailsImpl userDetails){
-//            List<Posts> posts = postsRepository.findAllByOrderByModifiedAtDesc();
-//            return postsRepository.findAllByOrderByModifiedAtDesc();
-//        List<PostsJoinVO> posts = postsRepository.findAllWithPostImages();
-//        List<PostsJoinVO> result = posts.stream()
-//            .map(p -> new PostsJoinVO(p))
-//            .collect(Collectors.toList());
-//        return result;
         Long user_id;
         if(userDetails == null){
             user_id = 0L;
