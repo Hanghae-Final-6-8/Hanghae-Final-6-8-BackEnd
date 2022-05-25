@@ -29,7 +29,7 @@ public class LikesController {
 
     // 내가 누른 좋아요 조회
     @ResponseBody
-    @GetMapping
+    @GetMapping("mine")
     public ResponseEntity<?> getMylikes(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
          Pageable pageable) throws RestException{
@@ -42,7 +42,7 @@ public class LikesController {
 
     // 좋아요 등록 & 삭제
     @ResponseBody
-    @PostMapping("mine")
+    @PostMapping
     public ResponseEntity<?> deleteComment(@RequestBody LikesRequestDto requestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails){
 			ResponseFormat responseFormat = new ResponseFormat().of(

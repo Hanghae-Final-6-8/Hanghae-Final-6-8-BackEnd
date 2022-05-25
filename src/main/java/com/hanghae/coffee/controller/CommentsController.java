@@ -42,7 +42,7 @@ public class CommentsController {
     @ResponseBody
     @GetMapping("comments/mine")
     public ResponseEntity<?> getMyComment(
-        @AuthenticationPrincipal UserDetailsImpl userDetails,Pageable pageable) throws RestException{
+        @AuthenticationPrincipal UserDetailsImpl userDetails,Pageable pageable){
 
         ResponseFormat responseFormat = new ResponseFormat().of(
             commentsService.getMyComment(userDetails.getUser().getId(), pageable), "success");
@@ -53,7 +53,7 @@ public class CommentsController {
     @ResponseBody
     @PostMapping(value = "comments")
     public ResponseEntity<?> writeComment(@RequestBody CommentsRequestDto requestDto,
-        @AuthenticationPrincipal UserDetailsImpl userDetails) throws RestException {
+        @AuthenticationPrincipal UserDetailsImpl userDetails){
         log.info("writePost");
         ResponseFormat responseFormat = new ResponseFormat().of(
             commentsService.writeComment(requestDto,userDetails), "success");
