@@ -9,7 +9,6 @@ import com.hanghae.coffee.dto.posts.PostsSliceResponseDto;
 import com.hanghae.coffee.model.Posts;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.posts.PostsRepository;
-import com.hanghae.coffee.repository.posts.PostsTagsRepository;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import java.util.List;
 import java.util.Optional;

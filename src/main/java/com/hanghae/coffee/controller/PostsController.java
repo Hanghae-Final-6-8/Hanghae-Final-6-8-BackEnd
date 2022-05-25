@@ -8,16 +8,12 @@ import com.hanghae.coffee.dto.posts.PostsResponseDto;
 import com.hanghae.coffee.dto.posts.PostsSliceResponseDto;
 import com.hanghae.coffee.model.Posts;
 
-import com.hanghae.coffee.model.Users;
-import com.hanghae.coffee.repository.posts.PostsRepository;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.posts.FileService;
 import com.hanghae.coffee.service.posts.PostsImageService;
 import com.hanghae.coffee.service.posts.PostsService;
 import com.hanghae.coffee.service.posts.PostsTagsService;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -76,12 +72,7 @@ public class PostsController {
     @GetMapping("posts/mine")
     public PostsSliceResponseDto getMyPost(
         @AuthenticationPrincipal UserDetailsImpl userDetails, Pageable pageable) throws RestException{
-        Long user_id;
-        if(userDetails == null){
-            user_id = 0L;
-        } else{
-            user_id = userDetails.getUser().getId();
-        }
+
         return postsService.getMyPostList(userDetails, pageable);
     }
 

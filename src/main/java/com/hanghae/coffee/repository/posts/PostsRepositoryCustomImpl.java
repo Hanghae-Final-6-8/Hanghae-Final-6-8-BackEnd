@@ -23,7 +23,6 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
 
   private final JPAQueryFactory jpaQueryFactory;
 
-
   @Override
   public Slice<PostsDto> getPostsAllByUsers_Id(Long id, Pageable pageable) {
     List<PostsDto> postsDtoList = jpaQueryFactory
@@ -33,9 +32,9 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                 posts.title,
                 posts.content,
                 posts.users.nickname,
-                posts.createdAt,
-                posts.modifiedAt,
-                postsImage.imageUrl,
+                posts.createdAt.as("created_at"),
+                posts.modifiedAt.as("modified_at"),
+                postsImage.imageUrl.as("posts_image"),
                 ExpressionUtils.
                     as(JPAExpressions
                         .select(likes.posts.id.count())
@@ -60,7 +59,7 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                             .innerJoin(postsTags.tags, tags)
                             .where(posts.id.eq(postsTags.posts.id))
                             .groupBy(posts.id)
-                        , "tagName")
+                        , "tag_name")
             ))
         .from(posts)
         .leftJoin(posts.postsImages, postsImage)
@@ -82,9 +81,9 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                 posts.title,
                 posts.content,
                 posts.users.nickname,
-                posts.createdAt,
-                posts.modifiedAt,
-                postsImage.imageUrl,
+                posts.createdAt.as("created_at"),
+                posts.modifiedAt.as("modified_at"),
+                postsImage.imageUrl.as("posts_image"),
                 ExpressionUtils.
                     as(JPAExpressions
                         .select(likes.posts.id.count())
@@ -109,7 +108,7 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                             .innerJoin(postsTags.tags, tags)
                             .where(posts.id.eq(postsTags.posts.id))
                             .groupBy(posts.id)
-                        , "tagName")
+                        , "tag_name")
             ))
         .from(posts)
         .leftJoin(posts.postsImages, postsImage)
@@ -130,16 +129,15 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                 posts.title,
                 posts.content,
                 posts.users.nickname,
-                posts.createdAt,
-                posts.modifiedAt,
-                postsImage.imageUrl,
+                posts.createdAt.as("created_at"),
+                posts.modifiedAt.as("modified_at"),
+                postsImage.imageUrl.as("posts_image"),
                 ExpressionUtils.
                     as(JPAExpressions
                         .select(likes.posts.id.count())
                         .from(likes)
                         .where(likes.posts.id.eq(posts.id))
                         .groupBy(likes.posts.id), "likes_count"
-
                     ),
                 ExpressionUtils.
                     as(JPAExpressions
@@ -157,14 +155,12 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                             .innerJoin(postsTags.tags, tags)
                             .where(posts.id.eq(postsTags.posts.id))
                             .groupBy(posts.id)
-                        , "tagName")
+                        , "tag_name")
             ))
         .from(posts)
         .leftJoin(posts.postsImages, postsImage)
         .where(posts.id.eq(id))
         .orderBy(posts.modifiedAt.desc())
         .fetchOne();
-
-
   }
 }
