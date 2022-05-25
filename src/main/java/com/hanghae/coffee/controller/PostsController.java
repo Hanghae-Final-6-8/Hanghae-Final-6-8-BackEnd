@@ -2,28 +2,24 @@ package com.hanghae.coffee.controller;
 
 
 import com.hanghae.coffee.advice.RestException;
-import com.hanghae.coffee.dto.global.DefaultResponseDto;
+import com.hanghae.coffee.dto.global.ResponseFormat;
 import com.hanghae.coffee.dto.posts.PostsRequestDto;
-import com.hanghae.coffee.dto.posts.PostsResponseDto;
-import com.hanghae.coffee.dto.posts.PostsSliceResponseDto;
+
 import com.hanghae.coffee.model.Posts;
 
-import com.hanghae.coffee.model.Users;
-import com.hanghae.coffee.repository.posts.PostsRepository;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.posts.FileService;
 import com.hanghae.coffee.service.posts.PostsImageService;
 import com.hanghae.coffee.service.posts.PostsService;
 import com.hanghae.coffee.service.posts.PostsTagsService;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,39 +52,38 @@ public class PostsController {
      */
     @ResponseBody
     @GetMapping("posts")
-    public PostsSliceResponseDto getPost(Pageable pageable,
+    public ResponseEntity<?> getPost(Pageable pageable,
         @AuthenticationPrincipal UserDetailsImpl userDetails){
 
-        return postsService.getPostList(userDetails, pageable);
+        ResponseFormat responseFormat = new ResponseFormat().of(
+            postsService.getPostList(userDetails, pageable), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
     }
 
     // 게시글 세부 조회
     @ResponseBody
     @GetMapping("posts/{post_id}")
-    public PostsResponseDto getDetailPost(@PathVariable Long post_id,
+    public ResponseEntity<?>  getDetailPost(@PathVariable Long post_id,
         @AuthenticationPrincipal UserDetailsImpl userDetails) throws RestException{
-
-        return postsService.getDetailPost(post_id,userDetails);
+        ResponseFormat responseFormat = new ResponseFormat().of(
+            postsService.getDetailPost(post_id,userDetails), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
     }
 
     // 내 게시글 전체 조회
     @ResponseBody
     @GetMapping("posts/mine")
-    public PostsSliceResponseDto getMyPost(
+    public ResponseEntity<?>  getMyPost(
         @AuthenticationPrincipal UserDetailsImpl userDetails, Pageable pageable) throws RestException{
-        Long user_id;
-        if(userDetails == null){
-            user_id = 0L;
-        } else{
-            user_id = userDetails.getUser().getId();
-        }
-        return postsService.getMyPostList(userDetails, pageable);
+        ResponseFormat responseFormat = new ResponseFormat().of(
+            postsService.getMyPostList(userDetails, pageable), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
     }
 
     //게시글 추가
     @ResponseBody
     @PostMapping(value = "posts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public PostsResponseDto writePost(
+    public ResponseEntity<?>  writePost(
         @RequestPart(value = "title") String title,
         @RequestPart(value = "content", required = false) String content,
         @RequestPart(value = "tag_name", required = false) String tagName,
@@ -96,15 +91,16 @@ public class PostsController {
         @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
 
         Posts posts = postsService.writePosts(title, content, tagName, posts_image, userDetails);
-
-        return postsService.getDetailPost(posts.getId(),userDetails);
+        ResponseFormat responseFormat = new ResponseFormat().of(
+            postsService.getDetailPost(posts.getId(),userDetails), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
     }
 
 
     //게시글 수정
     @ResponseBody
     @PostMapping("posts/update")
-    public PostsResponseDto updatePost( Long posts_id,
+    public ResponseEntity<?> updatePost( Long posts_id,
         @RequestPart(value = "title") String title,
         @RequestPart(value = "content", required = false) String content,
         @RequestPart(value = "tag_name", required = false) String tagName,
@@ -113,7 +109,9 @@ public class PostsController {
         Posts posts = postsService.updatePosts(posts_id, title, content, tagName, picture,
             userDetails);
 
-        return postsService.getDetailPost(posts.getId(),userDetails);
+        ResponseFormat responseFormat = new ResponseFormat().of(
+            postsService.getDetailPost(posts.getId(),userDetails), "success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
     }
 
 
@@ -123,15 +121,13 @@ public class PostsController {
     // 유저 정보 확인 후 권한 확인
     @ResponseBody
     @PostMapping("posts/delete")
-    public DefaultResponseDto deletePost(@RequestBody PostsRequestDto requestDto,
+    public ResponseEntity<?>  deletePost(@RequestBody PostsRequestDto requestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
         postsService.deletePost(requestDto, userDetails);
 
-        return DefaultResponseDto
-            .builder()
-            .status(HttpStatus.OK)
-            .msg("success")
-            .build();
+        ResponseFormat responseFormat = new ResponseFormat().of("success");
+        return new ResponseEntity<>(responseFormat, HttpStatus.OK);
+
     }
 
 

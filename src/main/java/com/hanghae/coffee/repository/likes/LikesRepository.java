@@ -1,9 +1,6 @@
 package com.hanghae.coffee.repository.likes;
 
-import com.hanghae.coffee.dto.posts.PostsDto;
 import com.hanghae.coffee.model.Likes;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LikesRepository extends JpaRepository<Likes,Long>, LikesRepositoryCustom {

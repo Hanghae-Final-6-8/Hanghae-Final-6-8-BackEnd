@@ -13,11 +13,11 @@ public class PostsDto {
 	private String title;
 	private String content;
 	private String nickname;
-	private String imageUrl;
+	private String posts_image;
 
-	private String tagName;
-	private LocalDateTime createdAt;
-	private LocalDateTime modifiedAt;
-	private Long likes_Count;
+	private String tag_name;
+	private LocalDateTime created_at;
+	private LocalDateTime modified_at;
+	private Long likes_count;
 	private Long isLikes;
 }
