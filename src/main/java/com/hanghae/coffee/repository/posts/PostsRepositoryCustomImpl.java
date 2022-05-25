@@ -2,11 +2,13 @@ package com.hanghae.coffee.repository.posts;
 
 import static com.hanghae.coffee.model.QPosts.posts;
 import static com.hanghae.coffee.model.QLikes.likes;
+import static com.hanghae.coffee.model.QUsers.users;
 import static com.hanghae.coffee.model.QPostsTags.postsTags;
 import static com.hanghae.coffee.model.QTags.tags;
 import static com.hanghae.coffee.model.QPostsImage.postsImage;
 
 import com.hanghae.coffee.dto.posts.PostsDto;
+import com.hanghae.coffee.repository.common.OrderByNull;
 import com.hanghae.coffee.repository.helper.RepositorySliceHelper;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
@@ -27,7 +29,7 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
   public Slice<PostsDto> getPostsAllByUsers_Id(Long id, Pageable pageable) {
     List<PostsDto> postsDtoList = jpaQueryFactory
         .select(
-            Projections.fields(PostsDto.class,
+            Projections.bean(PostsDto.class,
                 posts.id.as("posts_id"),
                 posts.title,
                 posts.content,
@@ -40,7 +42,9 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                         .select(likes.posts.id.count())
                         .from(likes)
                         .where(likes.posts.id.eq(posts.id))
-                        .groupBy(likes.posts.id), "likes_count"
+                        .groupBy(likes.posts.id)
+                        .orderBy(OrderByNull.DEFAULT),
+                        "likes_count"
 
                     ),
                 ExpressionUtils.
@@ -59,10 +63,12 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                             .innerJoin(postsTags.tags, tags)
                             .where(posts.id.eq(postsTags.posts.id))
                             .groupBy(posts.id)
+                            .orderBy(OrderByNull.DEFAULT)
                         , "tag_name")
             ))
         .from(posts)
         .leftJoin(posts.postsImages, postsImage)
+        .innerJoin(posts.users,users)
         .where(posts.users.id.eq(id))
         .orderBy(posts.modifiedAt.desc())
         .offset(pageable.getOffset())
@@ -89,7 +95,9 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                         .select(likes.posts.id.count())
                         .from(likes)
                         .where(likes.posts.id.eq(posts.id))
-                        .groupBy(likes.posts.id), "likes_count"
+                        .groupBy(likes.posts.id)
+                        .orderBy(OrderByNull.DEFAULT),
+                        "likes_count"
 
                     ),
                 ExpressionUtils.
@@ -108,10 +116,12 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                             .innerJoin(postsTags.tags, tags)
                             .where(posts.id.eq(postsTags.posts.id))
                             .groupBy(posts.id)
+                            .orderBy(OrderByNull.DEFAULT)
                         , "tag_name")
             ))
         .from(posts)
         .leftJoin(posts.postsImages, postsImage)
+        .innerJoin(posts.users,users)
         .orderBy(posts.modifiedAt.desc())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -124,7 +134,7 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
   public PostsDto getPostsByIdWithPostImages(Long id, Long user_id) {
     return jpaQueryFactory
         .select(
-            Projections.fields(PostsDto.class,
+            Projections.bean(PostsDto.class,
                 posts.id.as("posts_id"),
                 posts.title,
                 posts.content,
@@ -137,7 +147,9 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                         .select(likes.posts.id.count())
                         .from(likes)
                         .where(likes.posts.id.eq(posts.id))
-                        .groupBy(likes.posts.id), "likes_count"
+                        .groupBy(likes.posts.id)
+                        .orderBy(OrderByNull.DEFAULT),
+                        "likes_count"
                     ),
                 ExpressionUtils.
                     as(JPAExpressions
@@ -155,12 +167,14 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                             .innerJoin(postsTags.tags, tags)
                             .where(posts.id.eq(postsTags.posts.id))
                             .groupBy(posts.id)
+                            .orderBy(OrderByNull.DEFAULT)
                         , "tag_name")
             ))
         .from(posts)
         .leftJoin(posts.postsImages, postsImage)
         .where(posts.id.eq(id))
         .orderBy(posts.modifiedAt.desc())
+        .orderBy(OrderByNull.DEFAULT)
         .fetchOne();
   }
 }
