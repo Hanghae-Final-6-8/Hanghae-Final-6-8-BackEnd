@@ -16,7 +16,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response,
         AuthenticationException authException) throws IOException {
         String msg = "";
-        int status = 0;
+        int status = HttpServletResponse.SC_OK;
         String getException = (String) request.getAttribute("EXCEPTION");
         if (!StringUtils.isEmpty(getException)) {
             if ("NOT LOGIN STATUS".equals(request.getAttribute("EXCEPTION"))) {
