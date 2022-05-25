@@ -8,6 +8,7 @@ import com.hanghae.coffee.dto.posts.PostsResponseDto;
 import com.hanghae.coffee.dto.posts.PostsSliceResponseDto;
 import com.hanghae.coffee.model.Posts;
 
+import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.posts.PostsRepository;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.posts.FileService;
@@ -16,6 +17,7 @@ import com.hanghae.coffee.service.posts.PostsService;
 import com.hanghae.coffee.service.posts.PostsTagsService;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +43,6 @@ public class PostsController {
 
     private final static String DIRECTORY_URL = "posts/images";
 
-    private final PostsRepository postsRepository;
     private final PostsService postsService;
     private final PostsImageService postsImageService;
     private final FileService fileService;
@@ -57,13 +58,8 @@ public class PostsController {
     @GetMapping("posts")
     public PostsSliceResponseDto getPost(Pageable pageable,
         @AuthenticationPrincipal UserDetailsImpl userDetails){
-        Long user_id;
-        if(userDetails == null){
-            user_id = 0L;
-        } else{
-            user_id = userDetails.getUser().getId();
-        }
-        return postsService.getPostList(user_id, pageable);
+
+        return postsService.getPostList(userDetails, pageable);
     }
 
     // 게시글 세부 조회
@@ -71,13 +67,8 @@ public class PostsController {
     @GetMapping("posts/{post_id}")
     public PostsResponseDto getDetailPost(@PathVariable Long post_id,
         @AuthenticationPrincipal UserDetailsImpl userDetails) throws RestException{
-        Long user_id;
-        if(userDetails == null){
-            user_id = 0L;
-        } else{
-            user_id = userDetails.getUser().getId();
-        }
-        return postsService.getDetailPost(post_id,user_id);
+
+        return postsService.getDetailPost(post_id,userDetails);
     }
 
     // 내 게시글 전체 조회
@@ -91,7 +82,7 @@ public class PostsController {
         } else{
             user_id = userDetails.getUser().getId();
         }
-        return postsService.getMyPostList(user_id, pageable);
+        return postsService.getMyPostList(userDetails, pageable);
     }
 
     //게시글 추가
@@ -104,20 +95,11 @@ public class PostsController {
         @RequestPart(value = "posts_image", required = false) MultipartFile posts_image,
         @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
 
-        List<String> tagNameList = List.of(tagName.split(","));
+        Posts posts = postsService.writePosts(title, content, tagName, posts_image, userDetails);
 
-
-        Posts posts = postsService.writePost(title, content, userDetails);
-        postsTagsService.putPostsTags(posts,tagNameList);
-
-
-        if (posts_image != null) {
-            String url = fileService.uploadFile(posts.getId(), posts_image, DIRECTORY_URL);
-            postsImageService.imageSave(posts, url);
-        }
-
-        return postsService.getDetailPost(posts.getId(),posts.getUsers().getId());
+        return postsService.getDetailPost(posts.getId(),userDetails);
     }
+
 
     //게시글 수정
     @ResponseBody
@@ -128,37 +110,13 @@ public class PostsController {
         @RequestPart(value = "tag_name", required = false) String tagName,
         @RequestPart(value = "posts_image", required = false) MultipartFile picture,
         @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        Posts posts = postsService.getPosts(posts_id, userDetails.getUser().getId());
-        List<String> tagNameList = List.of(tagName.split(","));
+        Posts posts = postsService.updatePosts(posts_id, title, content, tagName, picture,
+            userDetails);
 
-
-
-
-        // 업로드 이미지가 있으면
-        if (picture != null) {
-            //기존에 저장되어 있는 이미지 찾아오기
-            String url = postsImageService.getImageUrl(posts_id);
-            //기존 이미지가 있으면
-            if (url != null) {
-                //이미지 업데이트
-                postsImageService.imageDelete(posts_id);
-                String newUrl = fileService.updateFile(posts_id, url, picture, DIRECTORY_URL);
-
-                postsImageService.imageSave(posts, newUrl);
-
-            } else {
-                //이미지 업로드
-                String newUrl = fileService.uploadFile(posts.getId(), picture, DIRECTORY_URL);
-                postsImageService.imageSave(posts, newUrl);
-            }
-
-        }
-        postsTagsService.updatePostsTags(posts, tagNameList);
-        postsService.updatePost(posts_id, title, content, userDetails);
-
-        return postsService.getDetailPost(posts.getId(),posts.getUsers().getId());
-
+        return postsService.getDetailPost(posts.getId(),userDetails);
     }
+
+
 
 
     // 게시글 삭제
@@ -167,24 +125,16 @@ public class PostsController {
     @PostMapping("posts/delete")
     public DefaultResponseDto deletePost(@RequestBody PostsRequestDto requestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        Long postId = requestDto.getPosts_id();
-
-        Posts posts = postsService.getPosts(postId, userDetails.getUser().getId());
-        String url = postsImageService.getImageUrl(postId);
-
-        if (url != null) {
-            fileService.deleteFile(url);
-        }
-
-        postsRepository.deleteById(postId);
+        postsService.deletePost(requestDto, userDetails);
 
         return DefaultResponseDto
             .builder()
             .status(HttpStatus.OK)
             .msg("success")
             .build();
-
     }
+
+
 
 
 }
