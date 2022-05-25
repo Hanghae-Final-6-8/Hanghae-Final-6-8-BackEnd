@@ -44,17 +44,14 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                         .where(likes.posts.id.eq(posts.id))
                         .groupBy(likes.posts.id)
                         .orderBy(OrderByNull.DEFAULT),
-                        "likes_count"
-
-                    ),
+                        "likes_count"),
                 ExpressionUtils.
                     as(JPAExpressions
                             .select(likes.users.id)
                             .from(likes)
-                            .join(likes.posts, posts)
-                            .on(likes.posts.id.eq(posts.id))
-                            .on(likes.users.id.eq(id))
-                        , "isLikes"),
+                            .where(posts.id.eq(likes.posts.id))
+                            .where(likes.users.id.eq(id)),
+                        "isLikes"),
                 ExpressionUtils.
                     as(JPAExpressions
                             .select(Expressions.stringTemplate("group_concat({0})", tags.tagName)
@@ -63,8 +60,8 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                             .innerJoin(postsTags.tags, tags)
                             .where(posts.id.eq(postsTags.posts.id))
                             .groupBy(posts.id)
-                            .orderBy(OrderByNull.DEFAULT)
-                        , "tag_name")
+                            .orderBy(OrderByNull.DEFAULT),
+                        "tag_name")
             ))
         .from(posts)
         .leftJoin(posts.postsImages, postsImage)
@@ -98,16 +95,14 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                         .groupBy(likes.posts.id)
                         .orderBy(OrderByNull.DEFAULT),
                         "likes_count"
-
                     ),
                 ExpressionUtils.
                     as(JPAExpressions
                             .select(likes.users.id)
                             .from(likes)
-                            .join(likes.posts, posts)
-                            .on(likes.posts.id.eq(posts.id))
-                            .on(likes.users.id.eq(id))
-                        , "isLikes"),
+                            .where(posts.id.eq(likes.posts.id))
+                            .where(likes.users.id.eq(id)),
+                        "isLikes"),
                 ExpressionUtils.
                     as(JPAExpressions
                             .select(Expressions.stringTemplate("group_concat({0})", tags.tagName)
@@ -116,8 +111,8 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                             .innerJoin(postsTags.tags, tags)
                             .where(posts.id.eq(postsTags.posts.id))
                             .groupBy(posts.id)
-                            .orderBy(OrderByNull.DEFAULT)
-                        , "tag_name")
+                            .orderBy(OrderByNull.DEFAULT),
+                        "tag_name")
             ))
         .from(posts)
         .leftJoin(posts.postsImages, postsImage)
@@ -155,10 +150,9 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                     as(JPAExpressions
                             .select(likes.users.id)
                             .from(likes)
-                            .join(likes.posts, posts)
-                            .on(likes.posts.id.eq(posts.id))
-                            .on(likes.users.id.eq(id))
-                        , "isLikes"),
+                            .where(posts.id.eq(likes.posts.id))
+                            .where(likes.users.id.eq(id)),
+                        "isLikes"),
                 ExpressionUtils.
                     as(JPAExpressions
                             .select(Expressions.stringTemplate("group_concat({0})", tags.tagName)
@@ -167,8 +161,8 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                             .innerJoin(postsTags.tags, tags)
                             .where(posts.id.eq(postsTags.posts.id))
                             .groupBy(posts.id)
-                            .orderBy(OrderByNull.DEFAULT)
-                        , "tag_name")
+                            .orderBy(OrderByNull.DEFAULT),
+                        "tag_name")
             ))
         .from(posts)
         .leftJoin(posts.postsImages, postsImage)
