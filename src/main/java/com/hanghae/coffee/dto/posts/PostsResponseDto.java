@@ -9,5 +9,5 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 public class PostsResponseDto extends DefaultResponseDto {
-	private PostsInterfaceJoinVO data;
+	private PostsDto data;
 }

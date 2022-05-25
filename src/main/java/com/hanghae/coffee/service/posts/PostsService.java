@@ -2,10 +2,10 @@ package com.hanghae.coffee.service.posts;
 
 
 import com.hanghae.coffee.advice.RestException;
+import com.hanghae.coffee.dto.posts.PostsDto;
 import com.hanghae.coffee.dto.posts.PostsResponseDto;
 import com.hanghae.coffee.dto.posts.PostsSliceResponseDto;
 import com.hanghae.coffee.model.Posts;
-import com.hanghae.coffee.dto.posts.PostsInterfaceJoinVO;
 import com.hanghae.coffee.repository.posts.PostsRepository;
 import com.hanghae.coffee.repository.posts.PostsTagsRepository;
 import com.hanghae.coffee.security.UserDetailsImpl;
@@ -28,51 +28,45 @@ public class PostsService {
 
     private final PostsRepository postsRepository;
     private final PostsTagsRepository postsTagsRepository;
-//    private final LikeRepository likeRepository;
 
     public PostsSliceResponseDto getPostList(Long user_id, Pageable pageable) {
 
 
-        Slice<PostsInterfaceJoinVO> postsInterfaceJoinVO = postsRepository.findAllWithPostImages(user_id, pageable);
-        System.out.println(postsInterfaceJoinVO.getContent());
+        Slice<PostsDto> postsDtoSlice = postsRepository.getAllWithPostImages(user_id, pageable);
 
 
         return PostsSliceResponseDto
             .builder()
             .status(HttpStatus.OK)
             .msg("success")
-            .data(postsInterfaceJoinVO)
+            .data(postsDtoSlice)
             .build();
     }
 
     public PostsSliceResponseDto getMyPostList(Long user_id, Pageable pageable) {
 
 
-        Slice<PostsInterfaceJoinVO> postsInterfaceJoinVO = postsRepository.findAllByUsers_Id(user_id, pageable);
+        Slice<PostsDto> postsDtoSlice = postsRepository.getPostsAllByUsers_Id(user_id, pageable);
 
         return PostsSliceResponseDto
             .builder()
             .status(HttpStatus.OK)
             .msg("success")
-            .data(postsInterfaceJoinVO)
+            .data(postsDtoSlice)
             .build();
     }
 
 
 
     public PostsResponseDto getDetailPost(Long post_id, Long user_id) {
-
-//        boolean Like = likeRepository.findByUseridAndPostid(user_id,post_id);
-
-//        return new PostsRequestDto(board,Like);
-        PostsInterfaceJoinVO postsInterfaceJoinVO = postsRepository.findPostsByIdWithPostImages(post_id, user_id);
+        PostsDto postsDto = postsRepository.getPostsByIdWithPostImages(post_id, user_id);
 
 
         return PostsResponseDto
             .builder()
             .status(HttpStatus.OK)
             .msg("success")
-            .data(postsInterfaceJoinVO)
+            .data(postsDto)
             .build();
     }
 
@@ -109,9 +103,5 @@ public class PostsService {
 
         return posts;
     }
-
-//    public PostsRequestDto getMyPost(Long user_id) {
-//        Posts posts = (Posts) postsRepository.findAllByOrderByUser_id(user_id);
-//        return posts;
 }
 

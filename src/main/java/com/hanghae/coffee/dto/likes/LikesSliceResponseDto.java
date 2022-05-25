@@ -10,5 +10,5 @@ import org.springframework.data.domain.Slice;
 @Setter
 @SuperBuilder
 public class LikesSliceResponseDto extends DefaultResponseDto {
-	private Slice<LikesInterfaceJoinVO> data;
+	private Slice<LikesDto> data;
 }

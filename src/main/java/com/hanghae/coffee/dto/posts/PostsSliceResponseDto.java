@@ -10,5 +10,5 @@ import org.springframework.data.domain.Slice;
 @Setter
 @SuperBuilder
 public class PostsSliceResponseDto extends DefaultResponseDto {
-	private Slice<PostsInterfaceJoinVO> data;
+	private Slice<PostsDto> data;
 }
