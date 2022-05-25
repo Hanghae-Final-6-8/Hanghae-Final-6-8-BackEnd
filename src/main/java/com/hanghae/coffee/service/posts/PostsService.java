@@ -110,7 +110,6 @@ public class PostsService {
             throw new RestException(HttpStatus.FORBIDDEN, "forbidden");
 
         }
-
         return posts;
     }
 
@@ -125,9 +124,8 @@ public class PostsService {
         }
 
         postsRepository.deleteById(postId);
+
     }
-
-
 
 }
 
