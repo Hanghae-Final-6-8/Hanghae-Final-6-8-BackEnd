@@ -54,7 +54,7 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                         , "isLikes"),
                 ExpressionUtils.
                     as(JPAExpressions
-                            .select(Expressions.stringTemplate("group_concat({0})", " ")
+                            .select(Expressions.stringTemplate("group_concat({0})", tags.tagName)
                             )
                             .from(postsTags)
                             .innerJoin(postsTags.tags, tags)
@@ -103,7 +103,7 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                         , "isLikes"),
                 ExpressionUtils.
                     as(JPAExpressions
-                            .select(Expressions.stringTemplate("group_concat({0})", " ")
+                            .select(Expressions.stringTemplate("group_concat({0})", tags.tagName)
                             )
                             .from(postsTags)
                             .innerJoin(postsTags.tags, tags)
@@ -151,7 +151,7 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                         , "isLikes"),
                 ExpressionUtils.
                     as(JPAExpressions
-                            .select(Expressions.stringTemplate("group_concat({0})", " ")
+                            .select(Expressions.stringTemplate("group_concat({0})", tags.tagName)
                             )
                             .from(postsTags)
                             .innerJoin(postsTags.tags, tags)
