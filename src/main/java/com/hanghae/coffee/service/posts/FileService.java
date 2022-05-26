@@ -6,7 +6,6 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
-import com.hanghae.coffee.model.Posts;
 import com.hanghae.coffee.utils.FilesUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -22,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class FileService extends Posts {
+public class FileService {
 
     private final AmazonS3Client amazonS3Client;
 
