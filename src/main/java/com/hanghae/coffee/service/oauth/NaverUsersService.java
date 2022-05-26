@@ -10,6 +10,7 @@ import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.users.UsersRepository;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -136,19 +137,15 @@ public class NaverUsersService implements OauthUsersService {
     private Users registerNaverUserIfNeeded(UserInfoDto userInfoDto) {
         // DB 에 중복된 Naver Id 가 있는지 확인
         String naverId = userInfoDto.getAuthId();
-        Users naverUsers = usersRepository.findAllByAuthId(naverId)
-            .orElse(null);
-        if (naverUsers == null) {
+        Optional<Users> naverUsers = usersRepository.findAllByAuthId(naverId);
+        if (naverUsers.isEmpty()) {
             // 회원가입
-            naverUsers = Users.createUsers(userInfoDto);
-            usersRepository.save(naverUsers);
-        } else {
-            naverUsers = naverUsers.updateUsers(userInfoDto);
-//            usersRepository.save(naverUsers);     //dirty checking 으로 생략가능
-
+            naverUsers = Optional.of(Users.createUsers(userInfoDto));
+            usersRepository.save(naverUsers.get());
         }
 
-        return naverUsers;
+
+        return naverUsers.get();
     }
 
 }

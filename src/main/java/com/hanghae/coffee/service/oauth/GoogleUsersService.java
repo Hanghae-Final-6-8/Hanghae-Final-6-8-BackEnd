@@ -12,6 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -137,18 +138,15 @@ public class GoogleUsersService implements OauthUsersService {
         private Users registerGoogleUserIfNeeded (UserInfoDto userInfoDto){
             // DB 에 중복된 Kakao Id 가 있는지 확인
             String googleId = userInfoDto.getAuthId();
-            Users googleUsers = usersRepository.findAllByAuthId(googleId)
-                .orElse(null);
+            Optional<Users> googleUsers = usersRepository.findAllByAuthId(googleId);
 
-            if (googleUsers == null) {
+            if (googleUsers.isEmpty()) {
                 // 회원가입
-                googleUsers = Users.createUsers(userInfoDto);
-                usersRepository.save(googleUsers);
-
-            } else {
-                googleUsers = googleUsers.updateUsers(userInfoDto);
+                googleUsers = Optional.of(Users.createUsers(userInfoDto));
+                usersRepository.save(googleUsers.get());
 
             }
-            return googleUsers;
+
+            return googleUsers.get();
         }
     }
