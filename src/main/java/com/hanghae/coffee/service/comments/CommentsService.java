@@ -1,18 +1,21 @@
 package com.hanghae.coffee.service.comments;
 import com.hanghae.coffee.advice.RestException;
 
+import com.hanghae.coffee.dto.comments.CommentsDto;
 import com.hanghae.coffee.dto.comments.CommentsRequestDto;
 import com.hanghae.coffee.model.Posts;
 import com.hanghae.coffee.repository.comments.CommentsRepository;
 import com.hanghae.coffee.model.Comments;
 import com.hanghae.coffee.repository.posts.PostsRepository;
 import com.hanghae.coffee.security.UserDetailsImpl;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @RequiredArgsConstructor
@@ -23,19 +26,18 @@ public class CommentsService {
     private final CommentsRepository commentsRepository;
     private final PostsRepository postsRepository;
 
+    public Slice<CommentsDto> getComment(Long posts_id, Pageable pageable) {
 
-    public Slice<Comments> getComment(Long posts_id, Pageable pageable) {
-
-        return commentsRepository.findAllByPosts_Id(posts_id,pageable);
+        return commentsRepository.getAllByPosts_Id(posts_id,pageable);
     }
 
+    public Slice<CommentsDto> getMyComment(Long id, Pageable pageable) {
 
-    public Slice<Comments> getMyComment(Long id, Pageable pageable) {
-
-        return commentsRepository.findAllByUsers_Id(id, pageable);
+        return commentsRepository.getAllByUsers_Id(id, pageable);
     }
 
-    public Comments writeComment(CommentsRequestDto requestDto, UserDetailsImpl userDetails){
+    @Transactional
+    public CommentsDto writeComment(CommentsRequestDto requestDto, UserDetailsImpl userDetails){
         log.info("writePost");
         Posts posts = postsRepository.findById(requestDto.getPosts_id()).orElseThrow(
             () -> new RestException(HttpStatus.BAD_REQUEST,"bad request")
@@ -43,12 +45,13 @@ public class CommentsService {
         Comments comments = new Comments(requestDto.getContent(), posts,userDetails.getUser());
         Comments newcomments = commentsRepository.save(comments);
 
-        return commentsRepository.findById(newcomments.getId()).orElseThrow(
+        return Optional.ofNullable(commentsRepository.getByIdWithDto(newcomments.getId())).orElseThrow(
             () -> new RestException(HttpStatus.BAD_REQUEST,"bad request")
         );
 
     }
 
+    @Transactional
     public String deleteComment(CommentsRequestDto requestDto,
         UserDetailsImpl userDetails) {
         Comments comments = commentsRepository.findById(requestDto.getComments_id()).orElseThrow(

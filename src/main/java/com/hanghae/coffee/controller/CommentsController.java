@@ -1,5 +1,4 @@
 package com.hanghae.coffee.controller;
-import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.global.ResponseFormat;
 import com.hanghae.coffee.dto.comments.CommentsRequestDto;
 
