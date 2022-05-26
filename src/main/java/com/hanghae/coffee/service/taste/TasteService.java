@@ -54,14 +54,14 @@ public class TasteService {
             beans = getBeansTasteRepeat(beansFlavor, tasteRequestDto);
         }
 
-        Taste taste = tasteRepository.findByUsersId(users.getId()).orElse(null);
+        Optional<Taste> taste = Optional.ofNullable(tasteRepository.findByUsersId(users.getId()));
 
-        if (taste != null) {
-            taste.updateTaste(users, beans.get());
+        if (taste.isPresent()) {
+            taste.get().updateTaste(users, beans.get());
 
         } else {
-            taste = Taste.createTaste(users, beans.get());
-            tasteRepository.save(taste);
+
+            tasteRepository.save(Taste.createTaste(users, beans.get()));
         }
 
     }
@@ -132,8 +132,8 @@ public class TasteService {
 
         }
 
-        beansList.stream().map(b -> b.getBeanName()).forEach(System.out::println);
-        System.out.println("--------------------------------------------------------------------");
+//        beansList.stream().map(b -> b.getBeanName()).forEach(System.out::println);
+//        System.out.println("--------------------------------------------------------------------");
 
         if (beansList.size() > 0) {
             Random rand = new Random();
@@ -231,7 +231,6 @@ public class TasteService {
 
             Beans e = list.get(r.nextInt(list.size()));
             beans.add(e);
-            log.info(String.valueOf(e.getBeanName()));
             list = list.stream().filter(b -> !b.getId().equals(e.getId())).toList();
 
         }

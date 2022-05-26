@@ -43,7 +43,7 @@ public class OauthLoginController {
      *
      * @param oauthType (GOOGLE, KAKAO, NAVER)
      * @param code      API Server 로부터 넘어노는 code
-     * @return SNS Login 요청 결과로 받은 Json 형태의 String 문자열 (access_token, refresh_token 등)
+     * @return ResponseEntity
      */
     @GetMapping(value = "/{oauth}/callback")
     public ResponseEntity<?> oauthLoginCallback(

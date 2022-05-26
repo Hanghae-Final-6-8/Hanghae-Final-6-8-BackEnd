@@ -19,7 +19,7 @@ public class CafeController {
 
     /**
      *
-     * cafe 목록 조회
+     * 카페 목록 조회
      */
     @GetMapping("/list")
     public ResponseEntity<?> getCafeList() {
@@ -31,7 +31,7 @@ public class CafeController {
 
     /**
      *
-     * cafe 기반 원두 검색
+     * 카페 기준 원두 조회
      */
     @GetMapping("/{cafeId}/beans")
     public ResponseEntity<?> getBeansList(@PathVariable Long cafeId) {
@@ -40,7 +40,9 @@ public class CafeController {
         return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
     }
-
+    /**
+     * 카페 기준 원두 종류 수 조회
+     */
     @GetMapping("/beans/total")
     public ResponseEntity<?> getBeansTotalByCafe() {
 

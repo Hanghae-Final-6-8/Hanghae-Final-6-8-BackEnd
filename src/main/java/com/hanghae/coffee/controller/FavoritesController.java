@@ -5,6 +5,7 @@ import com.hanghae.coffee.dto.global.ResponseFormat;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.favorites.FavoritesService;
 import io.swagger.annotations.Api;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,7 @@ public class FavoritesController {
      * 즐겨찾기 저장
      */
     @PostMapping("/beans")
-    public ResponseEntity<?> doFavoritesByUser(@RequestBody FavoritesRequestDto favoritesRequestDto, @AuthenticationPrincipal UserDetailsImpl users) {
+    public ResponseEntity<?> doFavoritesByUser(@Valid @RequestBody FavoritesRequestDto favoritesRequestDto, @AuthenticationPrincipal UserDetailsImpl users) {
 
         String msg = favoritesService.doFavoritesByUser(favoritesRequestDto.getBean_id(),users.getUser());
 

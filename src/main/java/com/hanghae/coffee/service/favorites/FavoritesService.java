@@ -1,5 +1,6 @@
 package com.hanghae.coffee.service.favorites;
 
+import com.hanghae.coffee.advice.ErrorCode;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.beans.BeansListDto;
 import com.hanghae.coffee.model.Beans;
@@ -10,7 +11,6 @@ import com.hanghae.coffee.repository.favorites.FavoritesRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +33,7 @@ public class FavoritesService {
         Optional<Favorites> favorites = favoritesRepository.findByBeansIdAndUsersId(beanId, users.getId());
 
         Beans beans = beansRepository.findById(beanId)
-            .orElseThrow(() -> new RestException(HttpStatus.BAD_REQUEST, "원두 정보가 없습니다."));
+            .orElseThrow(() -> new RestException(ErrorCode.NOT_FOUND_BEANS));
 
         if(favorites.isPresent()){
             favoritesRepository.deleteById(favorites.get().getId());
