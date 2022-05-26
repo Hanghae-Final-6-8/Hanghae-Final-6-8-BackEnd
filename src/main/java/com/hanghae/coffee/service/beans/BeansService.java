@@ -1,5 +1,6 @@
 package com.hanghae.coffee.service.beans;
 
+import com.hanghae.coffee.advice.ErrorCode;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.beans.BeansDto;
 import com.hanghae.coffee.dto.beans.BeansListDto;
@@ -9,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +24,7 @@ public class BeansService {
     public BeansDto getBeansByBeanId(Long userId, Long beanId) {
 
         return beansRepository.getBeansByBeanId(userId, beanId).orElseThrow(
-            () -> new RestException(HttpStatus.BAD_REQUEST, "원두 정보가 없습니다")
+            () -> new RestException(ErrorCode.NOT_FOUND_BEANS)
         );
 
     }

@@ -2,10 +2,7 @@ package com.hanghae.coffee.repository.cafe;
 
 import static com.hanghae.coffee.model.QBeans.beans;
 import static com.hanghae.coffee.model.QCafe.cafe;
-import static com.hanghae.coffee.model.QLikes.likes;
-import static com.hanghae.coffee.model.QTaste.taste;
 
-import com.hanghae.coffee.dto.beans.BeansListDto;
 import com.hanghae.coffee.dto.cafe.CafeDto;
 import com.hanghae.coffee.repository.common.OrderByNull;
 import com.querydsl.core.types.ExpressionUtils;
@@ -29,7 +26,9 @@ public class CafeRepositoryCustomImpl implements CafeRepositoryCustom {
                     cafe.cafeLogoImage,
                     cafe.cafeBackGroundImage,
                     ExpressionUtils.as(JPAExpressions.select(beans.count()).from(beans)
-                        .where(cafe.id.eq(beans.cafe.id)).groupBy(cafe.id), "beansCount")
+                        .where(cafe.id.eq(beans.cafe.id))
+                        .orderBy(OrderByNull.DEFAULT)
+                        .groupBy(cafe.id), "beansCount")
                 )
             )
             .from(cafe)

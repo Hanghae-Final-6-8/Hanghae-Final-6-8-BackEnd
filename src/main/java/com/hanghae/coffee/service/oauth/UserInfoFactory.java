@@ -1,5 +1,6 @@
 package com.hanghae.coffee.service.oauth;
 
+import com.hanghae.coffee.advice.ErrorCode;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.oauthProperties.GoogleUserInfoDto;
 import com.hanghae.coffee.dto.oauthProperties.KakaoUserInfoDto;
@@ -17,7 +18,7 @@ public class UserInfoFactory {
             case GOOGLE: return new GoogleUserInfoDto(id, nickname, email, profileUrl);
             case NAVER: return new NaverUserInfoDto(id, nickname, email, profileUrl);
             case KAKAO: return new KakaoUserInfoDto(id, nickname, email, profileUrl);
-            default: throw new RestException(HttpStatus.BAD_REQUEST, "알 수 없는 oAuthType 입니다.");
+            default: throw new RestException(ErrorCode.NOT_FOUND_OAUTH);
         }
     }
 }
