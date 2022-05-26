@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -78,7 +79,6 @@ public class JwtTokenProvider {
     // JWT 토큰에서 인증 정보 조회
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(this.getAuthId(token));
-        log.info("getAuthentication :: " + userDetails.getUsername());
         return new UsernamePasswordAuthenticationToken(userDetails, "",
             userDetails.getAuthorities());
     }
@@ -88,17 +88,17 @@ public class JwtTokenProvider {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
     }
 
-    public String resolveToken(HttpServletRequest request) {
+    public Optional<String> resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(Authorization);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
             String token = bearerToken.substring(7);
             if(token.equals("undefined")){
-                return null;
+                return Optional.empty();
             }else {
-                return token;
+                return Optional.of(token);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     // 토큰 유효성 체크

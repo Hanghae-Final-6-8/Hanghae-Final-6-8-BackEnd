@@ -1,15 +1,16 @@
 package com.hanghae.coffee.service.users;
 
+import com.hanghae.coffee.advice.ErrorCode;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.users.CountInfoByUserDto;
 import com.hanghae.coffee.dto.users.UserAuthDto;
 import com.hanghae.coffee.model.Users;
-import com.hanghae.coffee.security.jwt.JwtTokenProvider;
 import com.hanghae.coffee.repository.users.UsersRepository;
+import com.hanghae.coffee.security.jwt.JwtTokenProvider;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +25,9 @@ public class UsersService {
     @Transactional
     public void doLogout(HttpServletRequest request, String authId) {
 
-        String token = jwtTokenProvider.resolveToken(request);
+        Optional<String> token = jwtTokenProvider.resolveToken(request);
         jwtTokenProvider.deleteRefreshToken(authId);
-        jwtTokenProvider.saveLogoutAccessToken(token);
+        jwtTokenProvider.saveLogoutAccessToken(token.get());
         jwtTokenProvider.setNullAuthentication();
 
     }
@@ -79,7 +80,7 @@ public class UsersService {
     public void doUserInfoUpdate(Users users, String url, String nickname) {
 
         Users user = usersRepository.findAllByAuthId(users.getAuthId()).orElseThrow(
-            () -> new RestException(HttpStatus.BAD_REQUEST,"해당 사용자를 찾을 수 없습니다.")
+            () -> new RestException(ErrorCode.NOT_FOUND_USER)
         );
 
         user.updateUsersProfile(url, nickname);
