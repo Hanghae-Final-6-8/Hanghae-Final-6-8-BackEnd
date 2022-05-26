@@ -104,7 +104,7 @@ public class UsersController {
     @PostMapping("/update")
     public ResponseEntity<?> doUserInfoUpdate(
         @RequestParam("nickname") String nickname,
-        @RequestParam(value = "imageFile", required = false) Optional<MultipartFile> file,
+        @RequestParam(value = "profile_url", required = false) Optional<MultipartFile> file,
         @AuthenticationPrincipal UserDetailsImpl users) {
 
         Users user = users.getUser();

@@ -10,6 +10,7 @@ import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.users.UsersRepository;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -137,21 +138,15 @@ public class KakaoUsersService implements OauthUsersService {
     private Users registerKakaoUserIfNeeded(UserInfoDto userInfoDto) {
         // DB 에 중복된 Kakao Id 가 있는지 확인
         String kakaoId = userInfoDto.getAuthId();
-        Users kakaoUsers = usersRepository.findAllByAuthId(kakaoId)
-            .orElse(null);
-        if (kakaoUsers == null) {
+        Optional<Users> kakaoUsers = usersRepository.findAllByAuthId(kakaoId);
+        if(kakaoUsers.isEmpty()){
             // 회원가입
+            kakaoUsers = Optional.of(Users.createUsers(userInfoDto));
+            usersRepository.save(kakaoUsers.get());
 
-            kakaoUsers = Users.createUsers(userInfoDto);
-            usersRepository.save(kakaoUsers);
+        };
 
-        } else {
-
-            kakaoUsers = kakaoUsers.updateUsers(userInfoDto);
-
-        }
-
-        return kakaoUsers;
+        return kakaoUsers.get();
     }
 
 }

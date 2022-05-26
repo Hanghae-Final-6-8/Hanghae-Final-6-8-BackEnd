@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class FileService extends Posts {
+public class FileService {
 
     private final AmazonS3Client amazonS3Client;
 
@@ -36,10 +36,7 @@ public class FileService extends Posts {
         // 파일 유효성 검사
         String fileName = multipartfileToS3(uniqueId, multipartFile, dirName);
 
-
-
         // 시작
-
         return amazonS3Client.getUrl(bucketName, fileName).toString();
     }
 
@@ -87,6 +84,11 @@ public class FileService extends Posts {
 
     //파일 삭제
     public void deleteFile(String fileUrl) {
+
+        String bucketUrl = amazonS3Client.getUrl(bucketName, "").toString();
+        if(fileUrl.startsWith(bucketUrl)) {
+            fileUrl = fileUrl.substring(bucketUrl.length());
+        }
         DeleteObjectRequest request = new DeleteObjectRequest(bucketName, fileUrl);
         amazonS3Client.deleteObject(request);
 
