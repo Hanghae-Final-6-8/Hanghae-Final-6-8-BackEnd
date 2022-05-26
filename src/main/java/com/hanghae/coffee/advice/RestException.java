@@ -12,6 +12,11 @@ public class RestException extends RuntimeException {
     private HttpStatus httpStatus;
     private String msg;
 
+    public RestException(ErrorCode errorCode) {
+        this.msg = errorCode.getMsg();
+        this.httpStatus = errorCode.getHttpStatus();
+    }
+
     public RestException(HttpStatus httpStatus, String msg) {
         this.httpStatus = httpStatus;
         this.msg = msg;

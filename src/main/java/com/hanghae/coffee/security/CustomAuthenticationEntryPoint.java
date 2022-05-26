@@ -15,20 +15,16 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
         AuthenticationException authException) throws IOException {
-        String msg = "";
-        int status = HttpServletResponse.SC_OK;
-        String getException = (String) request.getAttribute("EXCEPTION");
-        if (!StringUtils.isEmpty(getException)) {
-            if ("NOT LOGIN STATUS".equals(request.getAttribute("EXCEPTION"))) {
-                status = 440;
-            } else if ("NOT VALIDATE TOKEN".equals(request.getAttribute("EXCEPTION"))) {
-                status = 441;
-            }
 
-            msg = (String) request.getAttribute("EXCEPTION");
+        String getException = (String) request.getAttribute("EXCEPTION");
+        int getStatus =  Integer.parseInt((String) request.getAttribute("STATUS"));
+
+        if (StringUtils.isEmpty(getException)) {
+            getException = "";
+            getStatus = HttpServletResponse.SC_OK;
         }
 
-        setResponse(response, status, msg);
+        setResponse(response, getStatus, getException);
 
     }
 

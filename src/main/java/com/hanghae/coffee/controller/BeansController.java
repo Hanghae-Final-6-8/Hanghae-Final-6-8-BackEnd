@@ -1,8 +1,10 @@
 package com.hanghae.coffee.controller;
 
 import com.hanghae.coffee.dto.global.ResponseFormat;
+import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.beans.BeansService;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -27,12 +29,8 @@ public class BeansController {
     @GetMapping("/{beanId}")
     public ResponseEntity<?> getBeansByBeanId(@AuthenticationPrincipal UserDetailsImpl users,
         @PathVariable Long beanId) {
-        Long userId = 0L;
-        try {
-            userId = users.getUser().getId();
-        } catch (NullPointerException e) {
-            userId = 0L;
-        }
+
+        Long userId = Optional.ofNullable(users).map(UserDetailsImpl::getUser).map(Users::getId).orElse(0L);
 
         ResponseFormat responseFormat = new ResponseFormat().of(
             beansService.getBeansByBeanId(userId, beanId), "success");

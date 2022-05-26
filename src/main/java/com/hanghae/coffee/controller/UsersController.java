@@ -35,6 +35,9 @@ public class UsersController {
     private final UsersService usersService;
     private final FileService fileService;
 
+    /**
+     * 유저 기본 인증 정보
+     */
     @GetMapping(value = "/auth")
     public ResponseEntity<?> getUserAuth(@AuthenticationPrincipal UserDetailsImpl users) {
 
@@ -44,6 +47,9 @@ public class UsersController {
 
     }
 
+    /**
+     * 유저 로그아웃
+     */
     @GetMapping(value = "/logout")
     public ResponseEntity<?> doLogout(HttpServletRequest request,
         @AuthenticationPrincipal UserDetailsImpl users) {
@@ -54,6 +60,9 @@ public class UsersController {
 
     }
 
+    /**
+     * 유저 탈퇴
+     */
     @PostMapping(value = "/delete")
     public ResponseEntity<?> doUserDelete(@AuthenticationPrincipal UserDetailsImpl users) {
 
@@ -63,6 +72,9 @@ public class UsersController {
 
     }
 
+    /**
+     * 유저 활동 정보
+     */
     @GetMapping(value = "/info")
     public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal UserDetailsImpl users) {
 
@@ -72,6 +84,9 @@ public class UsersController {
 
     }
 
+    /**
+     * access token, refresh token 재발급
+     */
     @GetMapping(value = "/reissue")
     public ResponseEntity<?> reissue(HttpServletResponse response,
         @AuthenticationPrincipal UserDetailsImpl users) {
@@ -83,6 +98,9 @@ public class UsersController {
 
     }
 
+    /**
+     * 유저 프로필 수정
+     */
     @PostMapping("/update")
     public ResponseEntity<?> doUserInfoUpdate(
         @RequestParam("nickname") String nickname,

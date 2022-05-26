@@ -1,11 +1,9 @@
 package com.hanghae.coffee.dto.oauthProperties;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-//@Profile("local")
 public class OauthNaverPropertiesDto {
 
     public static String naverClientId;

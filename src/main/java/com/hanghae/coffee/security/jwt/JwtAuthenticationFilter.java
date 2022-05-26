@@ -1,12 +1,14 @@
 package com.hanghae.coffee.security.jwt;
 
 import java.io.IOException;
+import java.util.Optional;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,23 +22,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain chain) throws IOException, ServletException {
         // 1. Request Header 에서 JWT 토큰 추출
-        String token = jwtTokenProvider.resolveToken(request);
+        Optional<String> token = jwtTokenProvider.resolveToken(request);
         log.info("Authorization :: " + token);
         // 2. validateToken 으로 토큰 유효성 검사
-        if (token != null) {
-            if (jwtTokenProvider.validateToken(token)) {
+        if (token.isPresent()) {
+            if (jwtTokenProvider.validateToken(token.get())) {
                 // (추가) Redis 에 해당 accessToken logout 여부 확인
-                String isLogout = jwtTokenProvider.logoutTokenCheck(token);
+                String isLogout = jwtTokenProvider.logoutTokenCheck(token.get());
                 if (ObjectUtils.isEmpty(isLogout)) {
                     // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장
-                    jwtTokenProvider.setAuthentication(token);
+                    try {
+                        jwtTokenProvider.setAuthentication(token.get());
+                    } catch (UsernameNotFoundException e) {
+                        request.setAttribute("EXCEPTION", e.getMessage());
+                        request.setAttribute("STATUS", "440");
+                    }
+
                 } else {
                     jwtTokenProvider.setNullAuthentication();
                     request.setAttribute("EXCEPTION", "NOT LOGIN STATUS");
+                    request.setAttribute("STATUS", "440");
                 }
-            } else if (!jwtTokenProvider.validateToken(token)) {
+            } else if (!jwtTokenProvider.validateToken(token.get())) {
 
                 request.setAttribute("EXCEPTION", "NOT VALIDATE TOKEN");
+                request.setAttribute("STATUS", "441");
 
             }
 
@@ -44,6 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             jwtTokenProvider.setNullAuthentication();
             request.setAttribute("EXCEPTION", "NOT LOGIN STATUS");
+            request.setAttribute("STATUS", "440");
 
         }
 

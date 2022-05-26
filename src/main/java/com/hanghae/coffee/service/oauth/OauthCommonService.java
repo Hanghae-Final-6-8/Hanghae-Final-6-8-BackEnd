@@ -1,6 +1,7 @@
 package com.hanghae.coffee.service.oauth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.hanghae.coffee.advice.ErrorCode;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.model.OauthType;
 import com.hanghae.coffee.model.Users;
@@ -59,7 +60,7 @@ public class OauthCommonService {
         return oauthUsersServiceList.stream()
             .filter(x -> x.type() == oauthType)
             .findFirst()
-            .orElseThrow(() -> new RestException(HttpStatus.BAD_REQUEST, "알 수 없는 oAuthType 입니다."));
+            .orElseThrow(() -> new RestException(ErrorCode.NOT_FOUND_OAUTH));
     }
 
 }

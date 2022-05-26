@@ -6,7 +6,6 @@ import static com.hanghae.coffee.model.QFavorites.favorites;
 
 import com.hanghae.coffee.dto.beans.BeansDto;
 import com.hanghae.coffee.dto.beans.BeansListDto;
-import com.hanghae.coffee.dto.taste.TasteRequestDto;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Order;
@@ -102,42 +101,6 @@ public class BeansRepositoryCustomImpl implements BeansRepositoryCustom {
             return null;
         }
         return beans.type.eq(Integer.parseInt(type));
-    }
-
-    @Override
-    public List<BeansDto> getBeansByBeanTaste(TasteRequestDto tasteRequestDto) {
-        return jpaQueryFactory
-            .select(
-                Projections.bean(BeansDto.class,
-                    beans.id.as("beanId"),
-                    beans.beanName,
-                    beans.beanImage,
-                    beans.type,
-                    beans.acidity,
-                    beans.sweetness,
-                    beans.bitter,
-                    beans.body,
-                    beans.nutty,
-                    beans.floral,
-                    beans.fruitFlavor,
-                    beans.cocoaFlavor,
-                    beans.nuttyFlavor,
-                    beans.description)
-            )
-            .from(beans)
-            .where(beans.acidity.eq(tasteRequestDto.getAcidity())
-                .and(beans.sweetness.eq(tasteRequestDto.getSweetness()))
-                .and(beans.bitter.eq(tasteRequestDto.getBitter()))
-                .and(beans.body.eq(tasteRequestDto.getBody()))
-                .and(beans.nutty.eq(tasteRequestDto.getNutty()))
-                .and(beans.floral.eq(tasteRequestDto.getFloral()))
-                .and(beans.fruitFlavor.eq(tasteRequestDto.getFruit_flavor()))
-                .and(beans.cocoaFlavor.eq(tasteRequestDto.getCocoa_flavor()))
-                .and(beans.nuttyFlavor.eq(tasteRequestDto.getNutty_flavor()))
-            )
-
-            .fetch();
-
     }
 
     @Override
