@@ -21,7 +21,6 @@ import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Posts extends Timestamped {
 
@@ -69,12 +68,5 @@ public class Posts extends Timestamped {
         this.users = users;
     }
 
-    //==생성 메서드==//
-    public Posts createPosts(Posts posts,List<PostsImage> postsImages,List<PostsTags> postsTags) {
-        posts.setPostsImages(postsImages);
-        posts.setPostsTags(postsTags);
-
-        return posts;
-    }
 
 }

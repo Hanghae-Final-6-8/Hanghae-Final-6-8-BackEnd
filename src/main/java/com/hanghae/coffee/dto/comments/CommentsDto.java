@@ -1,19 +1,23 @@
 package com.hanghae.coffee.dto.comments;
 
-import com.hanghae.coffee.model.Posts;
-import com.hanghae.coffee.model.Users;
+
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class CommentsDto {
 
-	private Long id;
+	private Long comments_id;
 	private String content;
-	private Users users;
-	private Posts posts;
-	private LocalDateTime ModifiedAt;
-	private LocalDateTime CreatedAt;
+	private String nickname;
+	private Long posts_id;
+	private LocalDateTime modified_at;
+	private LocalDateTime created_at;
+
+
+
 }

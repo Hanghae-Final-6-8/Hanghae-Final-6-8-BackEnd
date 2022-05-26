@@ -7,6 +7,7 @@ import static com.hanghae.coffee.model.QPostsTags.postsTags;
 import static com.hanghae.coffee.model.QTags.tags;
 
 import com.hanghae.coffee.dto.likes.LikesDto;
+import com.hanghae.coffee.dto.posts.PostsDto;
 import com.hanghae.coffee.repository.helper.RepositorySliceHelper;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -22,10 +23,10 @@ public class LikesRepositoryCustomImpl implements LikesRepositoryCustom {
 
 
   @Override
-  public Slice<LikesDto> getAllByOrderByUser_IdwithPosts(Long id, Pageable pageable){
-    List<LikesDto> postsDtoList = jpaQueryFactory
+  public Slice<PostsDto> getAllByOrderByUser_IdwithPosts(Long id, Pageable pageable){
+    List<PostsDto> postsDtoList = jpaQueryFactory
         .select(
-            Projections.fields(LikesDto.class,
+            Projections.fields(PostsDto.class,
                 posts.id.as("posts_id"),
                 posts.title,
                 posts.content,

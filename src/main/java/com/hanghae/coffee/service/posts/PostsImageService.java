@@ -3,6 +3,7 @@ package com.hanghae.coffee.service.posts;
 import com.hanghae.coffee.model.Posts;
 import com.hanghae.coffee.model.PostsImage;
 import com.hanghae.coffee.repository.posts.PostsImageRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +15,7 @@ public class PostsImageService {
 
     private final PostsImageRepository postsImageRepository;
 
-    @Transactional(readOnly = false)
+    @Transactional
     public void imageSave(Posts posts, String url){
 
         PostsImage postsImage = new PostsImage(posts,url);
@@ -22,15 +23,15 @@ public class PostsImageService {
         postsImageRepository.save(postsImage);
     }
 
-    public String getImageUrl(Long postId){
+    public Optional<String> getImageUrl(Long postId){
 
-        PostsImage postsImage = postsImageRepository.findByPosts_Id(postId).orElse(null);
+        Optional<PostsImage> postsImage = postsImageRepository.findByPosts_Id(postId);
 
-        return postsImage != null ? postsImage.getImageUrl() : null;
+        return postsImage.map(PostsImage::getImageUrl);
 
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     public void imageDelete(Long postId){
         postsImageRepository.deleteByPosts_Id(postId);
     }

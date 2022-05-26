@@ -18,7 +18,6 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Likes {
 
