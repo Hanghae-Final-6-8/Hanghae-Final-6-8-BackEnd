@@ -1,12 +1,9 @@
 package com.hanghae.coffee.controller;
 
-
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.global.ResponseFormat;
 import com.hanghae.coffee.dto.posts.PostsRequestDto;
-
 import com.hanghae.coffee.model.Posts;
-
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.posts.FileService;
 import com.hanghae.coffee.service.posts.PostsImageService;
@@ -16,7 +13,6 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -88,7 +84,7 @@ public class PostsController {
         @RequestPart(value = "content", required = false) String content,
         @RequestPart(value = "tag_name", required = false) String tagName,
         @RequestPart(value = "posts_image", required = false) MultipartFile posts_image,
-        @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         Posts posts = postsService.writePosts(title, content, tagName, posts_image, userDetails);
         ResponseFormat responseFormat = new ResponseFormat().of(
@@ -105,7 +101,7 @@ public class PostsController {
         @RequestPart(value = "content", required = false) String content,
         @RequestPart(value = "tag_name", required = false) String tagName,
         @RequestPart(value = "posts_image", required = false) MultipartFile picture,
-        @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        @AuthenticationPrincipal UserDetailsImpl userDetails){
         Posts posts = postsService.updatePosts(posts_id, title, content, tagName, picture,
             userDetails);
 

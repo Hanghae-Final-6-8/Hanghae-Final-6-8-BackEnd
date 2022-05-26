@@ -29,6 +29,7 @@ public enum ErrorCode {
 
     // 공통
     COMMON_BAD_REQUEST_400(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    COMMON_BAD_REQUEST_400_FILE(HttpStatus.BAD_REQUEST, "파일업로드에 실패하였습니다."),
     COMMON_INTERNAL_ERROR_500(HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 오류가 발생하였습니다."),
 
     // JWT 관련
@@ -39,8 +40,11 @@ public enum ErrorCode {
     NOT_FOUND_BEANS(HttpStatus.NOT_FOUND, "원두 정보가 존재하지 않습니다."),
     NOT_FOUND_OAUTH(HttpStatus.NOT_FOUND, "Oauth 타입이 존재하지 않습니다."),
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "유저 정보가 존재하지 않습니다."),
+    NOT_FOUND_POST(HttpStatus.NOT_FOUND, "게시물 정보가 존재하지 않습니다."),
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "댓글 정보가 존재하지 않습니다."),
 
     // FORBIDDEN 관련
+    PERMISSION_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
     PERMISSION_DENIED_TO_MODIFY(HttpStatus.FORBIDDEN, "수정 권한이 없습니다."),
     PERMISSION_DENIED_TO_DELETE(HttpStatus.FORBIDDEN, "삭제 권한이 없습니다.");
 

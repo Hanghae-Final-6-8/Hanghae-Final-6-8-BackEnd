@@ -1,6 +1,7 @@
 package com.hanghae.coffee.service.comments;
-import com.hanghae.coffee.advice.RestException;
 
+import com.hanghae.coffee.advice.ErrorCode;
+import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.comments.CommentsDto;
 import com.hanghae.coffee.dto.comments.CommentsRequestDto;
 import com.hanghae.coffee.model.Posts;
@@ -13,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,13 +40,13 @@ public class CommentsService {
     public CommentsDto writeComment(CommentsRequestDto requestDto, UserDetailsImpl userDetails){
         log.info("writePost");
         Posts posts = postsRepository.findById(requestDto.getPosts_id()).orElseThrow(
-            () -> new RestException(HttpStatus.BAD_REQUEST,"bad request")
+            () -> new RestException(ErrorCode.NOT_FOUND_POST)
         );
         Comments comments = new Comments(requestDto.getContent(), posts,userDetails.getUser());
         Comments newcomments = commentsRepository.save(comments);
 
         return Optional.ofNullable(commentsRepository.getByIdWithDto(newcomments.getId())).orElseThrow(
-            () -> new RestException(HttpStatus.BAD_REQUEST,"bad request")
+            () -> new RestException(ErrorCode.NOT_FOUND_COMMENT)
         );
 
     }
@@ -55,14 +55,14 @@ public class CommentsService {
     public String deleteComment(CommentsRequestDto requestDto,
         UserDetailsImpl userDetails) {
         Comments comments = commentsRepository.findById(requestDto.getComments_id()).orElseThrow(
-            () -> new NullPointerException("fail")
+            () -> new RestException(ErrorCode.NOT_FOUND_COMMENT)
         );
         Long id = comments.getUsers().getId();
 
         if(id.equals( userDetails.getUser().getId())) {
             commentsRepository.deleteById(requestDto.getComments_id());
             return "success";
-        } throw new RestException(HttpStatus.FORBIDDEN,"forbidden");
+        } throw new RestException(ErrorCode.PERMISSION_DENIED_TO_DELETE);
 
     }
 
