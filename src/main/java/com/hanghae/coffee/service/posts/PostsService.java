@@ -1,6 +1,6 @@
 package com.hanghae.coffee.service.posts;
 
-
+import com.hanghae.coffee.advice.ErrorCode;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.posts.PostsDto;
 import com.hanghae.coffee.dto.posts.PostsRequestDto;
@@ -14,14 +14,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-
 import javax.transaction.Transactional;
 import java.io.IOException;
 import org.springframework.web.multipart.MultipartFile;
-
 
 @RequiredArgsConstructor
 @Service
@@ -56,7 +52,7 @@ public class PostsService {
 
     @Transactional
     public Posts writePosts(String title, String content, String tagName, MultipartFile posts_image,
-        UserDetailsImpl userDetails) throws IOException {
+        UserDetailsImpl userDetails) {
         List<String> tagNameList = List.of(tagName.split(","));
 
         Posts posts = new Posts(title, content, userDetails.getUser());
@@ -66,8 +62,12 @@ public class PostsService {
 
         Optional<MultipartFile> multipartFile = Optional.ofNullable(posts_image);
         if (multipartFile.isPresent()) {
-            String url = fileService.uploadFile(posts.getId(), multipartFile.get(), DIRECTORY_URL);
-            postsImageService.imageSave(posts, url);
+            try {
+                String url = fileService.uploadFile(posts.getId(), multipartFile.get(), DIRECTORY_URL);
+                postsImageService.imageSave(posts, url);
+            } catch (IOException e) {
+                throw new RestException(ErrorCode.COMMON_BAD_REQUEST_400_FILE);
+            }
         }
         return posts;
     }
@@ -104,9 +104,9 @@ public class PostsService {
 
     public Posts getPosts(Long postId, Long userId) {
         Posts posts = postsRepository.findById(postId).orElseThrow(
-            () -> new RestException(HttpStatus.NOT_FOUND, "not found")
+            () -> new RestException(ErrorCode.NOT_FOUND_POST)
         );
-        if (!posts.getUsers().getId().equals(userId)) {throw new RestException(HttpStatus.FORBIDDEN, "forbidden");}
+        if (!posts.getUsers().getId().equals(userId)) {throw new RestException(ErrorCode.PERMISSION_DENIED);}
 
         return posts;
     }

@@ -1,5 +1,4 @@
 package com.hanghae.coffee.controller;
-import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.global.ResponseFormat;
 import com.hanghae.coffee.dto.likes.LikesRequestDto;
 import com.hanghae.coffee.security.UserDetailsImpl;
@@ -32,7 +31,7 @@ public class LikesController {
     @GetMapping("mine")
     public ResponseEntity<?> getMylikes(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
-         Pageable pageable) throws RestException{
+         Pageable pageable){
 
 			ResponseFormat responseFormat = new ResponseFormat().of(
 					likesService.getComment(userDetails.getUser().getId(),pageable), "success");

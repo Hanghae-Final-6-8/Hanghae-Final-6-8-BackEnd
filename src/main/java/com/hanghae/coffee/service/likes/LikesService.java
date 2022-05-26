@@ -1,6 +1,7 @@
 package com.hanghae.coffee.service.likes;
+
+import com.hanghae.coffee.advice.ErrorCode;
 import com.hanghae.coffee.advice.RestException;
-import com.hanghae.coffee.dto.likes.LikesDto;
 import com.hanghae.coffee.dto.likes.LikesRequestDto;
 import com.hanghae.coffee.dto.posts.PostsDto;
 import com.hanghae.coffee.model.Posts;
@@ -13,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -35,7 +35,7 @@ public class LikesService {
 
 
 		Posts posts = postsRepository.findById(posts_id).orElseThrow(
-				() -> new RestException(HttpStatus.BAD_REQUEST,"bad request")
+				() -> new RestException(ErrorCode.NOT_FOUND_POST)
 		);
 		Optional<Likes> likes = Optional.ofNullable(likesRepository.findByPosts_Id(posts_id));
 
@@ -50,7 +50,7 @@ public class LikesService {
 				// 삭제
 				likesRepository.deleteById(likes.get().getId());
 				return "delete";
-			} throw new RestException(HttpStatus.FORBIDDEN,"forbidden");
+			} throw new RestException(ErrorCode.PERMISSION_DENIED_TO_DELETE);
 			}
 		}
 	}

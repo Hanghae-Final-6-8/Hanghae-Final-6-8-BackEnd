@@ -1,12 +1,9 @@
 package com.hanghae.coffee.controller;
 
-
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.global.ResponseFormat;
 import com.hanghae.coffee.dto.posts.PostsRequestDto;
-
 import com.hanghae.coffee.model.Posts;
-
 import com.hanghae.coffee.security.UserDetailsImpl;
 import com.hanghae.coffee.service.posts.FileService;
 import com.hanghae.coffee.service.posts.PostsImageService;
@@ -16,7 +13,6 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
