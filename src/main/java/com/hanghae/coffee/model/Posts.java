@@ -52,6 +52,9 @@ public class Posts extends Timestamped {
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostsTags> postsTags = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Likes> likes = new ArrayList<>();
     
 
     @Builder
