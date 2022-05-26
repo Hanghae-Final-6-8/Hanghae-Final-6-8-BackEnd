@@ -35,10 +35,7 @@ public class FileService {
         // 파일 유효성 검사
         String fileName = multipartfileToS3(uniqueId, multipartFile, dirName);
 
-
-
         // 시작
-
         return amazonS3Client.getUrl(bucketName, fileName).toString();
     }
 
@@ -68,7 +65,9 @@ public class FileService {
     public String updateFile(Long uniqueId, String url, MultipartFile multipartFile, String dirName)
         throws IOException {
         // 기존 파일 삭제
-        deleteFile(url);
+        if(url != null){
+            deleteFile(url);
+        }
 
         // 파일 유효성 검사
         String fileName = multipartfileToS3(uniqueId, multipartFile, dirName);
@@ -86,6 +85,11 @@ public class FileService {
 
     //파일 삭제
     public void deleteFile(String fileUrl) {
+
+        String bucketUrl = amazonS3Client.getUrl(bucketName, "").toString();
+        if(fileUrl.startsWith(bucketUrl)) {
+            fileUrl = fileUrl.substring(bucketUrl.length());
+        }
         DeleteObjectRequest request = new DeleteObjectRequest(bucketName, fileUrl);
         amazonS3Client.deleteObject(request);
 
