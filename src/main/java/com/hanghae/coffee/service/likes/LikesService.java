@@ -2,11 +2,13 @@ package com.hanghae.coffee.service.likes;
 import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.dto.likes.LikesDto;
 import com.hanghae.coffee.dto.likes.LikesRequestDto;
+import com.hanghae.coffee.dto.posts.PostsDto;
 import com.hanghae.coffee.model.Posts;
 import com.hanghae.coffee.repository.likes.LikesRepository;
 import com.hanghae.coffee.model.Likes;
 import com.hanghae.coffee.repository.posts.PostsRepository;
 import com.hanghae.coffee.security.UserDetailsImpl;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +24,7 @@ public class LikesService {
 	private final LikesRepository likesRepository;
 	private final PostsRepository postsRepository;
 
-	public Slice<LikesDto> getComment(Long id, Pageable pageable) {
+	public Slice<PostsDto> getComment(Long id, Pageable pageable) {
 
 		return likesRepository.getAllByOrderByUser_IdwithPosts(id, pageable);
 	}
@@ -35,18 +37,18 @@ public class LikesService {
 		Posts posts = postsRepository.findById(posts_id).orElseThrow(
 				() -> new RestException(HttpStatus.BAD_REQUEST,"bad request")
 		);
-		Likes likes = likesRepository.findByPosts_Id(posts_id);
+		Optional<Likes> likes = Optional.ofNullable(likesRepository.findByPosts_Id(posts_id));
 
-		if(likes == null){
+		if(likes.isEmpty()){
 			// 등록
-			likes = new Likes(posts,userDetails.getUser());
-			likesRepository.save(likes);
+			Likes newLikes = new Likes(posts,userDetails.getUser());
+			likesRepository.save(newLikes);
 
 			return "success";
 		} else{
-			if(likes.getUsers().getId().equals(userDetails.getUser().getId())){
+			if(likes.get().getUsers().getId().equals(userDetails.getUser().getId())){
 				// 삭제
-				likesRepository.deleteById(likes.getId());
+				likesRepository.deleteById(likes.get().getId());
 				return "delete";
 			} throw new RestException(HttpStatus.FORBIDDEN,"forbidden");
 			}
