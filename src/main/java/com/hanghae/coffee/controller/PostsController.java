@@ -84,7 +84,7 @@ public class PostsController {
         @RequestPart(value = "content", required = false) String content,
         @RequestPart(value = "tag_name", required = false) String tagName,
         @RequestPart(value = "posts_image", required = false) MultipartFile posts_image,
-        @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         Posts posts = postsService.writePosts(title, content, tagName, posts_image, userDetails);
         ResponseFormat responseFormat = new ResponseFormat().of(
@@ -101,7 +101,7 @@ public class PostsController {
         @RequestPart(value = "content", required = false) String content,
         @RequestPart(value = "tag_name", required = false) String tagName,
         @RequestPart(value = "posts_image", required = false) MultipartFile picture,
-        @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        @AuthenticationPrincipal UserDetailsImpl userDetails){
         Posts posts = postsService.updatePosts(posts_id, title, content, tagName, picture,
             userDetails);
 

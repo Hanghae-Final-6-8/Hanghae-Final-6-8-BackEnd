@@ -74,7 +74,7 @@ public class PostsService {
 
     @Transactional
     public Posts updatePosts(Long posts_id, String title, String content, String tagName,
-        MultipartFile picture, UserDetailsImpl userDetails) throws IOException {
+        MultipartFile picture, UserDetailsImpl userDetails){
         Posts posts = getPosts(posts_id, userDetails.getUser().getId());
         List<String> tagNameList = List.of(tagName.split(","));
         Optional<MultipartFile> multipartFile = Optional.ofNullable(picture);
@@ -84,16 +84,23 @@ public class PostsService {
             Optional<String> url = postsImageService.getImageUrl(posts_id);
             //기존 이미지가 있으면
             if (url.isPresent()) {
-                //이미지 업데이트
-                postsImageService.imageDelete(posts_id);
-                String newUrl = fileService.updateFile(posts_id, url.get(), multipartFile.get(), DIRECTORY_URL);
-
-                postsImageService.imageSave(posts, newUrl);
+                try {
+                    //이미지 업데이트
+                    postsImageService.imageDelete(posts_id);
+                    String newUrl = fileService.updateFile(posts_id, url.get(), multipartFile.get(), DIRECTORY_URL);
+                    postsImageService.imageSave(posts, newUrl);
+                } catch (IOException e) {
+                    throw new RestException(ErrorCode.COMMON_BAD_REQUEST_400_FILE);
+                }
 
             } else {
-                //이미지 업로드
-                String newUrl = fileService.uploadFile(posts.getId(), picture, DIRECTORY_URL);
-                postsImageService.imageSave(posts, newUrl);
+                try {
+                    //이미지 업로드
+                    String newUrl = fileService.uploadFile(posts.getId(), picture, DIRECTORY_URL);
+                    postsImageService.imageSave(posts, newUrl);
+                } catch (IOException e) {
+                    throw new RestException(ErrorCode.COMMON_BAD_REQUEST_400_FILE);
+                }
             }
 
         }
