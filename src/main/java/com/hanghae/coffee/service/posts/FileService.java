@@ -66,7 +66,9 @@ public class FileService {
     public String updateFile(Long uniqueId, String url, MultipartFile multipartFile, String dirName)
         throws IOException {
         // 기존 파일 삭제
-        deleteFile(url);
+        if(url != null){
+            deleteFile(url);
+        }
 
         // 파일 유효성 검사
         String fileName = multipartfileToS3(uniqueId, multipartFile, dirName);
