@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hanghae.coffee.dto.oauthProperties.UserInfoDto;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -48,11 +49,11 @@ public class Users extends Timestamped {
     private OauthType oauthType;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Posts> posts = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comments> comments = new ArrayList<>();
 
     private void setAuthId(String authId) {
@@ -84,17 +85,6 @@ public class Users extends Timestamped {
         users.setProfileUrl(userInfoDto.getProfileUrl());
         users.setOauthType(userInfoDto.getOauthType());
         return users;
-    }
-
-    //==생성 메서드==//
-    public Users updateUsers(UserInfoDto userInfoDto) {
-
-        this.setNickname(userInfoDto.getNickname());
-        this.setEmail(userInfoDto.getEmail());
-        this.setProfileUrl(userInfoDto.getProfileUrl());
-        this.setOauthType(userInfoDto.getOauthType());
-
-        return this;
     }
 
     //==생성 메서드==//

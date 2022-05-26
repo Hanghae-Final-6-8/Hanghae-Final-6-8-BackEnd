@@ -115,12 +115,12 @@ public class UsersController {
                 url = fileService.updateFile(user.getId(), user.getProfileUrl(), file.get(),
                     DIRECTORY_URL);
             } catch (IOException e) {
-                throw new RestException(HttpStatus.BAD_REQUEST,"파일 업로드에 실패했습니다.");
+                throw new RestException(HttpStatus.BAD_REQUEST, "파일 업로드에 실패했습니다.");
             }
         }
-        usersService.doUserInfoUpdate(user, url, nickname);
 
-        ResponseFormat responseFormat = new ResponseFormat().of("success");
+        ResponseFormat responseFormat = new ResponseFormat()
+            .of(usersService.doUserInfoUpdate(user, url, nickname), "success");
 
         return new ResponseEntity<>(responseFormat, HttpStatus.OK);
 
