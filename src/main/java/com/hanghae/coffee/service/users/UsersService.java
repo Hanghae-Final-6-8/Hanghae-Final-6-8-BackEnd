@@ -77,13 +77,15 @@ public class UsersService {
     }
 
     @Transactional
-    public void doUserInfoUpdate(Users users, String url, String nickname) {
+    public UserAuthDto doUserInfoUpdate(Users users, String url, String nickname) {
 
         Users user = usersRepository.findAllByAuthId(users.getAuthId()).orElseThrow(
             () -> new RestException(ErrorCode.NOT_FOUND_USER)
         );
 
         user.updateUsersProfile(url, nickname);
+
+        return usersRepository.getUserAuth(user.getId());
 
     }
 

@@ -12,13 +12,11 @@ import javax.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Taste extends Timestamped {
 
@@ -38,6 +36,14 @@ public class Taste extends Timestamped {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bean_id")
     private Beans beans;
+
+    private void setBeans(Beans beans) {
+        this.beans = beans;
+    }
+
+    private void setUsers(Users users) {
+        this.users = users;
+    }
 
     public static Taste createTaste(Users users, Beans beans) {
         Taste taste = new Taste();

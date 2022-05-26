@@ -12,15 +12,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ControllerAdvice {
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> exceptionHandler(Exception e) {
-
-        Map<String, Object> resBody = new HashMap<>();
-        resBody.put("msg", e.getMessage());
-
-        return new ResponseEntity<>(resBody,HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(RestException.class)
     public ResponseEntity<Map<String, Object>> RestExceptionHandler(RestException e) {
         Map<String, Object> resBody = new HashMap<>();

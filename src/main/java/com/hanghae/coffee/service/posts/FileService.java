@@ -10,6 +10,7 @@ import com.hanghae.coffee.utils.FilesUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,9 +66,8 @@ public class FileService {
     public String updateFile(Long uniqueId, String url, MultipartFile multipartFile, String dirName)
         throws IOException {
         // 기존 파일 삭제
-        if(url != null){
-            deleteFile(url);
-        }
+        Optional<String> profileUrl = Optional.ofNullable(url);
+        profileUrl.ifPresent(profile -> this.deleteFile(profile));
 
         // 파일 유효성 검사
         String fileName = multipartfileToS3(uniqueId, multipartFile, dirName);
