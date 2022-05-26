@@ -90,6 +90,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET, "/api/beans/**").permitAll()
             .antMatchers(HttpMethod.GET, "/api/cafe/**").permitAll()
             .antMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/likes/**").permitAll()
+
             //antMatchers로 설정한 조건 외의 어떤 요청이든 '인증'해야 한다
             .anyRequest().authenticated()
             .and()
