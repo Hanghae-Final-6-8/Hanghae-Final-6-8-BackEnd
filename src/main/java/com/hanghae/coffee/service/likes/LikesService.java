@@ -37,7 +37,7 @@ public class LikesService {
 		Posts posts = postsRepository.findById(posts_id).orElseThrow(
 				() -> new RestException(ErrorCode.NOT_FOUND_POST)
 		);
-		Optional<Likes> likes = Optional.ofNullable(likesRepository.findByPosts_Id(posts_id));
+		Optional<Likes> likes =likesRepository.findByPosts_IdAndUsers_Id(posts.getId(),userDetails.getUser().getId());
 
 		if(likes.isEmpty()){
 			// 등록

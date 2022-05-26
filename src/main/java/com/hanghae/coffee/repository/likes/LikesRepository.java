@@ -1,9 +1,12 @@
 package com.hanghae.coffee.repository.likes;
 
 import com.hanghae.coffee.model.Likes;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LikesRepository extends JpaRepository<Likes,Long>, LikesRepositoryCustom {
+
+	Optional<Likes> findByPosts_IdAndUsers_Id(Long id, Long users_id);
 
 
 //	@Query("SELECT p.id as posts_id, "
