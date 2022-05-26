@@ -54,6 +54,7 @@ public class PostsService {
         return postsRepository.getPostsByIdWithPostImages(post_id, user_id);
     }
 
+    @Transactional
     public Posts writePosts(String title, String content, String tagName, MultipartFile posts_image,
         UserDetailsImpl userDetails) throws IOException {
         List<String> tagNameList = List.of(tagName.split(","));
@@ -63,8 +64,9 @@ public class PostsService {
         postsRepository.save(posts);
         postsTagsService.putPostsTags(posts,tagNameList);
 
-        if (posts_image != null) {
-            String url = fileService.uploadFile(posts.getId(), posts_image, DIRECTORY_URL);
+        Optional<MultipartFile> multipartFile = Optional.ofNullable(posts_image);
+        if (multipartFile.isPresent()) {
+            String url = fileService.uploadFile(posts.getId(), multipartFile.get(), DIRECTORY_URL);
             postsImageService.imageSave(posts, url);
         }
         return posts;
@@ -75,16 +77,16 @@ public class PostsService {
         MultipartFile picture, UserDetailsImpl userDetails) throws IOException {
         Posts posts = getPosts(posts_id, userDetails.getUser().getId());
         List<String> tagNameList = List.of(tagName.split(","));
-
+        Optional<MultipartFile> multipartFile = Optional.ofNullable(picture);
         // 업로드 이미지가 있으면
-        if (picture != null) {
+        if (multipartFile.isPresent()) {
             //기존에 저장되어 있는 이미지 찾아오기
-            String url = postsImageService.getImageUrl(posts_id);
+            Optional<String> url = postsImageService.getImageUrl(posts_id);
             //기존 이미지가 있으면
-            if (url != null) {
+            if (url.isPresent()) {
                 //이미지 업데이트
                 postsImageService.imageDelete(posts_id);
-                String newUrl = fileService.updateFile(posts_id, url, picture, DIRECTORY_URL);
+                String newUrl = fileService.updateFile(posts_id, url.get(), multipartFile.get(), DIRECTORY_URL);
 
                 postsImageService.imageSave(posts, newUrl);
 
@@ -102,28 +104,26 @@ public class PostsService {
 
     public Posts getPosts(Long postId, Long userId) {
         Posts posts = postsRepository.findById(postId).orElseThrow(
-            () -> new RestException(HttpStatus.BAD_REQUEST, "bad request")
+            () -> new RestException(HttpStatus.NOT_FOUND, "not found")
         );
+        if (!posts.getUsers().getId().equals(userId)) {throw new RestException(HttpStatus.FORBIDDEN, "forbidden");}
 
-        if (!posts.getUsers().getId().equals(userId)) {
-
-            throw new RestException(HttpStatus.FORBIDDEN, "forbidden");
-
-        }
         return posts;
     }
 
+
+    @Transactional
     public void deletePost(PostsRequestDto requestDto, UserDetailsImpl userDetails) {
+
         Long postId = requestDto.getPosts_id();
 
         Posts posts = getPosts(postId, userDetails.getUser().getId());
-        String url = postsImageService.getImageUrl(postId);
 
-        if (url != null) {
-            fileService.deleteFile(url);
-        }
+        Optional<String> url = postsImageService.getImageUrl(posts.getId());
 
-        postsRepository.deleteById(postId);
+        url.ifPresent(fileService::deleteFile);
+
+        postsRepository.deleteById(posts.getId());
 
     }
 
