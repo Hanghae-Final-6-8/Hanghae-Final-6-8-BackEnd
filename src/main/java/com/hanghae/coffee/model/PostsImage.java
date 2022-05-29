@@ -26,7 +26,7 @@ public class PostsImage {
     @JoinColumn(name = "posts_id")
     private Posts posts;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1000)
     private String imageUrl;
 
     @Builder

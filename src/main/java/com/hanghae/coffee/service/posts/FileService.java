@@ -10,6 +10,8 @@ import com.hanghae.coffee.utils.FilesUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +65,34 @@ public class FileService {
         return fileName;
     }
 
+    public String multipartStaticfileToS3(Long uniqueId, String uniqueName,
+        MultipartFile multipartFile, String dirName)
+        throws IOException {
+        validateFileExists(multipartFile);
+
+        // 파일 이름 설정
+        String fileName = FilesUtils.buildStaticFileName(uniqueId,
+            multipartFile.getOriginalFilename(), uniqueName, dirName);
+
+        // AWS S3 직렬화
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(multipartFile.getContentType());
+
+        InputStream inputStream = multipartFile.getInputStream();
+        byte[] bytes = IOUtils.toByteArray(inputStream);
+        objectMetadata.setContentLength(bytes.length);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+
+        amazonS3Client.putObject(
+            new PutObjectRequest(bucketName, fileName, byteArrayInputStream, objectMetadata)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
+
+        String result = URLDecoder.decode(amazonS3Client.getUrl(bucketName, fileName).toString(),
+            "UTF-8");
+
+        return result;
+    }
+
     public String updateFile(Long uniqueId, String url, MultipartFile multipartFile, String dirName)
         throws IOException {
         // 기존 파일 삭제
@@ -71,7 +101,6 @@ public class FileService {
 
         // 파일 유효성 검사
         String fileName = multipartfileToS3(uniqueId, multipartFile, dirName);
-
 
         return amazonS3Client.getUrl(bucketName, fileName).toString();
 
@@ -87,11 +116,29 @@ public class FileService {
     public void deleteFile(String fileUrl) {
 
         String bucketUrl = amazonS3Client.getUrl(bucketName, "").toString();
-        if(fileUrl.startsWith(bucketUrl)) {
+        if (fileUrl.startsWith(bucketUrl)) {
             fileUrl = fileUrl.substring(bucketUrl.length());
         }
         DeleteObjectRequest request = new DeleteObjectRequest(bucketName, fileUrl);
         amazonS3Client.deleteObject(request);
+
+    }
+
+    //파일 존재 여부
+    public String existsFile(String fileName) throws UnsupportedEncodingException {
+
+        String getUrl = amazonS3Client.getUrl(bucketName, fileName).toString();
+        if (amazonS3Client.doesObjectExist(bucketName, fileName)) {
+            try {
+                return URLDecoder.decode(getUrl, "UTF-8");
+
+            } catch (UnsupportedEncodingException e) {
+                throw new UnsupportedEncodingException("Object " + getUrl + " not encoding");
+            }
+
+        }
+
+        return null;
 
     }
 
