@@ -55,12 +55,14 @@ public class PostsService {
         UserDetailsImpl userDetails) {
 
         Posts posts = new Posts(title, content, userDetails.getUser());
+        postsRepository.save(posts);
+
         if(Optional.ofNullable(tagName).isPresent()) {
             List<String> tagNameList = List.of(tagName.split(","));
             postsTagsService.putPostsTags(posts,tagNameList);
         }
 
-        postsRepository.save(posts);
+
 
 
         Optional<MultipartFile> multipartFile = Optional.ofNullable(posts_image);
@@ -79,11 +81,14 @@ public class PostsService {
     public Posts updatePosts(Long posts_id, String title, String content, String tagName,
         MultipartFile picture, UserDetailsImpl userDetails){
         Posts posts = getPosts(posts_id, userDetails.getUser().getId());
+        posts.update(title, content, userDetails.getUser());
         if(Optional.ofNullable(tagName).isPresent()) {
             List<String> tagNameList = List.of(tagName.split(","));
-            postsTagsService.putPostsTags(posts,tagNameList);
+            postsTagsService.updatePostsTags(posts, tagNameList);
+
         }
-        posts.update(title, content, userDetails.getUser());
+
+
         Optional<MultipartFile> multipartFile = Optional.ofNullable(picture);
         // 업로드 이미지가 있으면
         if (multipartFile.isPresent()) {
