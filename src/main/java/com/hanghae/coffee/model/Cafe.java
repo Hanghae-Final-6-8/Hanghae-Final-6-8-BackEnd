@@ -25,8 +25,10 @@ public class Cafe {
     @Column(nullable = false)
     private String cafeName;
 
+    @Column(length = 1000)
     private String cafeLogoImage;
 
+    @Column(length = 1000)
     private String cafeBackGroundImage;
 
     @JsonIgnore

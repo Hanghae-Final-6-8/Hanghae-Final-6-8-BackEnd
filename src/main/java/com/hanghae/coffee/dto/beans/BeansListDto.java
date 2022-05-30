@@ -1,5 +1,7 @@
 package com.hanghae.coffee.dto.beans;
 
+import com.hanghae.coffee.model.Beans;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,5 +29,14 @@ public class BeansListDto {
         this.beanImage = beansListDto.getBeanImage();
         this.description = beansListDto.getDescription();
 
+    }
+
+    @Builder
+    public BeansListDto(Beans beans) {
+        this.beanId = beans.getId();
+        this.beanName = beans.getBeanName();
+        this.type = beans.getType();
+        this.beanImage = beans.getBeanImage();
+        this.description = beans.getDescription();
     }
 }

@@ -42,6 +42,7 @@ public class Users extends Timestamped {
 
     private String nickname;
 
+    @Column(length = 1000)
     private String profileUrl;
 
     @Column(nullable = false)
