@@ -47,7 +47,7 @@ public class FileService {
     private String multipartfileToS3(Long uniqueId, MultipartFile multipartFile, String dirName)
         throws IOException {
         validateFileExists(multipartFile);
-
+        if(!multipartFile.getContentType().startsWith("image")) throw new RestException(ErrorCode.BAD_REQUEST_NOT_VAILIDATION_FILE_EXT);
         // 파일 이름 설정
         String fileName = FilesUtils.buildFileName(uniqueId, multipartFile.getOriginalFilename(),
             dirName);
