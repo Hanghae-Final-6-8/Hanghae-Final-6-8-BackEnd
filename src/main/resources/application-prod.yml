@@ -1,93 +1,95 @@
-spring:
-  jpa:
-    show-sql: true
-    generate-ddl: true
-    hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate:
-        format_sql: true
-        highlight_sql: true
-
-  config:
-    activate:
-      on-profile: prod
-
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-
-  cache:
-    type: redis
-
-  redis:
-    host: ${{ secrets.AWS_REDIS_HOST }}
-    port: 6379
-
-
-  datasource:
-    url: ${{ secrets.DATABASE_URL }}
-    username: ${{ secrets.DATASOURCE_USERNAME }}
-    password: ${{ secrets.DATASOURCE_PASSWORD }}
-
-secret:
-  key: ${{ secrets.JWT_SECRET_KEY }}
-
-oauth:
-  kakao:
-    client:
-      id: ${{ secrets.OAUTH_KAKAO_CLIENT_ID }}
-    oauth:
-      request:
-        url: https://kauth.kakao.com/oauth/authorize
-    token:
-      url: https://kauth.kakao.com/oauth/token
-    user:
-      info:
-        url: https://kapi.kakao.com/v2/user/me
-    redirect:
-      url: ${{ secrets.AWS_EC2_DOMAIN }}/api/user/login/kakao/callback
-
-
-  naver:
-    client:
-      id: ${{ secrets.OAUTH_NAVER_CLIENT_ID}}
-      secret: ${{ secrets.OAUTH_NAVER_CLIENT_SECRET}}
-    oauth:
-      request:
-        url: https://nid.naver.com/oauth2.0/authorize
-    token:
-      url: https://nid.naver.com/oauth2.0/token
-    user:
-      info:
-        url: https://openapi.naver.com/v1/nid/me
-    redirect:
-      url: ${{ secrets.AWS_EC2_DOMAIN }}/api/user/login/naver/callback
-
-  google:
-    url: https://accounts.google.com/o/oauth2/v2/auth
-    client:
-      id: ${{ secrets.OAUTH_GOOGLE_CLIENT_ID }}
-      secret: ${{ secrets.OAUTH_GOOGLE_SECRET_KEY }}
-    callback:
-      url: ${{ secrets.AWS_EC2_DOMAIN }}/api/user/login/google/callback
-    token:
-      url: https://oauth2.googleapis.com/token
-    scope: profile+email
-    user:
-      info:
-        url: https://www.googleapis.com/oauth2/v1/userinfo
-cloud:
-  aws:
-    credentials:
-      accessKey: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      secretKey: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      instanceProfile: true
-    s3:
-      bucket: ${{ secrets.CLOUD_AWS_S3_BUCKET }}
-    region: 
-      static: ${{ secrets.CLOUD_AWS_REGION_STATIC }}
-    stack:
-      auto: false
-      
-      
+#spring:
+#  jpa:
+#    show-sql: true
+#    generate-ddl: true
+#    hibernate:
+#      ddl-auto: validate
+#    properties:
+#      hibernate:
+#        format_sql: true
+#        highlight_sql: true
+#
+#  config:
+#    activate:
+#      on-profile: prod
+#  mvc:
+#    pathmatch:
+#      matching-strategy: ant_path_matcher
+#
+#  cache:
+#    type: redis
+#
+#  redis:
+#    host: ${{ secrets.AWS_REDIS_HOST }}
+#    port: 6379
+#
+#  datasource:
+#    url: ${{ secrets.DATABASE_URL }}
+#    username: ${{ secrets.DATASOURCE_USERNAME }}
+#    password: ${{ secrets.DATASOURCE_PASSWORD }}
+#  servlet:
+#    multipart:
+#      max-file-size: 8MB
+#      max-request-size: 8MB
+#
+#secret:
+#  key: ${{ secrets.JWT_SECRET_KEY }}
+#
+#oauth:
+#  kakao:
+#    client:
+#      id: ${{ secrets.OAUTH_KAKAO_CLIENT_ID }}
+#    oauth:
+#      request:
+#        url: https://kauth.kakao.com/oauth/authorize
+#    token:
+#      url: https://kauth.kakao.com/oauth/token
+#    user:
+#      info:
+#        url: https://kapi.kakao.com/v2/user/me
+#    redirect:
+#      url: ${{ secrets.AWS_EC2_DOMAIN }}/api/user/login/kakao/callback
+#
+#
+#  naver:
+#    client:
+#      id: ${{ secrets.OAUTH_NAVER_CLIENT_ID}}
+#      secret: ${{ secrets.OAUTH_NAVER_CLIENT_SECRET}}
+#    oauth:
+#      request:
+#        url: https://nid.naver.com/oauth2.0/authorize
+#    token:
+#      url: https://nid.naver.com/oauth2.0/token
+#    user:
+#      info:
+#        url: https://openapi.naver.com/v1/nid/me
+#    redirect:
+#      url: ${{ secrets.AWS_EC2_DOMAIN }}/api/user/login/naver/callback
+#
+#  google:
+#    url: https://accounts.google.com/o/oauth2/v2/auth
+#    client:
+#      id: ${{ secrets.OAUTH_GOOGLE_CLIENT_ID }}
+#      secret: ${{ secrets.OAUTH_GOOGLE_SECRET_KEY }}
+#    callback:
+#      url: ${{ secrets.AWS_EC2_DOMAIN }}/api/user/login/google/callback
+#    token:
+#      url: https://oauth2.googleapis.com/token
+#    scope: profile+email
+#    user:
+#      info:
+#        url: https://www.googleapis.com/oauth2/v1/userinfo
+#cloud:
+#  aws:
+#    credentials:
+#      accessKey: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#      secretKey: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#      instanceProfile: true
+#    s3:
+#      bucket: ${{ secrets.CLOUD_AWS_S3_BUCKET }}
+#    region:
+#      static: ${{ secrets.CLOUD_AWS_REGION_STATIC }}
+#    stack:
+#      auto: false
+#
+#
