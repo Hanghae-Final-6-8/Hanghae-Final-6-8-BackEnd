@@ -13,7 +13,6 @@ spring:
   config:
     activate:
       on-profile: prod
-
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -25,11 +24,14 @@ spring:
     host: ${{ secrets.AWS_REDIS_HOST }}
     port: 6379
 
-
   datasource:
     url: ${{ secrets.DATABASE_URL }}
     username: ${{ secrets.DATASOURCE_USERNAME }}
     password: ${{ secrets.DATASOURCE_PASSWORD }}
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 8MB
 
 secret:
   key: ${{ secrets.JWT_SECRET_KEY }}
@@ -86,9 +88,8 @@ cloud:
       instanceProfile: true
     s3:
       bucket: ${{ secrets.CLOUD_AWS_S3_BUCKET }}
-    region: 
+    region:
       static: ${{ secrets.CLOUD_AWS_REGION_STATIC }}
     stack:
       auto: false
-      
-      
+

@@ -8,9 +8,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ContentDisposition;
 import org.springframework.util.StringUtils;
 
+@Slf4j
 public class FilesUtils {
     private static final String PREFIX = "/";
     private static final String SEPARATOR = "_";
@@ -33,7 +35,6 @@ public class FilesUtils {
             originalFileName.substring(fileExtensionIndex)).orElseThrow(
             () -> new RestException(ErrorCode.BAD_REQUEST_NOT_VAILIDATION_FILE_EXT)
         );
-        if(!isPermissionFileExt(fileExtension)) throw new RestException(ErrorCode.BAD_REQUEST_FILE_EXT);
         String fileName = originalFileName.substring(0, fileExtensionIndex);
         String now = String.valueOf(System.currentTimeMillis());
         // 인코딩
@@ -56,15 +57,4 @@ public class FilesUtils {
         return dirName + PREFIX + uniqueId + SEPARATOR +fileName + fileExtension;
     }
 
-    public static boolean isPermissionFileExt(String fileExtension) {
-
-        if( !StringUtils.hasText(fileExtension) ) {
-            return false;
-        }
-
-        String ext = fileExtension.toUpperCase();
-
-        return Arrays.stream(PERMISSION_FILE_EXT_ARR).anyMatch(s -> s.contains(ext));
-
-    }
 }
