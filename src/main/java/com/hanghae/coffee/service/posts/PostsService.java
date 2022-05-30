@@ -8,15 +8,15 @@ import com.hanghae.coffee.model.Posts;
 import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.posts.PostsRepository;
 import com.hanghae.coffee.security.UserDetailsImpl;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
-import javax.transaction.Transactional;
-import java.io.IOException;
 import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
@@ -53,12 +53,15 @@ public class PostsService {
     @Transactional
     public Posts writePosts(String title, String content, String tagName, MultipartFile posts_image,
         UserDetailsImpl userDetails) {
-        List<String> tagNameList = List.of(tagName.split(","));
 
         Posts posts = new Posts(title, content, userDetails.getUser());
+        if(Optional.ofNullable(tagName).isPresent()) {
+            List<String> tagNameList = List.of(tagName.split(","));
+            postsTagsService.putPostsTags(posts,tagNameList);
+        }
 
         postsRepository.save(posts);
-        postsTagsService.putPostsTags(posts,tagNameList);
+
 
         Optional<MultipartFile> multipartFile = Optional.ofNullable(posts_image);
         if (multipartFile.isPresent()) {
@@ -76,7 +79,11 @@ public class PostsService {
     public Posts updatePosts(Long posts_id, String title, String content, String tagName,
         MultipartFile picture, UserDetailsImpl userDetails){
         Posts posts = getPosts(posts_id, userDetails.getUser().getId());
-        List<String> tagNameList = List.of(tagName.split(","));
+        if(Optional.ofNullable(tagName).isPresent()) {
+            List<String> tagNameList = List.of(tagName.split(","));
+            postsTagsService.putPostsTags(posts,tagNameList);
+        }
+        posts.update(title, content, userDetails.getUser());
         Optional<MultipartFile> multipartFile = Optional.ofNullable(picture);
         // 업로드 이미지가 있으면
         if (multipartFile.isPresent()) {
@@ -102,10 +109,7 @@ public class PostsService {
                     throw new RestException(ErrorCode.COMMON_BAD_REQUEST_400_FILE);
                 }
             }
-
         }
-        postsTagsService.updatePostsTags(posts, tagNameList);
-        posts.update(title, content, userDetails.getUser());
         return posts;
     }
 
@@ -127,10 +131,11 @@ public class PostsService {
         Posts posts = getPosts(postId, userDetails.getUser().getId());
 
         Optional<String> url = postsImageService.getImageUrl(posts.getId());
+        postsRepository.deleteById(posts.getId());
 
         url.ifPresent(fileService::deleteFile);
 
-        postsRepository.deleteById(posts.getId());
+
 
     }
 
