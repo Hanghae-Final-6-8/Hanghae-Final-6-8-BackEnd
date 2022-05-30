@@ -47,8 +47,9 @@ public enum ErrorCode {
     // FORBIDDEN 관련
     PERMISSION_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다."),
     PERMISSION_DENIED_TO_MODIFY(HttpStatus.FORBIDDEN, "수정 권한이 없습니다."),
-    PERMISSION_DENIED_TO_DELETE(HttpStatus.FORBIDDEN, "삭제 권한이 없습니다.");
-
+    PERMISSION_DENIED_TO_DELETE(HttpStatus.FORBIDDEN, "삭제 권한이 없습니다."),
+    BAD_REQUEST_FILE_EXT(HttpStatus.BAD_REQUEST,"허용되지 않은 파일 확장자입니다."),
+    BAD_REQUEST_NOT_VAILIDATION_FILE_EXT(HttpStatus.BAD_REQUEST,"올바르지 않은 파일명입니다.");
 
 
     private final HttpStatus httpStatus;
