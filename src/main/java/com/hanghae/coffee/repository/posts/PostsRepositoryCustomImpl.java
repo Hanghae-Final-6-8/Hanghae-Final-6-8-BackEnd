@@ -153,7 +153,7 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                             .select(likes.users.id)
                             .from(likes)
                             .where(posts.id.eq(likes.posts.id))
-                            .where(likes.users.id.eq(id)),
+                            .where(likes.users.id.eq(user_id)),
                         "isLikes"),
                 ExpressionUtils.
                     as(JPAExpressions
