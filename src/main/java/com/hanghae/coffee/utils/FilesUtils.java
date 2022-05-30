@@ -34,4 +34,15 @@ public class FilesUtils {
         // decodeURIComponent()
         return dirName + PREFIX + uniqueId + SEPARATOR +fileName + SEPARATOR + now + fileExtension;
     }
+
+    public static String buildStaticFileName(Long uniqueId, String originalFileName, String fileName, String dirName) {
+        int fileExtensionIndex = originalFileName.lastIndexOf(FILE_EXTENSION_SEPARATOR);
+        String fileExtension = originalFileName.substring(fileExtensionIndex);
+        // 인코딩
+//        String.format("attachment;filename=\"%1$s\";" +
+//            "filename*=\"UTF-8''%1$s\";", URLEncoder.encode(fileName, String.valueOf(StandardCharsets.UTF_8)));
+        // 디코딩 시
+        // decodeURIComponent()
+        return dirName + PREFIX + uniqueId + SEPARATOR +fileName + fileExtension;
+    }
 }

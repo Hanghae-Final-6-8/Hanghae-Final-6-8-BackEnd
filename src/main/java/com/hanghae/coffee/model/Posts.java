@@ -32,7 +32,7 @@ public class Posts extends Timestamped {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false,length = 1000)
     private String content; // text로 자료형 변경
 
     @JsonIgnore
