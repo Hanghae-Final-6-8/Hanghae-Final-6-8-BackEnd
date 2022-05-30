@@ -14,6 +14,7 @@ public class PostsDto {
 	private String content;
 	private String nickname;
 	private String posts_image;
+	private String profile_url;
 
 	private String tag_name;
 	private LocalDateTime created_at;
