@@ -6,6 +6,8 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
+import com.hanghae.coffee.advice.ErrorCode;
+import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.utils.FilesUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -96,8 +98,8 @@ public class FileService {
     public String updateFile(Long uniqueId, String url, MultipartFile multipartFile, String dirName)
         throws IOException {
         // 기존 파일 삭제
-        Optional<String> profileUrl = Optional.ofNullable(url);
-        profileUrl.ifPresent(profile -> this.deleteFile(profile));
+        Optional<String> optionalUrl = Optional.ofNullable(url);
+        optionalUrl.ifPresent(profile -> this.deleteFile(profile));
 
         // 파일 유효성 검사
         String fileName = multipartfileToS3(uniqueId, multipartFile, dirName);
@@ -108,7 +110,7 @@ public class FileService {
 
     private void validateFileExists(MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) {
-            throw new NullPointerException();
+            throw new RestException(ErrorCode.NOT_FOUND_FILE);
         }
     }
 

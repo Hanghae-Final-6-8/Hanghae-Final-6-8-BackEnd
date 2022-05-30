@@ -11,6 +11,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,6 +83,10 @@ public class UsersService {
         Users user = usersRepository.findAllByAuthId(users.getAuthId()).orElseThrow(
             () -> new RestException(ErrorCode.NOT_FOUND_USER)
         );
+
+        if(StringUtils.isEmpty(url)){
+            url = user.getProfileUrl();
+        }
 
         user.updateUsersProfile(url, nickname);
 

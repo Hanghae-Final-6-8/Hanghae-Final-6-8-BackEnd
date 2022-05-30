@@ -42,6 +42,7 @@ public enum ErrorCode {
     NOT_FOUND_USER(HttpStatus.NOT_FOUND, "유저 정보가 존재하지 않습니다."),
     NOT_FOUND_POST(HttpStatus.NOT_FOUND, "게시물 정보가 존재하지 않습니다."),
     NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "댓글 정보가 존재하지 않습니다."),
+    NOT_FOUND_FILE(HttpStatus.NOT_FOUND, "파일이 존재하지 않습니다."),
 
     // FORBIDDEN 관련
     PERMISSION_DENIED(HttpStatus.FORBIDDEN, "권한이 없습니다."),

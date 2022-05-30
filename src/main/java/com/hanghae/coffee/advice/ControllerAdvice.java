@@ -6,8 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @RestControllerAdvice
 public class ControllerAdvice {
@@ -24,12 +26,19 @@ public class ControllerAdvice {
     /**
      * @valid 유효성체크에 통과하지 못하면  MethodArgumentNotValidException 이 발생한다.
      */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> methodValidException(
-        MethodArgumentNotValidException e) {
-//        log.warn("MethodArgumentNotValidException 발생!!! url:{}, trace:{}",request.getRequestURI(), e.getStackTrace());
+    @ExceptionHandler({MethodArgumentNotValidException.class,
+        MissingServletRequestPartException.class,
+        MissingServletRequestParameterException.class
+    })
+    public ResponseEntity<Map<String, Object>> methodValidException(Exception e) {
         Map<String, Object> resBody = new HashMap<>();
-        resBody.put("msg", makeErrorResponse(e.getBindingResult()));
+        if (e instanceof MethodArgumentNotValidException) {
+            resBody.put("msg", makeErrorResponse(((MethodArgumentNotValidException) e).getBindingResult()));
+        }else if(e instanceof MissingServletRequestPartException){
+            resBody.put("msg", ((MissingServletRequestPartException) e).getRequestPartName() + " error");
+        }else if(e instanceof MissingServletRequestParameterException){
+            resBody.put("msg", ((MissingServletRequestParameterException) e).getParameterName()+ " 을 찾을 수 없습니다.");
+        }
 
         return new ResponseEntity<>(resBody, HttpStatus.BAD_REQUEST);
     }
@@ -40,7 +49,8 @@ public class ControllerAdvice {
         //에러가 있다면
         if (bindingResult.hasErrors()) {
             //DTO에 설정한 meaasge값을 가져온다
-            detail = bindingResult.getFieldError().getField()+" 는 " +bindingResult.getFieldError().getDefaultMessage();
+            detail = bindingResult.getFieldError().getField() + " 는 " + bindingResult.getFieldError()
+                    .getDefaultMessage();
 
         }
 

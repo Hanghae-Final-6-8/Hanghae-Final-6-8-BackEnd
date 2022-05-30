@@ -12,12 +12,15 @@ import java.io.IOException;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotBlank;
+import javax.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -104,10 +107,16 @@ public class UsersController {
      * 유저 프로필 수정
      */
     @PostMapping("/update")
+    @Validated
     public ResponseEntity<?> doUserInfoUpdate(
-        @RequestParam("nickname") @NotBlank(message = "을 입력해주세요.") String nickname,
+        @RequestParam(value = "nickname") String nickname,
         @RequestParam(value = "profile_url", required = false) Optional<MultipartFile> file,
-        @AuthenticationPrincipal UserDetailsImpl users) {
+        @AuthenticationPrincipal UserDetailsImpl users)
+        throws MissingServletRequestParameterException {
+
+        if(StringUtils.isEmpty(nickname)){
+            throw new MissingServletRequestParameterException("nickname", "string");
+        }
 
         Users user = users.getUser();
         String url = null;

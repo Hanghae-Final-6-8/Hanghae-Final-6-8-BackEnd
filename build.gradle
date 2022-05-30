@@ -22,6 +22,8 @@ repositories {
 
 dependencies {
     implementation 'com.opencsv:opencsv:5.3'
+    implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.4'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -42,8 +44,6 @@ dependencies {
     implementation 'io.springfox:springfox-swagger-ui:3.0.0'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
     implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.1'
-
-
 
     // QueryDSL
     implementation "com.querydsl:querydsl-jpa"
