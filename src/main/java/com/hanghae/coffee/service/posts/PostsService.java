@@ -85,9 +85,9 @@ public class PostsService {
         if(Optional.ofNullable(tagName).isPresent()) {
             List<String> tagNameList = List.of(tagName.split(","));
             postsTagsService.updatePostsTags(posts, tagNameList);
-
+        } else{
+            postsTagsService.deletePostsTags(posts);
         }
-
 
         Optional<MultipartFile> multipartFile = Optional.ofNullable(picture);
         // 업로드 이미지가 있으면
@@ -139,8 +139,6 @@ public class PostsService {
         postsRepository.deleteById(posts.getId());
 
         url.ifPresent(fileService::deleteFile);
-
-
 
     }
 

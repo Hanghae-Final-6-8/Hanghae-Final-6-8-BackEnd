@@ -51,6 +51,13 @@ public class PostsTagsService {
         }
     }
 
+    public void deletePostsTags(Posts posts){
+        Optional<PostsTags> postsTagsOptional = postsTagsRepository.findByPosts_Id(posts.getId());
+        postsTagsOptional.ifPresent(
+            postsTags -> postsTagsRepository.deleteAllByPosts_Id(posts.getId())
+        );
+    }
+
 
 
 }
