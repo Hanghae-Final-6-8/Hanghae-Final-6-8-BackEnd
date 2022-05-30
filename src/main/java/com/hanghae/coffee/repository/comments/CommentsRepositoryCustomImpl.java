@@ -36,7 +36,7 @@ public class CommentsRepositoryCustomImpl implements CommentsRepositoryCustom {
         .from(comments)
         .innerJoin(comments.users,users)
         .where(comments.posts.id.eq(posts_id))
-        .orderBy(comments.modifiedAt.desc())
+        .orderBy(comments.modifiedAt.asc())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
         .fetch();
@@ -60,7 +60,7 @@ public class CommentsRepositoryCustomImpl implements CommentsRepositoryCustom {
         .innerJoin(comments.users,users)
         .innerJoin(comments.posts,posts)
         .where(comments.users.id.eq(user_id))
-        .orderBy(comments.modifiedAt.desc())
+        .orderBy(comments.modifiedAt.asc())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
         .fetch();
@@ -83,7 +83,7 @@ public class CommentsRepositoryCustomImpl implements CommentsRepositoryCustom {
         .from(comments)
         .innerJoin(comments.users,users)
         .where(comments.id.eq(id))
-        .orderBy(comments.modifiedAt.desc())
+        .orderBy(comments.modifiedAt.asc())
         .orderBy(OrderByNull.DEFAULT)
         .fetchOne();
   }
