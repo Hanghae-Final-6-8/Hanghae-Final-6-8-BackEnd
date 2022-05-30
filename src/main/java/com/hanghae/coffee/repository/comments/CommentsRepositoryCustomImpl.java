@@ -2,6 +2,7 @@ package com.hanghae.coffee.repository.comments;
 
 import static com.hanghae.coffee.model.QComments.comments;
 
+import static com.hanghae.coffee.model.QPosts.posts;
 import static com.hanghae.coffee.model.QUsers.users;
 
 import com.hanghae.coffee.dto.comments.CommentsDto;
@@ -51,12 +52,13 @@ public class CommentsRepositoryCustomImpl implements CommentsRepositoryCustom {
                 comments.id.as("comments_id"),
                 comments.content,
                 comments.users.nickname,
-                comments.posts.id,
+                comments.posts.id.as("posts_id"),
                 comments.createdAt.as("created_at"),
                 comments.modifiedAt.as("modified_at")
             ))
         .from(comments)
         .innerJoin(comments.users,users)
+        .innerJoin(comments.posts,posts)
         .where(comments.users.id.eq(user_id))
         .orderBy(comments.modifiedAt.desc())
         .offset(pageable.getOffset())
@@ -74,7 +76,7 @@ public class CommentsRepositoryCustomImpl implements CommentsRepositoryCustom {
                 comments.id.as("comments_id"),
                 comments.content,
                 comments.users.nickname,
-                comments.posts.id,
+                comments.posts.id.as("posts_id"),
                 comments.createdAt.as("created_at"),
                 comments.modifiedAt.as("modified_at")
             ))
