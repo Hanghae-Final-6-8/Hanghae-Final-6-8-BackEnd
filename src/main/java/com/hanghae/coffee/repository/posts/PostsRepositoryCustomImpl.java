@@ -34,6 +34,7 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                 posts.title,
                 posts.content,
                 posts.users.nickname,
+                posts.users.profileUrl.as("profile_url"),
                 posts.createdAt.as("created_at"),
                 posts.modifiedAt.as("modified_at"),
                 postsImage.imageUrl.as("posts_image"),
@@ -84,6 +85,7 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                 posts.title,
                 posts.content,
                 posts.users.nickname,
+                posts.users.profileUrl.as("profile_url"),
                 posts.createdAt.as("created_at"),
                 posts.modifiedAt.as("modified_at"),
                 postsImage.imageUrl.as("posts_image")
@@ -136,6 +138,7 @@ public class PostsRepositoryCustomImpl implements PostsRepositoryCustom {
                 posts.title,
                 posts.content,
                 posts.users.nickname,
+                posts.users.profileUrl.as("profile_url"),
                 posts.createdAt.as("created_at"),
                 posts.modifiedAt.as("modified_at"),
                 postsImage.imageUrl.as("posts_image"),
