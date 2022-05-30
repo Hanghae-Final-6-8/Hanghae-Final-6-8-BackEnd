@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @RestControllerAdvice
@@ -21,6 +22,16 @@ public class ControllerAdvice {
         resBody.put("msg", e.getMsg());
 
         return new ResponseEntity<>(resBody, e.getHttpStatus());
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<Map<String, Object>> MaxUploadSizeExceededExceptionHandler(
+        MaxUploadSizeExceededException e) {
+        Map<String, Object> resBody = new HashMap<>();
+        resBody.put("status","500");
+        resBody.put("msg", "최대 첨부 가능한 사이즈(8MB)를 초과하였습니다.");
+
+        return new ResponseEntity<>(resBody, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
