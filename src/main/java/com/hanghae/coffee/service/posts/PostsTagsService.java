@@ -1,21 +1,21 @@
 package com.hanghae.coffee.service.posts;
 
-import com.hanghae.coffee.advice.RestException;
 import com.hanghae.coffee.model.Posts;
 import com.hanghae.coffee.model.PostsTags;
 import com.hanghae.coffee.model.Tags;
 import com.hanghae.coffee.repository.posts.PostsTagsRepository;
 import com.hanghae.coffee.repository.posts.TagsRepository;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class PostsTagsService {
 
     private final PostsTagsRepository postsTagsRepository;
@@ -40,6 +40,7 @@ public class PostsTagsService {
 
     // 게시물 태그 저장
     public void putPostsTags(Posts posts, List<String> tagName){
+        tagName = tagName.stream().distinct().collect(Collectors.toList());
         for(String name:tagName){
             Tags tags = tagsRepository.findByTagName(name);
             if(tags == null){
