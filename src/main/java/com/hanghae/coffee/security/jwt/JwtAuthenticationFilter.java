@@ -23,7 +23,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         FilterChain chain) throws IOException, ServletException {
         // 1. Request Header 에서 JWT 토큰 추출
         Optional<String> token = jwtTokenProvider.resolveToken(request);
-        log.info("Authorization :: " + token);
         // 2. validateToken 으로 토큰 유효성 검사
         if (token.isPresent()) {
             if (jwtTokenProvider.validateToken(token.get())) {
