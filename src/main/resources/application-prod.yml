@@ -1,9 +1,10 @@
 spring:
   jpa:
+    database-platform: com.hanghae.coffee.config.CustomMysqlDialect
     show-sql: false
     generate-ddl: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: false
