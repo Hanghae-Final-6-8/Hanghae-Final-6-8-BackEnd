@@ -1,6 +1,5 @@
 PROJECT=final_project
 REPOSITORY=/home/ubuntu/deploy
-LOGS_SHELL=/home/ubuntu/log.sh
 
 echo "> 현재 구동 중인 애플리케이션 pid 확인"
 
@@ -28,7 +27,7 @@ chmod +x "$JAR_NAME"
 
 echo "> $JAR_NAME 실행"
 
-sh LOGS_SHELL
+sh /home/ubuntu/log.sh
 
 # 실행
 nohup java -Duser.timezone=KST -jar "$JAR_NAME" > $REPOSITORY/nohup.out 2>&1 &
