@@ -122,14 +122,12 @@ public class NaverUsersService implements OauthUsersService {
         String id = jsonNode.get("response").get("id").asText();
         String nickname = jsonNode.get("response")
             .get("nickname").asText();
-        String email = jsonNode.get("response")
-            .get("email").asText();
         String profile_image_url =
             jsonNode.get("response").has("profile_image") ?
                 jsonNode.get("response").get("profile_image").asText() : null;
 
-        log.info("네이버 사용자 정보: " + id + ", " + nickname + ", " + email + ", " + profile_image_url);
-        return UserInfoFactory.getOAuth2UserInfo(OauthType.NAVER, id, nickname, email,
+        log.info("네이버 사용자 정보: " + id + ", " + nickname + ", " + ", " + profile_image_url);
+        return UserInfoFactory.getOAuth2UserInfo(OauthType.NAVER, id, nickname, null,
             profile_image_url);
 
     }
