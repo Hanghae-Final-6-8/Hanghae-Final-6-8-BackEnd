@@ -9,6 +9,7 @@ import com.hanghae.coffee.model.Users;
 import com.hanghae.coffee.repository.posts.PostsRepository;
 import com.hanghae.coffee.security.UserDetailsImpl;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
@@ -58,7 +59,7 @@ public class PostsService {
         postsRepository.save(posts);
 
         if(Optional.ofNullable(tagName).isPresent()) {
-            List<String> tagNameList = List.of(tagName.split(","));
+            List<String> tagNameList = new ArrayList<>(List.of(tagName.replace(" ","").split(",")));
             postsTagsService.putPostsTags(posts,tagNameList);
         }
 
@@ -83,7 +84,7 @@ public class PostsService {
         Posts posts = getPosts(posts_id, userDetails.getUser().getId());
         posts.update(title, content, userDetails.getUser());
         if(Optional.ofNullable(tagName).isPresent()) {
-            List<String> tagNameList = List.of(tagName.split(","));
+            List<String> tagNameList = new ArrayList<>(List.of(tagName.replace(" ","").split(",")));
             postsTagsService.updatePostsTags(posts, tagNameList);
         } else{
             postsTagsService.deletePostsTags(posts);
