@@ -38,22 +38,25 @@ public class TasteService {
 
         List<Beans> originBeansList = beansRepository.findAll();
 
-        // 1차
+        // 커피 향 일치 여부 확인하여 원두 가져오기
         List<Beans> beansFlavor = getBeansFlavor(originBeansList, tasteRequestDto, "1");
 
+        // 커피 향 일치하지 않을 경우 가장 근접한 원두 가져오기
         if (beansFlavor.size() < 1) {
             beansFlavor = getBeansFlavor(originBeansList, tasteRequestDto, "2");
         }
-
+        
+        // 위에서 가져온 원두로 일치하는 커피 맛 원두 가져오기
         Optional<Beans> beans = getBeansTasteRepeat(beansFlavor, tasteRequestDto);
 
-        // 2차
+        // 커피 맛 일치하지 않을 경우 가장 근접한 커피 맛 원두 가져오기
         if (beans.isEmpty()) {
             beansFlavor = getBeansFlavor(originBeansList, tasteRequestDto, "2");
 
             beans = getBeansTasteRepeat(beansFlavor, tasteRequestDto);
         }
-
+        
+        //취향조사 유저 여부
         Optional<Taste> taste = Optional.ofNullable(tasteRepository.findByUsersId(users.getId()));
 
         if (taste.isPresent()) {
@@ -65,10 +68,10 @@ public class TasteService {
         }
 
     }
-
+    //커피 향 기준 원두 선정하기
     private List<Beans> getBeansFlavor(List<Beans> beans, TasteRequestDto tasteRequestDto,
         String type) {
-
+        //일치하는 원두 찾기 
         if (type.equals("1")) {
 
             return beans.stream().filter(
@@ -78,7 +81,7 @@ public class TasteService {
                         b.getCocoaFlavor() == tasteRequestDto.getCocoa_flavor() &&
                         b.getNuttyFlavor() == tasteRequestDto.getNutty_flavor()
             ).toList();
-
+        //일치하는 원두 없을시 가장 비슷한 원두 찾기
         } else if (type.equals("2")) {
 
             return beans.stream().filter(
@@ -99,10 +102,11 @@ public class TasteService {
 
     }
 
-    //사용자 취향 기준 원두 선정하기
+    //커피 맛 기준 원두 선정하기
     private Optional<Beans> getBeansTaste(List<Beans> beans, TasteRequestDto tasteRequestDto,
         String type) {
         List<Beans> beansList = new ArrayList<>();
+        //일치하는 원두 찾기
         if (type.equals("1")) {
             beansList = beans.stream().filter(
                 b ->
@@ -112,7 +116,7 @@ public class TasteService {
                         b.getBody() == tasteRequestDto.getBody() &&
                         b.getNutty() == tasteRequestDto.getNutty()
             ).toList();
-
+        //일치하는 원두 없을시 가장 비슷한 원두 찾기
         } else if (type.equals("2")) {
 
             beansList = beans.stream().filter(
@@ -141,7 +145,7 @@ public class TasteService {
         }
         return Optional.empty();
     }
-
+    
     private Optional<Beans> getBeansTasteRepeat(List<Beans> beansFlavor,
         TasteRequestDto tasteRequestDto) {
 
@@ -158,7 +162,7 @@ public class TasteService {
         return Math.abs(x - y);
     }
 
-
+    //비슷한 4가지 원두 가져오기
     public List<BeansListDto> findTasteListByUserTaste(Users users) {
 
         List<BeansListDto> beansListDtoList = new LinkedList<>();
